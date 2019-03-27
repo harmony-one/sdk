@@ -16,6 +16,8 @@ lib/
 node/
 *.log
 
+#cache
+.rpt2_cache
 # Xcode
 #
 build/

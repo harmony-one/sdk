@@ -5,6 +5,8 @@
     "packages/*"
   ],
   "scripts": {
+    "packages:cleanBrowser": "gulp cleanBrowser",
+    "packages:browser": "yarn packages:cleanBrowser && rollup --c scripts/rollup/bundleBrowser.js",
     "bootstrap": "lerna bootstrap && yarn build",
     "build": "yarn build:proto && yarn build:ts",
     "build:ts": "tsc -b tsconfig.json",
@@ -60,8 +62,10 @@
     "cross-env": "^5.2.0",
     "dotenv": "^6.0.0",
     "fancy-log": "^1.3.2",
+    "fbjs-scripts": "^0.8.3",
     "glob": "^7.1.3",
     "glob-parent": "^3.1.0",
+    "gulp": "^4.0.0",
     "husky": "^1.1.2",
     "jest": "^23.4.2",
     "jest-fetch-mock": "^1.6.6",
@@ -88,5 +92,10 @@
     "typescript-json-schema": "^0.32.0",
     "webpack": "^4.20.2",
     "webpack-command": "^0.4.1"
+  },
+  "dependencies": {
+    "del": "^4.0.0",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-license": "^0.8.1"
   }
 }

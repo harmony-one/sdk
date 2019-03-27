@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="format-detection" content="email=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+    />
+    <title></title>
+  </head>
+  <style>
+    #nodeUrl,
+    #address {
+      width: 250px;
+      height: 50px;
+      font-size: 16px;
+    }
+
+    #setProviderButton,
+    #getBlanceButton {
+      width: 100px;
+      height: 50px;
+      margin-left: 16px;
+      background: rgba(0, 0, 0, 1);
+      color: #ffffff;
+    }
+  </style>
+
+  <body>
+    <div id="root">
+      <h1>
+        This is Laksa.js simple example, load this html in latest chrome please
+      </h1>
+
+      <h3>Current Provider is:</h3>
+      <h4 id="currentProvider"></h4>
+      <input id="nodeUrl" type="text" value="https://api-scilla.zilliqa.com" />
+      <button id="setProviderButton">Set Provider</button>
+      <h3>Input address, and get balance of it</h3>
+      <input id="address" type="text" />
+      <button id="getBlanceButton">Get Balance</button>
+      <div>
+        <span>balance:</span><span id="balance"></span> <span>nonce:</span
+        ><span id="nonce"></span>
+      </div>
+      <div id="code"></div>
+    </div>
+    <script src="../lib/index.js"></script>
+    
+   
+  </body>
+</html>
