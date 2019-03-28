@@ -5,5 +5,5 @@ module.exports = [
   // { name: 'LaksaWallet', dest: 'laksa-wallet' },
   // { name: 'LaksaHDWallet', dest: 'laksa-hd-wallet' },
   // { name: 'LaksaContract', dest: 'laksa-core-contract' },
-  // { name: 'Laksa', dest: 'laksa' }
+  { name: 'HarmonyCrypto', dest: 'harmony-crypto' },
 ];

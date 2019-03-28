@@ -7,11 +7,12 @@ export default {
       {
         modules: false,
         targets: {
-          browsers: ['>0.25%']
+          browsers: ['>0.25%'],
         },
-        useBuiltIns: 'usage'
-      }
-    ]
+        useBuiltIns: 'usage',
+      },
+    ],
+    '@babel/typescript',
   ],
   plugins: [
     ['@babel/transform-runtime'],
@@ -21,11 +22,11 @@ export default {
     [
       '@babel/plugin-proposal-decorators',
       {
-        legacy: true
-      }
+        legacy: true,
+      },
     ],
     '@babel/proposal-class-properties',
-    'add-module-exports'
+    'add-module-exports',
   ],
-  exclude: 'packages/**/node_modules/**'
-}
+  exclude: 'packages/**/node_modules/**',
+};

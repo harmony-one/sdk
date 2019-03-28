@@ -1,1 +1,2 @@
-export { randomBytes } from './random';
+export * from './random';
+export * from './keyTool';
