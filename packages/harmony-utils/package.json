@@ -1,8 +1,13 @@
 {
-  "name": "harmony-utils",
+  "name": "@harmony/utils",
   "version": "0.0.1",
   "description": "utils for harmony",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "node": "lib/index.js",
+  "browser": "dist/index.js",
+  "module": "dist/index.js",
+  "jsnext:main": "dist/index.js",
+  "typings":"lib/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

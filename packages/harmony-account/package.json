@@ -1,11 +1,16 @@
 {
-  "name": "harmony-account",
+  "name": "@harmony/account",
   "version": "0.0.1",
   "description": "account and wallet for harmony",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "typings":"lib/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "neeboo@firestack.one",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@harmony/crypto": "^0.0.1",
+    "@harmony/utils": "^0.0.1"
+  }
 }

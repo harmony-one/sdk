@@ -62,7 +62,11 @@ let _permanentCensorErrors = false;
 let _censorErrors = false;
 
 // @TODO: Enum
-export function throwError(message: string, code: string, params: any): never {
+export function throwError(
+  message: string,
+  code: string | null | undefined,
+  params: any,
+): never {
   if (_censorErrors) {
     throw new Error('unknown error');
   }
@@ -185,17 +189,17 @@ export function setLogLevel(logLevel: string): void {
   LogLevel = level;
 }
 
-function log(logLevel: string, args: any[]): void {
+function log(logLevel: string, args: [any?, ...any[]]): void {
   if (LogLevel > LogLevels[logLevel]) {
     return;
   }
   console.log.apply(console, args);
 }
 
-export function warn(...args: any[]): void {
+export function warn(...args: [any?, ...any[]]): void {
   log('warn', args);
 }
 
-export function info(...args: any[]): void {
+export function info(...args: [any?, ...any[]]): void {
   log('info', args);
 }

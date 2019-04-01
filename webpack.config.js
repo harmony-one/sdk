@@ -5,7 +5,7 @@ const packagesSettings = require('./scripts/packagesList');
 function createBatchConfig(list) {
   return list.map((l) => {
     const entryBase = {};
-    entryBase[l.name] = [`./packages/${l.dest}/lib/index.js`];
+    entryBase[l.name] = [`./packages/${l.dest}/dist/index.js`];
 
     const batchBaseConfig = {
       entry: entryBase,

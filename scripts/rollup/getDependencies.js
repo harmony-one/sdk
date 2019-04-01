@@ -7,7 +7,7 @@ export function getKeys(p) {
   const { dependencies } = JSON.parse(data);
 
   const keys = dependencies
-    ? Object.keys(dependencies).filter((d) => !/harmony/.test(d))
+    ? Object.keys(dependencies) //.filter((d) => !/harmony/.test(d))
     : [];
   return keys;
 }

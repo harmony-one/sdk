@@ -72,10 +72,9 @@ async function bundles() {
     const external = getKeys(p);
     const externalSetting = getKeys(p).length > 0 ? { external } : {};
     const externalObject = external.reduce((g, pkg) => {
-      g[`${pkg}`] = camelCase(pkg);
+      g[`${pkg}`] = pkg.startsWith('@harmony') ? pkg : camelCase(pkg);
       return g;
     }, {});
-
     const normal = {
       input: `packages/${p}/src/index.ts`,
       plugins: [
@@ -112,7 +111,7 @@ async function bundles() {
         }),
       ],
       output: {
-        file: `packages/${p}/lib/index.js`,
+        file: `packages/${p}/dist/index.js`,
         exports: 'named',
         format: 'umd',
         sourcemap: true,

@@ -1,12 +1,20 @@
 {
-  "name": "harmony-crypto",
+  "name": "@harmony/crypto",
   "version": "0.0.1",
   "description": "crypto libraries for harmony",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "node": "lib/index.js",
+  "browser": "dist/index.js",
+  "module": "dist/index.js",
+  "jsnext:main": "dist/index.js",
+  "typings":"lib/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "neeboo@firestack.one",
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "ISC",
   "dependencies": {
     "aes-js": "^3.1.2",

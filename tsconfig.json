@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/harmony-account" },
+    { "path": "packages/harmony-crypto" }
+    { "path": "packages/harmony-utils" }
+  ]
+}

@@ -31,7 +31,9 @@ function addSlice(array: Uint8Array): Uint8Array {
   // tslint:disable-next-line: only-arrow-functions
   array.slice = function() {
     const args = Array.prototype.slice.call(arguments);
-    return addSlice(new Uint8Array(Array.prototype.slice.apply(array, args)));
+    return addSlice(
+      new Uint8Array(Array.prototype.slice.apply(array, [args[0], args[1]])),
+    );
   };
 
   return array;
@@ -59,7 +61,7 @@ export function isArrayish(value: any): value is Arrayish {
   return true;
 }
 
-export function arrayify(value: Arrayish | Hexable): Uint8Array {
+export function arrayify(value: Arrayish | Hexable): Uint8Array | null {
   if (value == null) {
     errors.throwError(
       'cannot convert null value to array',
@@ -82,7 +84,7 @@ export function arrayify(value: Arrayish | Hexable): Uint8Array {
       });
     }
 
-    if (match[1] !== '0x') {
+    if (match !== null && match[1] !== '0x') {
       errors.throwError(
         'hex string must have 0x prefix',
         errors.INVALID_ARGUMENT,
@@ -116,11 +118,17 @@ export function arrayify(value: Arrayish | Hexable): Uint8Array {
 }
 
 export function concat(objects: Arrayish[]): Uint8Array {
+  if (objects === null) {
+    throw new Error(`concat objects is null`);
+  }
   const arrays = [];
   let length = 0;
   // tslint:disable-next-line: prefer-for-of
   for (let i = 0; i < objects.length; i++) {
     const object = arrayify(objects[i]);
+    if (object == null) {
+      throw new Error('arrayify failed');
+    }
     arrays.push(object);
     length += object.length;
   }
@@ -137,7 +145,11 @@ export function concat(objects: Arrayish[]): Uint8Array {
 }
 
 export function stripZeros(value: Arrayish): Uint8Array {
-  let result: Uint8Array = arrayify(value);
+  let result: Uint8Array | null = arrayify(value);
+
+  if (result === null) {
+    throw new Error('arrayify failed');
+  }
 
   if (result.length === 0) {
     return result;
@@ -158,14 +170,16 @@ export function stripZeros(value: Arrayish): Uint8Array {
 }
 
 export function padZeros(value: Arrayish, length: number): Uint8Array {
-  value = arrayify(value);
-
-  if (length < value.length) {
+  const arrayifyValue = arrayify(value);
+  if (arrayifyValue === null) {
+    throw new Error('arrayify failed');
+  }
+  if (length < arrayifyValue.length) {
     throw new Error('cannot pad');
   }
 
   const result = new Uint8Array(length);
-  result.set(value, length - value.length);
+  result.set(arrayifyValue, length - arrayifyValue.length);
   return addSlice(result);
 }
 
@@ -230,7 +244,7 @@ export function hexlify(value: Arrayish | Hexable | number): string {
       });
     }
 
-    if (match[1] !== '0x') {
+    if (match !== null && match[1] !== '0x') {
       errors.throwError(
         'hex string must have 0x prefix',
         errors.INVALID_ARGUMENT,
@@ -326,7 +340,7 @@ function isSignature(value: any): value is Signature {
 }
 
 export function splitSignature(signature: Arrayish | Signature): Signature {
-  let v = 0;
+  let v: number | undefined = 0;
   let r = '0x';
   let s = '0x';
 
@@ -346,13 +360,16 @@ export function splitSignature(signature: Arrayish | Signature): Signature {
       v = parseInt(v, 16);
     }
 
-    let recoveryParam = signature.recoveryParam;
+    let recoveryParam = signature.recoveryParam || 1;
     if (recoveryParam == null && signature.v != null) {
-      recoveryParam = 1 - (v % 2);
+      recoveryParam = 1 - (typeof v !== 'number' ? 0 : v % 2);
     }
     v = 27 + recoveryParam;
   } else {
-    const bytes: Uint8Array = arrayify(signature);
+    const bytes: Uint8Array | null = arrayify(signature);
+    if (bytes === null) {
+      throw new Error('arrayify failed');
+    }
     if (bytes.length !== 65) {
       throw new Error('invalid signature');
     }

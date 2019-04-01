@@ -1,11 +1,11 @@
 import elliptic from 'elliptic';
 import * as bytes from './bytes';
 import * as errors from './errors';
+
 import { keccak256 } from './keccak256';
 import { randomBytes } from './random';
 
 const secp256k1 = elliptic.ec('secp256k1');
-// const { curve } = secp256k1;
 
 /**
  * @function generatePrivateKey
@@ -32,10 +32,7 @@ export const generatePrivateKey = (): string => {
  * @return {string}
  */
 export const getPubkeyFromPrivateKey = (privateKey: string): string => {
-  const buffer = new Buffer(privateKey.slice(2), 'hex');
-  const ecKey = secp256k1.keyFromPrivate(buffer);
-  const publicKey = '0x' + ecKey.getPublic(true, 'hex');
-  return publicKey;
+  return '0x' + getPublic(privateKey, true);
 };
 
 /**
@@ -44,9 +41,15 @@ export const getPubkeyFromPrivateKey = (privateKey: string): string => {
  * @return {string} address with `length = 40`
  */
 export const getAddressFromPrivateKey = (privateKey: string): string => {
-  const publicKey = getPubkeyFromPrivateKey(privateKey);
+  const publicHash = '0x' + getPublic(privateKey).slice(2);
+  const publicKey = keccak256(publicHash);
   const address = '0x' + publicKey.slice(-40);
   return address;
+};
+
+export const getPublic = (privateKey: string, compress?: boolean): string => {
+  const ecKey = secp256k1.keyFromPrivate(privateKey.slice(2), 'hex');
+  return ecKey.getPublic(compress || false, 'hex');
 };
 
 /**
@@ -55,7 +58,9 @@ export const getAddressFromPrivateKey = (privateKey: string): string => {
  * @return {string} address with `length = 40`
  */
 export const getAddressFromPublicKey = (publicKey: string): string => {
-  const address = '0x' + publicKey.slice(-40);
+  const ecKey = secp256k1.keyFromPublic(publicKey.slice(2), 'hex');
+  const publickHash = ecKey.getPublic(false, 'hex');
+  const address = '0x' + keccak256('0x' + publickHash.slice(2)).slice(-40);
   return address;
 };
 
@@ -80,7 +85,7 @@ export const toChecksumAddress = (address: string): string => {
   for (let i = 0; i < 40; i++) {
     hashed[i] = chars[i].charCodeAt(0);
   }
-  hashed = bytes.arrayify(keccak256(hashed));
+  hashed = bytes.arrayify(keccak256(hashed)) || hashed;
 
   for (let i = 0; i < 40; i += 2) {
     if (hashed[i >> 1] >> 4 >= 8) {
