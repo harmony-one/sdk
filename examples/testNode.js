@@ -18,6 +18,6 @@ const c = Account.add(importKey);
 
 // console.log(isPrivateKey(importKey));
 
-console.log(c);
+c.addShard('newShard');
 
-console.log(getAddressFromPublicKey(c.publicKey));
+console.log(c.getShardsCount);

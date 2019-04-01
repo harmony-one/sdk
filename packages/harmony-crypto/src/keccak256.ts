@@ -1,3 +1,4 @@
+// this file is ported from 'ether.js' and done some fixes
 import * as sha3 from 'js-sha3';
 
 import { arrayify, Arrayish } from './bytes';

@@ -1,4 +1,5 @@
 // This file is ported from ether.js/src.ts/utils/bytes.ts
+// and done some fixes
 
 import * as errors from './errors';
 
