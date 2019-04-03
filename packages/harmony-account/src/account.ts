@@ -77,6 +77,7 @@ class Account {
   async toFile(password: string, options?: EncryptOptions): Promise<string> {
     if (this.privateKey && isPrivateKey(this.privateKey)) {
       const file = await encrypt(this.privateKey, password, options);
+      this.privateKey = file;
       return file;
     } else {
       throw new Error('Encryption failed because PrivateKey is not correct');
@@ -91,7 +92,7 @@ class Account {
       const file: Keystore = JSON.parse(keyStore);
       const decyptedPrivateKey = await decrypt(file, password);
       if (isPrivateKey(decyptedPrivateKey)) {
-        return Account.add(decyptedPrivateKey);
+        return this._import(decyptedPrivateKey);
       } else {
         throw new Error('decrypted failed');
       }
@@ -109,6 +110,20 @@ class Account {
     return '';
   }
 
+  /**
+   * @function updateShards
+   * @return {Promise<string>} {description}
+   */
+  async updateShards(): Promise<string> {
+    return '';
+  }
+  /**
+   * @function signTransaction
+   * @return {Promise<void>} sign transaction
+   */
+  async signTransaction(): Promise<void> {
+    console.log('sign transaction');
+  }
   /**
    * @function _new private method create Account
    * @return {Account} Account instance
