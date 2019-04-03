@@ -402,3 +402,56 @@ export function joinSignature(signature: Signature): string {
     ]),
   );
 }
+
+/**
+ * hexToByteArray
+ *
+ * Convers a hex string to a Uint8Array
+ *
+ * @param {string} hex
+ * @returns {Uint8Array}
+ */
+export const hexToByteArray = (hex: string): Uint8Array => {
+  const res = new Uint8Array(hex.length / 2);
+
+  for (let i = 0; i < hex.length; i += 2) {
+    res[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+  }
+
+  return res;
+};
+
+/**
+ * hexToIntArray
+ *
+ * @param {string} hex
+ * @returns {number[]}
+ */
+export const hexToIntArray = (hex: string): number[] => {
+  if (!hex || !isHex(hex)) {
+    return [];
+  }
+
+  const res = [];
+
+  for (let i = 0; i < hex.length; i++) {
+    const c = hex.charCodeAt(i);
+    const hi = c >> 8;
+    const lo = c & 0xff;
+
+    hi ? res.push(hi, lo) : res.push(lo);
+  }
+
+  return res;
+};
+
+/**
+ * isHex
+ *
+ * @param {string} str - string to be tested
+ * @returns {boolean}
+ */
+export const isHex = (str: string): boolean => {
+  const plain = str.replace('0x', '');
+  return /[0-9a-f]*$/i.test(plain);
+};

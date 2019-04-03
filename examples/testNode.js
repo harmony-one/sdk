@@ -21,3 +21,7 @@ const c = Account.add(importKey);
 c.addShard('newShard');
 
 console.log(c.getShardsCount);
+
+c.toFile('123').then((f) => {
+  c.fromFile(f, '123').then(console.log);
+});

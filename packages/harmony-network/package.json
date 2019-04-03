@@ -1,8 +1,13 @@
 {
-  "name": "harmony-network",
+  "name": "@harmony/network",
   "version": "0.0.1",
-  "description": "network packages for harmony",
-  "main": "index.js",
+  "description": "network suites for harmony",
+  "main": "lib/index.js",
+  "node": "lib/index.js",
+  "browser": "dist/index.js",
+  "module": "dist/index.js",
+  "jsnext:main": "dist/index.js",
+  "typings":"lib/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

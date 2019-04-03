@@ -2,7 +2,7 @@ const packages = [
   'harmony-utils',
   'harmony-crypto',
   'harmony-account',
-  // 'harmony-network',
+  'harmony-network',
 ];
 
 export { packages };

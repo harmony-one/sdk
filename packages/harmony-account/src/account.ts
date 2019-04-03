@@ -3,6 +3,10 @@ import {
   getAddressFromPrivateKey,
   getPubkeyFromPrivateKey,
   toChecksumAddress,
+  encrypt,
+  decrypt,
+  EncryptOptions,
+  Keystore,
 } from '@harmony/crypto';
 
 import { isPrivateKey } from '@harmony/utils';
@@ -49,8 +53,10 @@ class Account {
   }
 
   constructor(key?: string) {
-    if (key === null) {
+    if (!key) {
       this._new();
+    } else {
+      this._import(key);
     }
   }
 
@@ -61,16 +67,46 @@ class Account {
   addShard(id: ShardId): void {
     if (this.shards && this.shards.has('default')) {
       this.shards.set(id, '');
+    } else {
+      throw new Error(
+        'This account has no default shard or shard is not exist',
+      );
     }
-    throw new Error('this account has no default shard or shard is not exist');
+  }
+
+  async toFile(password: string, options?: EncryptOptions): Promise<string> {
+    if (this.privateKey && isPrivateKey(this.privateKey)) {
+      const file = await encrypt(this.privateKey, password, options);
+      return file;
+    } else {
+      throw new Error('Encryption failed because PrivateKey is not correct');
+    }
+  }
+
+  async fromFile(keyStore: string, password: string): Promise<Account> {
+    try {
+      if (!password) {
+        throw new Error('you must provide password');
+      }
+      const file: Keystore = JSON.parse(keyStore);
+      const decyptedPrivateKey = await decrypt(file, password);
+      if (isPrivateKey(decyptedPrivateKey)) {
+        return Account.add(decyptedPrivateKey);
+      } else {
+        throw new Error('decrypted failed');
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
    * @function getBalance get Account's balance
    * @return {type} {description}
    */
-  getBalance() {
+  async getBalance(): Promise<string> {
     // console.log()
+    return '';
   }
 
   /**
@@ -82,11 +118,7 @@ class Account {
     if (!isPrivateKey(prv)) {
       throw new Error('key gen failed');
     }
-    this.privateKey = prv;
-    this.publicKey = getPubkeyFromPrivateKey(this.privateKey);
-    this.address = getAddressFromPrivateKey(this.privateKey);
-
-    return this;
+    return this._import(prv);
   }
 
   /**
@@ -101,7 +133,7 @@ class Account {
     this.privateKey = key;
     this.publicKey = getPubkeyFromPrivateKey(this.privateKey);
     this.address = getAddressFromPrivateKey(this.privateKey);
-
+    this.shards = new Map().set('default', '');
     return this;
   }
 }
