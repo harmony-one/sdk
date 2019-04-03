@@ -1,5 +1,5 @@
 # Plan
 
-1. validators
+1. [x] validators(isPrvK/isPubK/isAddr)
 2. transformers
 3. common tools

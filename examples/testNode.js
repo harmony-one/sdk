@@ -23,5 +23,11 @@ c.addShard('newShard');
 console.log(c.getShardsCount);
 
 c.toFile('123').then((f) => {
-  c.fromFile(f, '123').then(console.log);
+  console.log('---- encrypting ----');
+  console.log(f);
+
+  c.fromFile(f, '123').then((a) => {
+    console.log('--- decrypting and add to Account ----');
+    console.log(a);
+  });
 });
