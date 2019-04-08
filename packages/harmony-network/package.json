@@ -7,10 +7,13 @@
   "browser": "dist/index.js",
   "module": "dist/index.js",
   "jsnext:main": "dist/index.js",
-  "typings":"lib/index.d.ts",
+  "typings": "lib/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "neeboo@firestack.one",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "cross-fetch": "^3.0.2"
+  }
 }
