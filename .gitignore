@@ -3,6 +3,7 @@
 .DS_Store
 *.lock
 .vscode/
+includes/
 # package.json
 
 package-lock.json
