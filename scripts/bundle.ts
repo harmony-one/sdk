@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 // tslint:disable-next-line: no-implicit-dependencies
 import * as rollup from 'rollup';
@@ -21,6 +22,17 @@ import typescript2 from 'rollup-plugin-typescript2';
 import ts from 'typescript';
 
 import { projects, preProcessFunc, preProcessProjects } from './projects';
+
+function getKeys(p) {
+  const packageJsonFile = `${process.cwd()}/packages/${p}/package.json`;
+  const data = fs.readFileSync(packageJsonFile, 'utf-8');
+
+  const { dependencies } = JSON.parse(data);
+
+  // .filter((d) => !/harmony/.test(d))
+  const keys = dependencies ? Object.keys(dependencies) : [];
+  return keys;
+}
 
 async function bundles() {
   await preProcessFunc(preProcessProjects);
@@ -63,10 +75,11 @@ async function bundles() {
           banner: `Test Banner`,
         }),
       ],
-      external: projects
-        .filter((p) => p.name !== pkg.name)
-        .map((p) => p.scopedName)
-        .concat(['cross-fetch']),
+      external: getKeys(pkg.name),
+      // external: projects
+      //   .filter((p) => p.name !== pkg.name)
+      //   .map((p) => p.scopedName)
+      // .concat(['cross-fetch']),
     };
 
     const pkgBundler = await rollup.rollup(base);
@@ -82,8 +95,18 @@ async function bundles() {
       exports: 'named',
       name: pkg.globalName,
       globals: {
-        ...projects.reduce((g, pkg) => {
-          g[pkg.scopedName] = pkg.globalName;
+        // tslint:disable-next-line: no-shadowed-variable
+        // ...projects.reduce((g, pkg) => {
+        //   g[pkg.scopedName] = pkg.globalName;
+        //   return g;
+        // }, {}),
+        ...getKeys(pkg.name).reduce((g, packages) => {
+          if (packages === pkg.name) {
+            g[pkg.scopedName] = pkg.globalName;
+          } else {
+            g[packages] = packages;
+          }
+          // g[pkg.scopedName] = pkg.globalName;
           return g;
         }, {}),
         tslib: 'tslib',
