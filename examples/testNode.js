@@ -1,11 +1,20 @@
-const { Account, Wallet } = require('../packages/harmony-account/lib/index.js');
+const {
+  Account,
+  Wallet,
+} = require('../packages/harmony-account/dist/index.js');
 const {
   getAddressFromPublicKey,
-} = require('../packages/harmony-crypto/lib/index.js');
+} = require('../packages/harmony-crypto/dist/index.js');
 const {
   isAddress,
   isPrivateKey,
-} = require('../packages/harmony-utils/lib/index.js');
+} = require('../packages/harmony-utils/dist/index.js');
+
+const { numberToHex } = require('../packages/harmony-utils/dist/index.js');
+const {
+  HttpProvider,
+  Messenger,
+} = require('../packages/harmony-network/dist/index.js');
 
 // const a = Account.new();
 
@@ -58,3 +67,16 @@ testWallet();
 //     console.log(a);
 //   });
 // });
+
+// const newProvider = new HttpProvider('https://dev-api.zilliqa.com');
+// const msg = new Messenger(newProvider);
+
+// const getBalance = async () => {
+//   const res = await msg.send(
+//     'GetBalance',
+//     '9bfec715a6bd658fcb62b0f8cc9bfa2ade71434a',
+//   );
+//   console.log(res);
+// };
+
+// getBalance();

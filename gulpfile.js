@@ -1,7 +1,12 @@
 const { task } = require('gulp');
 const del = require('del');
 
-const packages = ['harmony-crypto'];
+const packages = [
+  'harmony-crypto',
+  'harmony-account',
+  'harmony-network',
+  'harmony-utils',
+];
 
 task('cleanBrowser', async () => {
   await packages.map((p) => {
@@ -12,7 +17,7 @@ task('cleanBrowser', async () => {
 
 task('cleanServer', async () => {
   await packages.map((p) => {
-    const pathToLib = `packages/${p}/node`;
+    const pathToLib = `packages/${p}/dist`;
     return del.sync([pathToLib]);
   });
 });

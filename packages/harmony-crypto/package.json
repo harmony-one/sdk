@@ -2,12 +2,12 @@
   "name": "@harmony/crypto",
   "version": "0.0.1",
   "description": "crypto libraries for harmony",
-  "main": "lib/index.js",
-  "node": "lib/index.js",
+  "main": "dist/index.js",
+  "node": "dist/index.js",
   "browser": "dist/index.js",
-  "module": "dist/index.js",
-  "jsnext:main": "dist/index.js",
-  "typings":"lib/index.d.ts",
+  "module": "dist/index.esm.js",
+  "jsnext:main": "dist/index.esm.js",
+  "typings":"dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

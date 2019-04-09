@@ -45,7 +45,7 @@ class HttpProvider extends BaseProvider {
    * @param  {Function} callback - callback function
    * @return {any} - RPC Response
    */
-  send(payload: RPCRequestPayload<object>, callback: any): Promise<any> {
+  send(payload: RPCRequestPayload<object>, callback?: any): Promise<any> {
     return this.requestFunc({ payload, callback });
   }
 
@@ -121,10 +121,10 @@ class HttpProvider extends BaseProvider {
   /**
    * @function optionsHandler
    * @memberof HttpProvider.prototype
-   * @param  {Object} obj - options object
-   * @return {Object} - assign a new option object
+   * @param  {object} obj - options object
+   * @return {object} - assign a new option object
    */
-  optionsHandler(obj: object) {
+  optionsHandler(obj: object): object {
     if (this.options.user && this.options.password) {
       const AUTH_TOKEN = `Basic ${Buffer.from(
         `${this.options.user}:${this.options.password}`,

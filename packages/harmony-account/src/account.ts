@@ -9,7 +9,7 @@ import {
   Keystore,
 } from '@harmony/crypto';
 
-import { isPrivateKey } from '@harmony/utils';
+import { isPrivateKey, add0xToString } from '@harmony/utils';
 import { Shards, ShardId } from './types';
 
 class Account {
@@ -145,7 +145,7 @@ class Account {
     if (!isPrivateKey(key)) {
       throw new Error(`${key} is not PrivateKey`);
     }
-    this.privateKey = key;
+    this.privateKey = add0xToString(key);
     this.publicKey = getPubkeyFromPrivateKey(this.privateKey);
     this.address = getAddressFromPrivateKey(this.privateKey);
     this.shards = new Map().set('default', '');

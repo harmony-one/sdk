@@ -36,6 +36,7 @@ class Wallet {
     }
     const seed = bip39.mnemonicToSeed(phrase);
     const hdKey = hdkey.fromMasterSeed(seed);
+    //TODO:hdkey should apply to Harmony's settings
     const childKey = hdKey.derive(`m/44'/313'/0'/0/${index}`);
     const privateKey = childKey.privateKey.toString('hex');
     return this.addByPrivateKey(privateKey);
