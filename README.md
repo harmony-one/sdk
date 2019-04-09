@@ -12,6 +12,16 @@ It's a mono-repo library, not yet published to npm.
 4. [harmony-utils](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-utils)
 
 
+# Usage
+1. git clone and make sure you have `node.js` and `yarn` installed
+2. cleanup and build
+   
+   ```bash
+   yarn install && yarn bootstrap && yarn dist
+   ```
+3. open folder `examples` and `node testNode.js`
+
+
 # Example
 ** This package is not published to npm **
 
