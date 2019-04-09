@@ -106,7 +106,6 @@ async function bundles() {
           } else {
             g[packages] = packages;
           }
-          // g[pkg.scopedName] = pkg.globalName;
           return g;
         }, {}),
         tslib: 'tslib',
