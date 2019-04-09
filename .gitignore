@@ -3,7 +3,7 @@
 .DS_Store
 *.lock
 .vscode/
-includes/
+
 # package.json
 
 package-lock.json
@@ -19,6 +19,7 @@ node/
 
 #cache
 .rpt2_cache/
+includes/
 # Xcode
 #
 build/
