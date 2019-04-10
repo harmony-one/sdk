@@ -2,9 +2,9 @@ const { Account, Wallet } = require('@harmony/account');
 const { isAddress, isPrivateKey, numberToHex } = require('@harmony/utils');
 const { HttpProvider, Messenger } = require('@harmony/network');
 
-async function testEncrypt() {
-  const wallet = new Wallet();
+const wallet = new Wallet();
 
+async function testEncrypt() {
   const mne = wallet.generateMnemonic();
 
   console.log('---hint: please write these down');
@@ -28,3 +28,15 @@ async function testEncrypt() {
 }
 
 testEncrypt();
+
+async function testSign(prvKey, data) {
+  const newAcc = wallet.addByPrivateKey(prvKey);
+
+  const result = await newAcc.sign(data);
+  console.log(result);
+}
+
+testSign(
+  '0x0123456789012345678901234567890123456789012345678901234567890123',
+  '0x06',
+);

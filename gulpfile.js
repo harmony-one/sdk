@@ -6,6 +6,7 @@ const packages = [
   'harmony-account',
   'harmony-network',
   'harmony-utils',
+  'harmony-transaction',
 ];
 
 task('cleanBrowser', async () => {

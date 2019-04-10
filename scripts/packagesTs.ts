@@ -3,6 +3,7 @@ const packages = [
   'harmony-crypto',
   'harmony-account',
   'harmony-network',
+  'harmony-transaction',
 ];
 
 export { packages };

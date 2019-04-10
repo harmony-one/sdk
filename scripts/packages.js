@@ -3,4 +3,5 @@ export default [
   'harmony-crypto',
   'harmony-account',
   'harmony-network',
+  'harmony-transaction',
 ];

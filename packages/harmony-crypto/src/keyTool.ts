@@ -4,6 +4,7 @@ import * as errors from './errors';
 
 import { keccak256 } from './keccak256';
 import { randomBytes } from './random';
+import { isPrivateKey, strip0x } from '@harmony/utils';
 
 const secp256k1 = elliptic.ec('secp256k1');
 
@@ -48,7 +49,10 @@ export const getAddressFromPrivateKey = (privateKey: string): string => {
 };
 
 export const getPublic = (privateKey: string, compress?: boolean): string => {
-  const ecKey = secp256k1.keyFromPrivate(privateKey.slice(2), 'hex');
+  if (!isPrivateKey(privateKey)) {
+    throw new Error(`${privateKey} is not PrivateKey`);
+  }
+  const ecKey = secp256k1.keyFromPrivate(strip0x(privateKey), 'hex');
   return ecKey.getPublic(compress || false, 'hex');
 };
 
@@ -97,4 +101,21 @@ export const toChecksumAddress = (address: string): string => {
   }
 
   return '0x' + chars.join('');
+};
+
+export const sign = (
+  digest: bytes.Arrayish | string,
+  privateKey: string,
+): bytes.Signature => {
+  if (!isPrivateKey(privateKey)) {
+    throw new Error(`${privateKey} is not PrivateKey`);
+  }
+  const keyPair = secp256k1.keyFromPrivate(strip0x(privateKey), 'hex');
+  const signature = keyPair.sign(bytes.arrayify(digest), { canonical: true });
+  return {
+    recoveryParam: signature.recoveryParam,
+    r: bytes.hexZeroPad('0x' + signature.r.toString(16), 32),
+    s: bytes.hexZeroPad('0x' + signature.s.toString(16), 32),
+    v: 27 + signature.recoveryParam,
+  };
 };

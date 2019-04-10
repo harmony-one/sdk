@@ -1,0 +1,3 @@
+class TransactionFactory {}
+
+export { TransactionFactory };

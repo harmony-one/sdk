@@ -45,6 +45,7 @@ declare namespace Elliptic {
   }
 
   interface KeyPair {
+    sign(arg0: Uint8Array | null, arg1: { canonical: boolean }): any;
     fromPublic(ec: Curve, pub: BN, enc: string): KeyPair;
     fromPrivate(ec: Curve, priv: BN, enc: string): KeyPair;
     // this is broken, but we can't fix it without changing the upstream

@@ -7,6 +7,9 @@ import {
   decrypt,
   EncryptOptions,
   Keystore,
+  sign,
+  isSignature,
+  Signature,
 } from '@harmony/crypto';
 
 import { isPrivateKey, add0xToString } from '@harmony/utils';
@@ -118,11 +121,20 @@ class Account {
     return '';
   }
   /**
-   * @function signTransaction
+   * @function sign
    * @return {Promise<void>} sign transaction
    */
-  async signTransaction(): Promise<void> {
-    console.log('sign transaction');
+  async sign(message: string): Promise<Signature> {
+    if (this.privateKey && isPrivateKey(this.privateKey)) {
+      const signature: Signature = await sign(message, this.privateKey);
+      if (isSignature(signature)) {
+        return signature;
+      } else {
+        throw new Error('Cannot sign');
+      }
+    } else {
+      throw new Error('Privatekey not found or not correct');
+    }
   }
   /**
    * @function _new private method create Account

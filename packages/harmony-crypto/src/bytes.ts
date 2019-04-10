@@ -336,7 +336,7 @@ export function hexZeroPad(value: string, length: number): string {
   return value;
 }
 
-function isSignature(value: any): value is Signature {
+export function isSignature(value: any): value is Signature {
   return value && value.r != null && value.s != null;
 }
 
