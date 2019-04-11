@@ -1,4 +1,4 @@
-import { RPCRequestPayload } from './types';
+import { RPCRequestPayload } from '../types';
 import { RPCMethod } from './rpc';
 /**
  * @class JsonRpc

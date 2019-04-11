@@ -1,5 +1,5 @@
 import fetch from 'cross-fetch';
-import { RPCRequest, RPCResponseBody, RPCError, RPCResult } from './types';
+import { RPCRequest, RPCResponseBody, RPCError, RPCResult } from '../types';
 
 export const fetchRPC = {
   requestHandler: (request: RPCRequest<any[]>, headers: any) =>

@@ -1,4 +1,4 @@
-import { RPCResponseBody } from './types';
+import { RPCResponseBody } from '../types';
 /**
  * @class ResponseMiddleware
  * @description Response middleware of RPC

@@ -5,9 +5,9 @@ import {
   performRPC,
   DEFAULT_TIMEOUT,
   DEFAULT_HEADERS,
-} from './net';
+} from '../blockchain/net';
 
-import { RPCRequestPayload } from './types';
+import { RPCRequestPayload } from '../types';
 
 const defaultOptions = {
   method: 'POST',

@@ -1,9 +1,15 @@
-export * from './baseProvider';
-export * from './defaultFetcher';
-export * from './messenger';
-export * from './rpcBuilder';
+// provider related
+export * from './providers/baseProvider';
+export * from './providers/defaultFetcher';
+export * from './providers/http';
+// messenger and middlewares
+export * from './messenger/messenger';
+export * from './messenger/responseMiddleware';
+// rpc builder and blockchain method
+export * from './blockchain/rpcBuilder';
+export * from './blockchain/net';
+export * from './blockchain/rpc';
+// utils
 export * from './util';
-export * from './http';
-export * from './net';
-export * from './rpc';
+// types
 export * from './types';

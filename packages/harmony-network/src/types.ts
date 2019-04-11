@@ -1,4 +1,4 @@
-import { RPCMethod, RPCErrorCode } from './rpc';
+import { RPCMethod, RPCErrorCode } from './blockchain/rpc';
 
 export type ReqMiddleware = Map<string | RPCMethod | RegExp, any[]>;
 export type ResMiddleware = Map<string | RPCMethod | RegExp, any[]>;

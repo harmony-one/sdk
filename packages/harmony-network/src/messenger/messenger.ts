@@ -1,8 +1,8 @@
-import { JsonRpc } from './rpcbuilder';
+import { JsonRpc } from '../blockchain/rpcbuilder';
 import { ResponseMiddleware } from './responseMiddleware';
-import { HttpProvider } from './http';
-import { getResultForData } from './util';
-import { RPCMethod } from './rpc';
+import { HttpProvider } from '../providers/http';
+import { getResultForData } from '../util';
+import { RPCMethod } from '../blockchain/rpc';
 
 const defaultConfig = {
   Default: {
