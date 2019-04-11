@@ -7,13 +7,14 @@ import {
   decrypt,
   EncryptOptions,
   Keystore,
-  sign,
-  isSignature,
   Signature,
 } from '@harmony/crypto';
 
-import { isPrivateKey, add0xToString } from '@harmony/utils';
+import { isPrivateKey, add0xToString, hexToNumber } from '@harmony/utils';
+import { Transaction } from '@harmony/transaction';
+import { Messenger, RPCMethod } from '@harmony/network';
 import { Shards, ShardId } from './types';
+import { RLPSign } from './utils';
 
 class Account {
   /**
@@ -37,7 +38,10 @@ class Account {
   privateKey?: string;
   publicKey?: string;
   address?: string;
+  balance?: string = '0';
+  nonce?: number = 0;
   shards: Shards = new Map().set('default', '');
+  messenger?: Messenger;
 
   /**
    * @function checksumAddress checsumAddress getter
@@ -55,7 +59,8 @@ class Account {
     return this.shards.size;
   }
 
-  constructor(key?: string) {
+  constructor(key?: string, messenger?: Messenger) {
+    this.messenger = messenger;
     if (!key) {
       this._new();
     } else {
@@ -108,9 +113,22 @@ class Account {
    * @function getBalance get Account's balance
    * @return {type} {description}
    */
-  async getBalance(): Promise<string> {
-    // console.log()
-    return '';
+  async getBalance(): Promise<object> {
+    if (this.messenger) {
+      const result = await this.messenger.send(
+        RPCMethod.GetBalance,
+        this.address,
+      );
+      if (result.responseType === 'result') {
+        this.balance = hexToNumber(result.balance);
+        this.nonce = Number.parseInt(hexToNumber(result.nonce), 10);
+      }
+    }
+    return {
+      balance: this.balance,
+      nonce: this.nonce,
+      shards: this.shards,
+    };
   }
 
   /**
@@ -120,21 +138,38 @@ class Account {
   async updateShards(): Promise<string> {
     return '';
   }
-  /**
-   * @function sign
-   * @return {Promise<void>} sign transaction
-   */
-  async sign(message: string): Promise<Signature> {
-    if (this.privateKey && isPrivateKey(this.privateKey)) {
-      const signature: Signature = await sign(message, this.privateKey);
-      if (isSignature(signature)) {
-        return signature;
-      } else {
-        throw new Error('Cannot sign');
-      }
-    } else {
-      throw new Error('Privatekey not found or not correct');
+
+  async signTransaction(
+    transaction: Transaction,
+    updateNonce: boolean = true,
+    encodeMode: string = 'rlp',
+  ): Promise<Transaction> {
+    if (!this.privateKey || !isPrivateKey(this.privateKey)) {
+      throw new Error(`${this.privateKey} is not found or not correct`);
     }
+    // let signed = '';
+    if (updateNonce) {
+      const balanceObject: any = await this.getBalance();
+      transaction.setParams({
+        ...transaction.txParams,
+        nonce: balanceObject.nonce + 1,
+      });
+    }
+    if (encodeMode === 'rlp') {
+      const [signature, txnHash]: [Signature, string] = RLPSign(
+        transaction,
+        this.privateKey,
+      );
+      return transaction.map((obj: any) => {
+        return { ...obj, signature, txnHash };
+      });
+    } else {
+      // TODO: if we use other encode method, eg. protobuf, we should implement this
+      return transaction;
+    }
+  }
+  setMessenger(messenger?: Messenger) {
+    this.messenger = messenger;
   }
   /**
    * @function _new private method create Account

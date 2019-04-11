@@ -1,6 +1,7 @@
 export const enum RPCMethod {
   // account related
   FetchBalance = 'FetchBalance',
+  GetBalance = 'GetBalance',
   // block info related
   GetLatestBlock = 'GetLatestBlock',
   GetBlock = 'GetBlock',

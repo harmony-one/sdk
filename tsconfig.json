@@ -4,6 +4,7 @@
     { "path": "packages/harmony-account" },
     { "path": "packages/harmony-crypto" },
     { "path": "packages/harmony-utils" },
-    { "path": "packages/harmony-network" }
+    { "path": "packages/harmony-network" },
+    { "path": "packages/harmony-transaction" }
   ]
 }

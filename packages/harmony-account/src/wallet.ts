@@ -1,8 +1,10 @@
 import { bip39, hdkey, EncryptOptions } from '@harmony/crypto';
+import { Messenger } from '@harmony/network';
 import { isPrivateKey } from '@harmony/utils';
 import { Account } from './account';
 
 class Wallet {
+  messenger?: Messenger;
   /**
    * @memberof Wallet
    *
@@ -14,6 +16,10 @@ class Wallet {
    */
   get accounts(): string[] {
     return [...this.accountMap.keys()];
+  }
+
+  constructor(messenger?: Messenger) {
+    this.messenger = messenger;
   }
   /**
    * @function generateMnemonic
@@ -51,6 +57,7 @@ class Wallet {
   addByPrivateKey(privateKey: string): Account {
     try {
       const newAcc = Account.add(privateKey);
+      newAcc.setMessenger(this.messenger);
       if (newAcc.address) {
         this.accountMap.set(newAcc.address, newAcc);
         return newAcc;
