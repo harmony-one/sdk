@@ -1,7 +1,7 @@
 import * as crypto from '@harmony/crypto';
 import * as utils from '@harmony/utils';
 
-import { HttpProvider, Messenger } from '@harmony/network';
+import { HttpProvider, Messenger, Blockchain } from '@harmony/network';
 import { TransactionFactory } from '@harmony/transaction';
 import { Wallet } from '@harmony/account';
 
@@ -9,6 +9,7 @@ class Harmony {
   messenger: Messenger;
   transactions: TransactionFactory;
   wallet: Wallet;
+  blockchain: Blockchain;
   crypto: any;
   utils: any;
   private provider: HttpProvider;
@@ -16,6 +17,7 @@ class Harmony {
   constructor(url: string) {
     this.provider = new HttpProvider(url);
     this.messenger = new Messenger(this.provider);
+    this.blockchain = new Blockchain(this.messenger);
     this.transactions = new TransactionFactory(this.messenger);
     this.wallet = new Wallet(this.messenger);
     this.crypto = crypto;

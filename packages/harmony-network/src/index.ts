@@ -9,6 +9,7 @@ export * from './messenger/responseMiddleware';
 export * from './blockchain/rpcBuilder';
 export * from './blockchain/net';
 export * from './blockchain/rpc';
+export * from './blockchain/blockchain';
 // utils
 export * from './util';
 // types

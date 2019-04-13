@@ -125,4 +125,4 @@ const acc = wallet.addByPrivateKey(
 // console.log(getContractAddress(acc.publicKey, 248));
 
 const harmony = new Harmony('https://devnet.harmony.one');
-console.log(harmony);
+console.log(harmony.blockchain);
