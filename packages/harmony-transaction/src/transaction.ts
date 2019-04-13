@@ -1,31 +1,21 @@
 import {
   BN,
   encode,
-  // keccak256,
-  // decode,
-  // toChecksumAddress,
   arrayify,
   hexlify,
   stripZeros,
   Signature,
   splitSignature,
-  // hexZeroPad,
 } from '@harmony/crypto';
 import { add0xToString } from '@harmony/utils';
-import { TxParams } from './types';
-import { recover } from './utils';
-
-export const transactionFields = [
-  { name: 'nonce', length: 32, fix: false },
-  { name: 'gasPrice', length: 32, fix: false, transform: 'hex' },
-  { name: 'gasLimit', length: 32, fix: false, transform: 'hex' },
-  { name: 'to', length: 20, fix: true },
-  { name: 'value', length: 32, fix: false, transform: 'hex' },
-  { name: 'data', fix: false },
-];
+import { Messenger, RPCMethod } from '@harmony/network';
+import { TxParams, TxStatus } from './types';
+import { recover, transactionFields } from './utils';
 
 class Transaction {
-  //   private hash?: string;
+  messenger?: Messenger;
+  txStatus: TxStatus;
+  private id: string;
   private from: string;
   private nonce: number | string;
   private to: string;
@@ -39,7 +29,12 @@ class Transaction {
   private signature: Signature;
 
   // constructor
-  constructor(params?: TxParams) {
+  constructor(
+    params?: TxParams,
+    messenger?: Messenger,
+    txStatus = TxStatus.INTIALIZED,
+  ) {
+    this.id = params ? params.id : '0x';
     this.from = params ? params.from : '0x';
     this.nonce = params ? params.nonce : 0;
     this.gasPrice = params ? params.gasPrice : new BN(0);
@@ -58,6 +53,8 @@ class Transaction {
           recoveryParam: 0,
           v: 0,
         };
+    this.messenger = messenger;
+    this.txStatus = txStatus;
   }
 
   getRLPUnsigned(): [string, any[]] {
@@ -126,6 +123,7 @@ class Transaction {
 
   get txParams(): TxParams {
     return {
+      id: this.id || '0x',
       from: this.from || '',
       nonce: this.nonce || 0,
       gasPrice: this.gasPrice || new BN(0),
@@ -140,6 +138,7 @@ class Transaction {
     };
   }
   setParams(params: TxParams) {
+    this.id = params ? params.id : '0x';
     this.from = params ? params.from : '0x';
     this.nonce = params ? params.nonce : 0;
     this.gasPrice = params ? params.gasPrice : new BN(0);
@@ -158,12 +157,67 @@ class Transaction {
           recoveryParam: 0,
           v: 0,
         };
+    if (this.txnHash !== '0x') {
+      this.setTxStatus(TxStatus.SIGNED);
+    } else {
+      this.setTxStatus(TxStatus.INTIALIZED);
+    }
   }
 
   map(fn: any) {
     const newParams = fn(this.txParams);
     this.setParams(newParams);
+
     return this;
+  }
+
+  setTxStatus(txStatus: TxStatus): void {
+    this.txStatus = txStatus;
+  }
+
+  getTxStatus(): TxStatus {
+    return this.txStatus;
+  }
+
+  // get status
+  isInitialized(): boolean {
+    return this.getTxStatus() === TxStatus.INTIALIZED;
+  }
+  isSigned(): boolean {
+    return this.getTxStatus() === TxStatus.SIGNED;
+  }
+  isPending(): boolean {
+    return this.getTxStatus() === TxStatus.PENDING;
+  }
+  isRejected(): boolean {
+    return this.getTxStatus() === TxStatus.REJECTED;
+  }
+  isConfirmed(): boolean {
+    return this.getTxStatus() === TxStatus.CONFIRMED;
+  }
+
+  async sendTransaction(): Promise<[Transaction, string]> {
+    // TODO: we use eth RPC setting for now, incase we have other params, we should add here
+    if (this.txnHash === 'tx' || this.txnHash === undefined) {
+      throw new Error('Transaction not signed');
+    }
+    if (!this.messenger) {
+      throw new Error('Messenger not found');
+    }
+    const result = await this.messenger.send(
+      RPCMethod.SendTransaction,
+      this.txnHash,
+    );
+
+    // temporarilly hard coded
+    if (typeof result === 'string') {
+      this.id = result;
+      this.setTxStatus(TxStatus.PENDING);
+      return [this, result];
+    } else {
+      this.setTxStatus(TxStatus.REJECTED);
+      throw new Error('transaction failed');
+    }
   }
 }
 export { Transaction };

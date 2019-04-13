@@ -6,8 +6,10 @@
   },
   "include": ["src", "../../typings/**/*.d.ts"],
   "references": [
-    { "path": "../harmony-utils" },
+    { "path": "../harmony-account" },
     { "path": "../harmony-crypto" },
-    { "path": "../harmony-network" }
+    { "path": "../harmony-utils" },
+    { "path": "../harmony-network" },
+    { "path": "../harmony-transaction" }
   ]
 }

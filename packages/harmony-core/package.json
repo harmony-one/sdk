@@ -1,7 +1,7 @@
 {
-  "name": "@harmony/transaction",
+  "name": "@harmony/core",
   "version": "0.0.1",
-  "description": "transaction package for harmony",
+  "description": "harmony core package",
   "main": "dist/index.js",
   "node": "dist/index.js",
   "browser": "dist/index.js",
@@ -11,11 +11,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "neeboo@firestack.one",
   "license": "ISC",
   "dependencies": {
+    "@harmony/account": "^0.0.1",
     "@harmony/crypto": "^0.0.1",
-    "@harmony/utils": "^0.0.1",
-    "@harmony/network":"^0.0.1"
+    "@harmony/network": "^0.0.1",
+    "@harmony/transaction": "^0.0.1",
+    "@harmony/utils": "^0.0.1"
   }
 }

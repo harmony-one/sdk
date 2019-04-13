@@ -2,6 +2,7 @@ const { task } = require('gulp');
 const del = require('del');
 
 const packages = [
+  'harmony-core',
   'harmony-crypto',
   'harmony-account',
   'harmony-network',

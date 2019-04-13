@@ -6,11 +6,12 @@ It's a mono-repo library, not yet published to npm.
 
 # Packages
 
-1. [harmony-account](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-account)
-2. [harmony-crypto](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-crypto)
-3. [harmony-network](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-network)
-4. [harmony-utils](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-utils)
-5. [harmony-transaction](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-transaction)
+1. [harmony-core](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-core)
+2. [harmony-account](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-account)
+3. [harmony-crypto](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-crypto)
+4. [harmony-network](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-network)
+5. [harmony-utils](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-utils)
+6. [harmony-transaction](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-transaction)
 
 
 # Usage

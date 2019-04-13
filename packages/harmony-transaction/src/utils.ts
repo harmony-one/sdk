@@ -10,6 +10,15 @@ import {
 } from '@harmony/crypto';
 import { TxParams } from './types';
 
+export const transactionFields = [
+  { name: 'nonce', length: 32, fix: false },
+  { name: 'gasPrice', length: 32, fix: false, transform: 'hex' },
+  { name: 'gasLimit', length: 32, fix: false, transform: 'hex' },
+  { name: 'to', length: 20, fix: true },
+  { name: 'value', length: 32, fix: false, transform: 'hex' },
+  { name: 'data', fix: false },
+];
+
 export const handleNumber = (value: string) => {
   if (isHex(value) && value === '0x') {
     return hexToNumber('0x00');
@@ -37,6 +46,7 @@ export const recover = (rawTransaction: string) => {
   }
 
   const tx: TxParams = {
+    id: '0x',
     from: '0x',
     txnHash: '0x',
     unsignedTxnHash: '0x',

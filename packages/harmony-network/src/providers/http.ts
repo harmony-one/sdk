@@ -19,9 +19,9 @@ const defaultOptions = {
 
 class HttpProvider extends BaseProvider {
   url: string;
-  fetcher: any;
-  options: any;
-  constructor(url: string, options: any, fetcher: any) {
+  fetcher?: any;
+  options?: any;
+  constructor(url: string, options?: any, fetcher?: any) {
     super(url);
     this.url = url || 'http://localhost:4201';
     this.fetcher = fetcher || fetchRPC;

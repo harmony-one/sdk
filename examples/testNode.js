@@ -9,7 +9,7 @@ const {
   strip0x,
 } = require('@harmony/utils');
 const { HttpProvider, Messenger } = require('@harmony/network');
-const { Transaction } = require('@harmony/transaction');
+const { Transaction, TransactionFactory } = require('@harmony/transaction');
 const {
   arrayify,
   hexlify,
@@ -24,8 +24,11 @@ const {
   getAddressFromPublicKey,
 } = require('@harmony/crypto');
 
+const { Harmony } = require('@harmony/core');
+
 const msgr = new Messenger(new HttpProvider('https://dev-api.zilliqa.com'));
 const wallet = new Wallet(msgr);
+const transactions = new TransactionFactory(msgr);
 
 async function testEncrypt() {
   const mne = wallet.generateMnemonic();
@@ -80,16 +83,17 @@ const acc = wallet.addByPrivateKey(
 
 // console.log(txn.getRLPUnsigned()[0]);
 
-const signed = wallet
-  .getAccount(acc.address)
-  .signTransaction(txn, false)
-  .then((tx) => {
-    const newTx = tx.recover(tx.unsignedTxnHash);
-    // console.log(newTx);
-    acc.signTransaction(newTx, false, 'rlp').then((signed) => {
-      console.log(signed);
-    });
-  });
+// const signed = wallet
+//   .getAccount(acc.address)
+//   .signTransaction(txn, false)
+//   .then((tx) => {
+//     const newTx = tx.recover(tx.unsignedTxnHash);
+//     // console.log(newTx);
+//     acc.signTransaction(newTx, false, 'rlp').then((signed) => {
+//       const ttt = transactions.recover(signed.txnHash);
+//       console.log(ttt);
+//     });
+//   });
 
 // recoverAddress();
 // console.log(wallet.messenger);
@@ -119,3 +123,6 @@ const signed = wallet
 // });
 
 // console.log(getContractAddress(acc.publicKey, 248));
+
+const harmony = new Harmony('https://devnet.harmony.one');
+console.log(harmony);
