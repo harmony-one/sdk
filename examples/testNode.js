@@ -1,8 +1,28 @@
 const { Account, Wallet } = require('@harmony/account');
-const { isAddress, isPrivateKey, numberToHex } = require('@harmony/utils');
+const {
+  isAddress,
+  isPrivateKey,
+  numberToHex,
+  numToStr,
+  hexToNumber,
+  Unit,
+  strip0x,
+} = require('@harmony/utils');
 const { HttpProvider, Messenger } = require('@harmony/network');
 const { Transaction } = require('@harmony/transaction');
-const { hexlify, BN } = require('@harmony/crypto');
+const {
+  arrayify,
+  hexlify,
+  BN,
+  encode,
+  decode,
+  getContractAddress,
+  recoverAddress,
+  recoverPublicKey,
+  keccak256,
+  hexZeroPad,
+  getAddressFromPublicKey,
+} = require('@harmony/crypto');
 
 const msgr = new Messenger(new HttpProvider('https://dev-api.zilliqa.com'));
 const wallet = new Wallet(msgr);
@@ -58,15 +78,44 @@ const acc = wallet.addByPrivateKey(
   '0xc3886f791236bf31fe8fd7522a7b12808700deb9c159826fc99236c74614118b',
 );
 
-console.log(txn.getRLPUnsigned()[0]);
+// console.log(txn.getRLPUnsigned()[0]);
 
 const signed = wallet
   .getAccount(acc.address)
   .signTransaction(txn, false)
-  .then(console.log);
+  .then((tx) => {
+    const newTx = tx.recover(tx.unsignedTxnHash);
+    // console.log(newTx);
+    acc.signTransaction(newTx, false, 'rlp').then((signed) => {
+      console.log(signed);
+    });
+  });
 
+// recoverAddress();
 // console.log(wallet.messenger);
 // console.log(hexlify(0));
 
 // 0xda8003049401234567890123456789012345678901234567890580;
 // 0xda8003049401234567890123456789012345678901234567890580;
+/**
+ * { name: 'nonce', length: 32, fix: false },
+ { name: 'gasPrice', length: 32, fix: false, transform: 'hex' },
+ { name: 'gasLimit', length: 32, fix: false, transform: 'hex' },
+ { name: 'to', length: 20, fix: true },
+ { name: 'value', length: 32, fix: false, transform: 'hex' },
+ { name: 'data', fix: false },
+ */
+// const [nonce, gasPrice, gasLimit, to, value, data] = decode(
+//   txn.getRLPUnsigned()[0],
+// );
+
+// console.log({
+//   nonce: new BN(strip0x(hexToNumber(nonce))).toNumber(),
+//   gasPrice: hexToNumber(gasPrice !== '0x' ? gasPrice : '0x00'),
+//   gasLimit: hexToNumber(gasLimit !== '0x' ? gasLimit : '0x00'),
+//   to: hexToNumber(to !== '0x' ? to : '0x00'),
+//   value: hexToNumber(value !== '0x' ? value : '0x00'),
+//   data: hexToNumber(data !== '0x' ? data : '0x00'),
+// });
+
+// console.log(getContractAddress(acc.publicKey, 248));

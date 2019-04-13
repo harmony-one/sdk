@@ -152,6 +152,7 @@ class Account {
       const balanceObject: any = await this.getBalance();
       transaction.setParams({
         ...transaction.txParams,
+        from: this.address || '0x',
         nonce: balanceObject.nonce + 1,
       });
     }
@@ -161,7 +162,7 @@ class Account {
         this.privateKey,
       );
       return transaction.map((obj: any) => {
-        return { ...obj, signature, txnHash };
+        return { ...obj, signature, txnHash, from: this.address };
       });
     } else {
       // TODO: if we use other encode method, eg. protobuf, we should implement this

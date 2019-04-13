@@ -31,6 +31,11 @@ declare namespace Elliptic {
   }
 
   interface EC {
+    recoverPubKey(
+      arg0: Uint8Array | null,
+      rs: { r: Uint8Array | null; s: Uint8Array | null },
+      recoveryParam: number | undefined,
+    ): any;
     curve: Curve;
     genKeyPair(opt?: GenKeyPairOpt): KeyPair;
     keyFromPrivate(priv: string, enc: string): KeyPair;

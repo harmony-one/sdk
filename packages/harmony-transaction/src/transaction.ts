@@ -1,15 +1,19 @@
 import {
   BN,
   encode,
+  // keccak256,
+  // decode,
   // toChecksumAddress,
   arrayify,
   hexlify,
   stripZeros,
   Signature,
   splitSignature,
+  // hexZeroPad,
 } from '@harmony/crypto';
 import { add0xToString } from '@harmony/utils';
 import { TxParams } from './types';
+import { recover } from './utils';
 
 export const transactionFields = [
   { name: 'nonce', length: 32, fix: false },
@@ -22,7 +26,7 @@ export const transactionFields = [
 
 class Transaction {
   //   private hash?: string;
-  //   private from?: string;
+  private from: string;
   private nonce: number | string;
   private to: string;
   private gasLimit: BN;
@@ -33,11 +37,10 @@ class Transaction {
   private txnHash: string;
   private unsignedTxnHash: string;
   private signature: Signature;
-  //   private r?: string;
-  //   private s?: string;
-  //   private v?: number;
+
   // constructor
   constructor(params?: TxParams) {
+    this.from = params ? params.from : '0x';
     this.nonce = params ? params.nonce : 0;
     this.gasPrice = params ? params.gasPrice : new BN(0);
     this.gasLimit = params ? params.gasLimit : new BN(0);
@@ -115,8 +118,15 @@ class Transaction {
 
     return encode(raw);
   }
+
+  recover(txnHash: string): Transaction {
+    this.setParams(recover(txnHash));
+    return this;
+  }
+
   get txParams(): TxParams {
     return {
+      from: this.from || '',
       nonce: this.nonce || 0,
       gasPrice: this.gasPrice || new BN(0),
       gasLimit: this.gasLimit || new BN(0),
@@ -130,6 +140,7 @@ class Transaction {
     };
   }
   setParams(params: TxParams) {
+    this.from = params ? params.from : '0x';
     this.nonce = params ? params.nonce : 0;
     this.gasPrice = params ? params.gasPrice : new BN(0);
     this.gasLimit = params ? params.gasLimit : new BN(0);

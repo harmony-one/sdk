@@ -5,6 +5,7 @@ import * as errors from './errors';
 import { keccak256 } from './keccak256';
 import { randomBytes } from './random';
 import { isPrivateKey, strip0x } from '@harmony/utils';
+import { encode } from './rlp';
 
 const secp256k1 = elliptic.ec('secp256k1');
 
@@ -63,8 +64,8 @@ export const getPublic = (privateKey: string, compress?: boolean): string => {
  */
 export const getAddressFromPublicKey = (publicKey: string): string => {
   const ecKey = secp256k1.keyFromPublic(publicKey.slice(2), 'hex');
-  const publickHash = ecKey.getPublic(false, 'hex');
-  const address = '0x' + keccak256('0x' + publickHash.slice(2)).slice(-40);
+  const publicHash = ecKey.getPublic(false, 'hex');
+  const address = '0x' + keccak256('0x' + publicHash.slice(2)).slice(-40);
   return address;
 };
 
@@ -110,12 +111,71 @@ export const sign = (
   if (!isPrivateKey(privateKey)) {
     throw new Error(`${privateKey} is not PrivateKey`);
   }
+
   const keyPair = secp256k1.keyFromPrivate(strip0x(privateKey), 'hex');
   const signature = keyPair.sign(bytes.arrayify(digest), { canonical: true });
-  return {
+  const publicKey = '0x' + keyPair.getPublic(true, 'hex');
+  const result = {
     recoveryParam: signature.recoveryParam,
     r: bytes.hexZeroPad('0x' + signature.r.toString(16), 32),
     s: bytes.hexZeroPad('0x' + signature.s.toString(16), 32),
     v: 27 + signature.recoveryParam,
   };
+
+  if (verifySignature(digest, result, publicKey)) {
+    return result;
+  } else {
+    throw new Error('signing process failed');
+  }
 };
+
+export function getContractAddress(from: string, nonce: number): string {
+  if (!from) {
+    throw new Error('missing from address');
+  }
+
+  const addr = keccak256(
+    encode([from, bytes.stripZeros(bytes.hexlify(nonce))]),
+  );
+  return '0x' + addr.substring(26);
+}
+
+export function verifySignature(
+  digest: bytes.Arrayish,
+  signature: bytes.Signature,
+  publicKey: string,
+): boolean {
+  return recoverPublicKey(digest, signature) === publicKey;
+}
+
+export function recoverPublicKey(
+  digest: bytes.Arrayish | string,
+  signature: bytes.Signature | string,
+): string {
+  const sig = bytes.splitSignature(signature);
+  const rs = { r: bytes.arrayify(sig.r), s: bytes.arrayify(sig.s) };
+
+  ////
+  const recovered = secp256k1.recoverPubKey(
+    bytes.arrayify(digest),
+    rs,
+    sig.recoveryParam,
+  );
+
+  const key = recovered.encode('hex', false);
+  const ecKey = secp256k1.keyFromPublic(key, 'hex');
+  const publicKey = '0x' + ecKey.getPublic(true, 'hex');
+
+  ///
+
+  return publicKey;
+}
+
+export function recoverAddress(
+  digest: bytes.Arrayish | string,
+  signature: bytes.Signature | string,
+): string {
+  return getAddressFromPublicKey(
+    recoverPublicKey(bytes.arrayify(digest) || new Uint8Array(), signature),
+  );
+}

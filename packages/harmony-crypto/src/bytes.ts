@@ -341,54 +341,55 @@ export function isSignature(value: any): value is Signature {
 }
 
 export function splitSignature(signature: Arrayish | Signature): Signature {
-  let v: number | undefined = 0;
-  let r = '0x';
-  let s = '0x';
+  if (signature !== undefined) {
+    let v = 0;
+    let r = '0x';
+    let s = '0x';
 
-  if (isSignature(signature)) {
-    if (signature.v == null && signature.recoveryParam == null) {
-      errors.throwError(
-        'at least on of recoveryParam or v must be specified',
-        errors.INVALID_ARGUMENT,
-        { argument: 'signature', value: signature },
-      );
-    }
-    r = hexZeroPad(signature.r, 32);
-    s = hexZeroPad(signature.s, 32);
+    if (isSignature(signature)) {
+      if (signature.v == null && signature.recoveryParam == null) {
+        errors.throwError(
+          'at least on of recoveryParam or v must be specified',
+          errors.INVALID_ARGUMENT,
+          { argument: 'signature', value: signature },
+        );
+      }
+      r = hexZeroPad(signature.r, 32);
+      s = hexZeroPad(signature.s, 32);
 
-    v = signature.v;
-    if (typeof v === 'string') {
-      v = parseInt(v, 16);
+      v = signature.v || 0;
+      if (typeof v === 'string') {
+        v = parseInt(v, 16);
+      }
+
+      let recoveryParam = signature.recoveryParam || 0;
+      if (recoveryParam == null && signature.v != null) {
+        recoveryParam = 1 - (v % 2);
+      }
+      v = 27 + recoveryParam;
+    } else {
+      const bytes: Uint8Array = arrayify(signature) || new Uint8Array();
+      if (bytes.length !== 65) {
+        throw new Error('invalid signature');
+      }
+      r = hexlify(bytes.slice(0, 32));
+      s = hexlify(bytes.slice(32, 64));
+
+      v = bytes[64];
+      if (v !== 27 && v !== 28) {
+        v = 27 + (v % 2);
+      }
     }
 
-    let recoveryParam = signature.recoveryParam || 1;
-    if (recoveryParam == null && signature.v != null) {
-      recoveryParam = 1 - (typeof v !== 'number' ? 0 : v % 2);
-    }
-    v = 27 + recoveryParam;
+    return {
+      r,
+      s,
+      recoveryParam: v - 27,
+      v,
+    };
   } else {
-    const bytes: Uint8Array | null = arrayify(signature);
-    if (bytes === null) {
-      throw new Error('arrayify failed');
-    }
-    if (bytes.length !== 65) {
-      throw new Error('invalid signature');
-    }
-    r = hexlify(bytes.slice(0, 32));
-    s = hexlify(bytes.slice(32, 64));
-
-    v = bytes[64];
-    if (v !== 27 && v !== 28) {
-      v = 27 + (v % 2);
-    }
+    throw new Error('signature is not found');
   }
-
-  return {
-    r,
-    s,
-    recoveryParam: v - 27,
-    v,
-  };
 }
 
 export function joinSignature(signature: Signature): string {
