@@ -2,5 +2,5 @@
   "extends": "./tsconfig.base.json",
   "files": [],
   "include": ["./typings/**/*.d.ts"],
-  "references": []
+  "references": [{ "path": "packages/harmony-utils" }]
 }

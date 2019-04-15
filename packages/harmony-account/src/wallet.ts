@@ -42,7 +42,7 @@ class Wallet {
     }
     const seed = bip39.mnemonicToSeed(phrase);
     const hdKey = hdkey.fromMasterSeed(seed);
-    //TODO:hdkey should apply to Harmony's settings
+    // TODO:hdkey should apply to Harmony's settings
     const childKey = hdKey.derive(`m/44'/313'/0'/0/${index}`);
     const privateKey = childKey.privateKey.toString('hex');
     return this.addByPrivateKey(privateKey);
@@ -66,6 +66,31 @@ class Wallet {
       }
     } catch (error) {
       throw error;
+    }
+  }
+
+  /**
+   * @function createAccount
+   * @description create a new account using Mnemonic
+   * @return {Account} {description}
+   */
+  async createAccount(
+    password?: string,
+    options?: EncryptOptions,
+  ): Promise<Account> {
+    const words = this.generateMnemonic();
+    const acc = this.addByMnemonic(words);
+    if (acc.address && password) {
+      const encrypted = await this.encryptAccount(
+        acc.address,
+        password,
+        options,
+      );
+      return encrypted;
+    } else if (acc.address && !password) {
+      return acc;
+    } else {
+      throw new Error('create acount failed');
     }
   }
   /**

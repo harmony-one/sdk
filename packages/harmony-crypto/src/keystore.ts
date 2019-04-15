@@ -119,7 +119,7 @@ export const encrypt = async (
     version: 3,
     id: uuid.v4({ random: uuidRandom || hexToIntArray(randomBytes(16)) }),
     address: address.toLowerCase().replace('0x', ''),
-    crypto: {
+    Crypto: {
       ciphertext: ciphertext.toString('hex'),
       cipherparams: {
         iv: iv.toString('hex'),
@@ -142,13 +142,13 @@ export const decrypt = async (
   keystore: Keystore,
   password: string,
 ): Promise<string> => {
-  const ciphertext = Buffer.from(keystore.crypto.ciphertext, 'hex');
-  const iv = Buffer.from(keystore.crypto.cipherparams.iv, 'hex');
-  const { kdfparams } = keystore.crypto;
+  const ciphertext = Buffer.from(keystore.Crypto.ciphertext, 'hex');
+  const iv = Buffer.from(keystore.Crypto.cipherparams.iv, 'hex');
+  const { kdfparams } = keystore.Crypto;
 
   const derivedKey = await getDerivedKey(
     Buffer.from(password),
-    keystore.crypto.kdf,
+    keystore.Crypto.kdf,
     kdfparams,
   );
 
@@ -157,7 +157,7 @@ export const decrypt = async (
     '',
   );
 
-  if (mac.toUpperCase() !== keystore.crypto.mac.toUpperCase()) {
+  if (mac.toUpperCase() !== keystore.Crypto.mac.toUpperCase()) {
     return Promise.reject(new Error('Failed to decrypt.'));
   }
 

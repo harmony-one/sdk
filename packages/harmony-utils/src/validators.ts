@@ -91,17 +91,12 @@ export const isFunction = (obj: any): boolean => {
   return typeof obj === 'function';
 };
 
-export const isHex = (obj: string): boolean => {
+export const isHex = (obj: any): boolean => {
   if (!isString(obj)) {
     throw new Error(`${obj} is not string`);
-  } else {
-    try {
-      return (
-        (obj.startsWith('0x') || obj.startsWith('-0x')) &&
-        isNumber(Number.parseInt(obj.toLowerCase().replace('0x', ''), 16))
-      );
-    } catch (error) {
-      throw error;
-    }
   }
+  return (
+    (obj.startsWith('0x') || obj.startsWith('-0x')) &&
+    isNumber(Number.parseInt(`${obj}`.toLowerCase().replace('0x', ''), 16))
+  );
 };
