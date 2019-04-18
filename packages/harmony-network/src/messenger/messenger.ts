@@ -79,7 +79,7 @@ class Messenger {
    * @param  {Object} params - RPC method params
    * @return {Object} RPC result
    */
-  send = async (method: RPCMethod, params: any) => {
+  send = async (method: RPCMethod, params?: string | any[] | undefined) => {
     this.providerCheck();
     try {
       const payload = this.JsonRpc.toPayload(method, params);

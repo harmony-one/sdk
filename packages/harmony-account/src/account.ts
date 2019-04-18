@@ -13,7 +13,7 @@ import {
 import { isPrivateKey, add0xToString, hexToNumber } from '@harmony/utils';
 import { Transaction } from '@harmony/transaction';
 import { Messenger, RPCMethod } from '@harmony/network';
-import { Shards, ShardId } from './types';
+import { Shards } from './types';
 import { RLPSign } from './utils';
 
 class Account {
@@ -68,20 +68,6 @@ class Account {
     }
   }
 
-  /**
-   * @function addShard add shard to this Account
-   * @param  {ShardId} id - ShardId to the Account
-   */
-  addShard(id: ShardId): void {
-    if (this.shards && this.shards.has('default')) {
-      this.shards.set(id, '');
-    } else {
-      throw new Error(
-        'This account has no default shard or shard is not exist',
-      );
-    }
-  }
-
   async toFile(password: string, options?: EncryptOptions): Promise<string> {
     if (this.privateKey && isPrivateKey(this.privateKey)) {
       const file = await encrypt(this.privateKey, password, options);
@@ -115,10 +101,10 @@ class Account {
    */
   async getBalance(): Promise<object> {
     if (this.messenger) {
-      const result = await this.messenger.send(
-        RPCMethod.GetBalance,
+      const result = await this.messenger.send(RPCMethod.GetBalance, [
         this.address,
-      );
+        'latest',
+      ]);
       if (result.responseType === 'result') {
         this.balance = hexToNumber(result.balance);
         this.nonce = Number.parseInt(hexToNumber(result.nonce), 10);
@@ -199,6 +185,20 @@ class Account {
     this.shards = new Map().set('default', '');
     return this;
   }
+
+  // /**
+  //  * @function addShard add shard to this Account
+  //  * @param  {ShardId} id - ShardId to the Account
+  //  */
+  // private addShard(id: ShardId): void {
+  //   if (this.shards && this.shards.has('default')) {
+  //     this.shards.set(id, '');
+  //   } else {
+  //     throw new Error(
+  //       'This account has no default shard or shard is not exist',
+  //     );
+  //   }
+  // }
 }
 
 export { Account };

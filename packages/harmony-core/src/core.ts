@@ -2,10 +2,19 @@ import * as crypto from '@harmony/crypto';
 import * as utils from '@harmony/utils';
 
 import { HttpProvider, Messenger, Blockchain } from '@harmony/network';
-import { TransactionFactory } from '@harmony/transaction';
-import { Wallet } from '@harmony/account';
+import { TransactionFactory, Transaction } from '@harmony/transaction';
+import { Wallet, Account } from '@harmony/account';
 
 class Harmony {
+  Modules = {
+    HttpProvider,
+    Messenger,
+    Blockchain,
+    TransactionFactory,
+    Wallet,
+    Transaction,
+    Account,
+  };
   messenger: Messenger;
   transactions: TransactionFactory;
   wallet: Wallet;

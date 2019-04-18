@@ -26,7 +26,7 @@ class JsonRpc {
    */
   toPayload = (
     method: RPCMethod,
-    params: string,
+    params: string | undefined | any[],
   ): RPCRequestPayload<object> => {
     // FIXME: error to be done by shared/errors
     if (!method) throw new Error('jsonrpc method should be specified!');
@@ -34,11 +34,18 @@ class JsonRpc {
     // advance message ID
     this.messageId += 1;
 
+    const sendParams =
+      params === undefined
+        ? []
+        : typeof params === 'string'
+        ? [params]
+        : [...params];
+
     return {
       jsonrpc: '2.0',
       id: this.messageId,
       method,
-      params: params !== undefined ? [params] : [],
+      params: sendParams,
     };
   };
 }

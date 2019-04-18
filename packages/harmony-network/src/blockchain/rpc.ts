@@ -1,18 +1,34 @@
 export const enum RPCMethod {
-  // account related
-  FetchBalance = 'FetchBalance',
-  GetBalance = 'GetBalance',
-  // block info related
-  GetLatestBlock = 'GetLatestBlock',
-  GetBlock = 'GetBlock',
-  GetEstimtedGas = 'GetEstimatedGas',
-  GetLatestTransactions = 'GetLatestTransactions',
-  GetLatestDSBlocks = 'GetLatestDSBlocks',
-  // transaction related
-  SendTransaction = 'SendTransaction',
-  SendTransactionToShard = 'SendTransactionToShard',
-  SendTransactionToBlock = 'SendTransactionToBlock',
-  GetTransaction = 'GetTransaction',
+  // 1. hmy_getBlockByHash
+  GetBlockByHash = 'hmy_getBlockByHash',
+  // 2. hmy_getBlockByNumber
+  GetBlockByNumber = 'hmy_getBlockByNumber',
+  // 3. hmy_getBlockTransactionCountByHash
+  GetBlockTransactionCountByHash = 'hmy_getBlockTransactionCountByHash',
+  // 4. hmy_getBlockTransactionCountByNumber
+  GetBlockTransactionCountByNumber = 'hmy_getBlockTransactionCountByNumber',
+  // 5. hmy_getCode
+  GetCode = 'hmy_getCode',
+  // 6. hmy_getTransactionByBlockHashAndIndex
+  GetTransactionByBlockHashAndIndex = 'hmy_getTransactionByBlockHashAndIndex',
+  // 7. hmy_getTransactionByBlockNumberAndIndex
+  GetTransactionByBlockNumberAndIndex = 'hmy_getTransactionByBlockNumberAndIndex',
+  // 8. hmy_getTransactionByHash
+  GetTransactionByHash = 'hmy_getTransactionByHash',
+  // 9. hmy_syncing
+  Syncing = 'hmy_syncing',
+  // 10. net_peerCount
+  PeerCount = 'net_peerCount',
+  // 11. hmy_getBalance
+  GetBalance = 'hmy_getBalance',
+  // 12. hmy_getStorageAt
+  GetStorageAt = 'hmy_getStorageAt',
+  // 13. hmy_getTransactionCount
+  GetTransactionCount = 'hmy_getTransactionCount',
+  // 14. hmy_sendTransaction
+  SendTransaction = 'hmy_sendTransaction',
+  // 15. hmy_sendRawTransaction
+  SendRawTransaction = 'hmy_sendRawTransaction',
 }
 
 export const enum RPCErrorCode {

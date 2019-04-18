@@ -14,6 +14,7 @@
   "author": "neeboo@firestack.one",
   "license": "ISC",
   "dependencies": {
-    "cross-fetch": "^3.0.2"
+    "cross-fetch": "^3.0.2",
+    "@harmony/utils": "^0.0.1"
   }
 }
