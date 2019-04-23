@@ -1,2 +1,3 @@
 export * from './harmony';
-// export * from './types';
+export * from './blockchain';
+export * from './types';
