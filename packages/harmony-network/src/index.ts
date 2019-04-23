@@ -6,10 +6,10 @@ export * from './providers/http';
 export * from './messenger/messenger';
 export * from './messenger/responseMiddleware';
 // rpc builder and blockchain method
-export * from './blockchain/rpcBuilder';
-export * from './blockchain/net';
-export * from './blockchain/rpc';
-export * from './blockchain/blockchain';
+export * from './rpcMethod/rpcBuilder';
+export * from './rpcMethod/net';
+export * from './rpcMethod/rpc';
+
 // utils
 export * from './util';
 // types

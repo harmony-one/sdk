@@ -5,7 +5,7 @@ import {
   performRPC,
   DEFAULT_TIMEOUT,
   DEFAULT_HEADERS,
-} from '../blockchain/net';
+} from '../rpcMethod/net';
 
 import { RPCRequestPayload } from '../types';
 

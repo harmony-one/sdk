@@ -1,9 +1,10 @@
 import * as crypto from '@harmony/crypto';
 import * as utils from '@harmony/utils';
 
-import { HttpProvider, Messenger, Blockchain } from '@harmony/network';
+import { HttpProvider, Messenger } from '@harmony/network';
 import { TransactionFactory, Transaction } from '@harmony/transaction';
 import { Wallet, Account } from '@harmony/account';
+import { Blockchain } from './blockchain';
 
 class Harmony extends utils.HarmonyCore {
   Modules = {

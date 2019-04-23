@@ -1,9 +1,9 @@
 import { HarmonyCore, ChainType, isString } from '@harmony/utils';
-import { JsonRpc } from '../blockchain/rpcbuilder';
+import { JsonRpc } from '../rpcMethod/rpcbuilder';
 import { ResponseMiddleware } from './responseMiddleware';
 import { HttpProvider } from '../providers/http';
 import { getResultForData } from '../util';
-import { RPCMethod } from '../blockchain/rpc';
+import { RPCMethod } from '../rpcMethod/rpc';
 
 const defaultConfig = {
   Default: {

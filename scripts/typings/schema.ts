@@ -39,10 +39,10 @@ async function generateSchemas() {
 
       const schema = schemas.generateSchema(prog, '*', settings);
 
-      fs.writeFileSync(
-        path.join(pkgPath, 'test', 'schema.json'),
-        JSON.stringify(schema, undefined, 2),
-      );
+      // fs.writeFileSync(
+      //   path.join(pkgPath, 'test', 'schema.json'),
+      //   JSON.stringify(schema, undefined, 2),
+      // );
     });
 }
 

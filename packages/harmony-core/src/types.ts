@@ -1,6 +1,7 @@
-import { HttpProvider, Messenger, Blockchain } from '@harmony/network';
+import { HttpProvider, Messenger } from '@harmony/network';
 import { TransactionFactory, Transaction } from '@harmony/transaction';
 import { Wallet, Account } from '@harmony/account';
+import { Blockchain } from './blockchain';
 
 export interface HarmonyModule {
   HttpProvider: HttpProvider;

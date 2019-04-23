@@ -20,9 +20,9 @@ server.listen(port, function(err, blockchain) {
 
   // // console.log(acc.address);
 
-  acc.getBalance().then((c) => {
-    console.log(c);
-  });
+  // acc.getBalance().then((c) => {
+  //   console.log(c);
+  // });
   const txn = harmony.transactions.newTx({
     nonce: 1,
     to: sendTo,
@@ -35,31 +35,7 @@ server.listen(port, function(err, blockchain) {
   acc.signTransaction(txn, true).then((signed) => {
     // console.log(signed.txPayload);
 
-    harmony.messenger
-      .send('hmy_sendTransaction', [signed.txPayload])
-      .then((res) => {
-        console.log(res);
-        txn.confirm(res).then((result) => {
-          harmony.blockchain
-            .getBlockByHash({
-              hash: result.receipt.blockHash,
-              returnObject: false,
-            })
-            .then((obj) => {
-              console.log(obj);
-            });
-        });
-        // harmony.blockchain.getBlockByHash({ hash: res }).then((obj) => {
-        //   console.log(obj);
-        // });
-      });
-    // signed.sendTransaction().then((msg) => {
-    //   const [txn, result] = msg;
-    //   txn.confirm(result).then((result) => {
-    //     console.log(`--------------`);
-    //     console.log(result);
-    //   });
-    // });
+    harmony.
   });
 
   // console.log(harmony.messenger.setRPCPrefix('eth_getPPP'));

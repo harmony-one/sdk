@@ -1,5 +1,5 @@
 import { ReqMiddleware, ResMiddleware, MiddlewareType } from '../types';
-import { RPCMethod } from '../blockchain/rpc';
+import { RPCMethod } from '../rpcMethod/rpc';
 
 class BaseProvider {
   middlewares = {
