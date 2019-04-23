@@ -12,6 +12,7 @@ export interface TxParams {
   txnHash: string;
   unsignedTxnHash: string;
   signature: Signature;
+  receipt?: TransasctionReceipt;
 }
 
 export const enum TxStatus {
@@ -20,4 +21,23 @@ export const enum TxStatus {
   PENDING = 'PENDING',
   CONFIRMED = 'CONFIRMED',
   REJECTED = 'REJECTED',
+}
+
+export interface TransasctionReceipt {
+  transactionHash: string;
+  transactionIndex: string;
+  blockHash: string;
+  blockNumber: string; // 11
+  from: string;
+  to: string;
+  gasUsed: string;
+  cumulativeGasUsed: string; // 13244
+  contractAddress?: string | null; // or null, if none was created
+  logs: any[];
+  status: string;
+  logsBloom: string; // 256 byte bloom filter
+  v: string;
+  r: string;
+  s: string;
+  responseType?: string;
 }

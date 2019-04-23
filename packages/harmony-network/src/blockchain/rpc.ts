@@ -15,6 +15,8 @@ export const enum RPCMethod {
   GetTransactionByBlockNumberAndIndex = 'hmy_getTransactionByBlockNumberAndIndex',
   // 8. hmy_getTransactionByHash
   GetTransactionByHash = 'hmy_getTransactionByHash',
+
+  GetTransactionReceipt = 'hmy_getTransactionReceipt',
   // 9. hmy_syncing
   Syncing = 'hmy_syncing',
   // 10. net_peerCount

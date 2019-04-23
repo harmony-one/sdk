@@ -4,7 +4,7 @@
     "outDir": "dist",
     "rootDir": "src"
   },
-  "include": ["src", "../../typings/**/*.d.ts"],
+  "include": ["src", "../../typings/**/*.d.ts", "../harmony-utils/src/core.ts"],
   "references": [
     { "path": "../harmony-account" },
     { "path": "../harmony-crypto" },

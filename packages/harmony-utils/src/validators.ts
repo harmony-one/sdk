@@ -18,6 +18,11 @@ export const isPublicKey = (publicKey: string): boolean => {
 };
 isPublicKey.validator = 'isPublicKey';
 
+export const isHash = (hash: string): boolean => {
+  return isKeyString(hash, 64);
+};
+isHash.validator = 'isHash';
+
 /**
  * [isNumber verify param is a Number]
  * @param  {any}  obj [value]
@@ -115,3 +120,21 @@ export const isHex = (obj: any): boolean => {
 };
 
 isHex.validator = 'isHex';
+
+export const isHttp = (obj: any): boolean => {
+  if (!isString(obj)) {
+    throw new Error(`${obj} is not valid url`);
+  } else {
+    return obj.startsWith('http://') || obj.startsWith('https://');
+  }
+};
+isHttp.validator = 'isHttp';
+
+export const isWs = (obj: any): boolean => {
+  if (!isString(obj)) {
+    throw new Error(`${obj} is not valid url`);
+  } else {
+    return obj.startsWith('ws://') || obj.startsWith('websocket://');
+  }
+};
+isWs.validator = 'isWs';

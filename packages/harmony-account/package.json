@@ -14,6 +14,7 @@
   "author": "neeboo@firestack.one",
   "license": "ISC",
   "dependencies": {
+    "@harmony/core": "^0.0.1",
     "@harmony/crypto": "^0.0.1",
     "@harmony/network": "^0.0.1",
     "@harmony/transaction": "^0.0.1",

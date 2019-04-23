@@ -45,7 +45,7 @@ class BaseProvider {
     }
   }
   protected getMiddleware(
-    method: RPCMethod,
+    method: RPCMethod | string,
   ): [ReqMiddleware[], ResMiddleware[]] {
     const requests: ReqMiddleware[] = [];
     const responses: ResMiddleware[] = [];

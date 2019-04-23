@@ -7,14 +7,15 @@ import {
   Signature,
   splitSignature,
 } from '@harmony/crypto';
-import { add0xToString } from '@harmony/utils';
+import { add0xToString, numberToHex } from '@harmony/utils';
 import { Messenger, RPCMethod } from '@harmony/network';
-import { TxParams, TxStatus } from './types';
-import { recover, transactionFields } from './utils';
+import { TxParams, TxStatus, TransasctionReceipt } from './types';
+import { recover, transactionFields, sleep } from './utils';
 
 class Transaction {
   messenger?: Messenger;
   txStatus: TxStatus;
+  receipt?: TransasctionReceipt;
   private id: string;
   private from: string;
   private nonce: number | string;
@@ -53,8 +54,13 @@ class Transaction {
           recoveryParam: 0,
           v: 0,
         };
+    this.receipt = params ? params.receipt : undefined;
     this.messenger = messenger;
     this.txStatus = txStatus;
+  }
+
+  setMessenger(messenger: Messenger) {
+    this.messenger = messenger;
   }
 
   getRLPUnsigned(): [string, any[]] {
@@ -64,9 +70,7 @@ class Transaction {
       let value = (<any>this.txParams)[field.name] || [];
       value = arrayify(
         hexlify(
-          field.transform === 'hex'
-            ? add0xToString(value.toString('hex'))
-            : value,
+          field.transform === 'hex' ? add0xToString(value.toString(16)) : value,
         ),
       );
       // Fixed-width field
@@ -119,6 +123,18 @@ class Transaction {
   recover(txnHash: string): Transaction {
     this.setParams(recover(txnHash));
     return this;
+  }
+  // use when using eth_sendTransaction
+  get txPayload() {
+    return {
+      from: this.from,
+      to: this.to,
+      gas: numberToHex(this.gasLimit),
+      gasPrice: numberToHex(this.gasPrice),
+      value: numberToHex(this.value),
+      data: this.data || '0x',
+      nonce: numberToHex(this.nonce),
+    };
   }
 
   get txParams(): TxParams {
@@ -205,7 +221,7 @@ class Transaction {
       throw new Error('Messenger not found');
     }
     const result = await this.messenger.send(
-      RPCMethod.SendTransaction,
+      RPCMethod.SendRawTransaction,
       this.txnHash,
     );
 
@@ -214,10 +230,59 @@ class Transaction {
       this.id = result;
       this.setTxStatus(TxStatus.PENDING);
       return [this, result];
-    } else {
+    } else if (typeof result !== 'string' && result.responseType === 'error') {
       this.setTxStatus(TxStatus.REJECTED);
+      return [this, `transaction failed:${result.message}`];
+    } else {
       throw new Error('transaction failed');
     }
+  }
+
+  async trackTx(txHash: string) {
+    if (!this.messenger) {
+      throw new Error('Messenger not found');
+    }
+    // TODO: regex validation for txHash so we don't get garbage
+    const res: TransasctionReceipt = await this.messenger.send(
+      RPCMethod.GetTransactionReceipt,
+      txHash,
+    );
+    if (res.responseType === 'error') {
+      return false;
+    }
+    this.receipt = res;
+    this.id = res.transactionHash;
+
+    this.txStatus =
+      this.receipt.status && this.receipt.status === '0x1'
+        ? TxStatus.CONFIRMED
+        : TxStatus.REJECTED;
+    return true;
+  }
+
+  async confirm(
+    txHash: string,
+    maxAttempts: number = 20,
+    interval: number = 1000,
+  ) {
+    this.txStatus = TxStatus.PENDING;
+    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      try {
+        if (await this.trackTx(txHash)) {
+          return this;
+        }
+      } catch (err) {
+        this.txStatus = TxStatus.REJECTED;
+        throw err;
+      }
+      if (attempt + 1 < maxAttempts) {
+        await sleep(interval * attempt);
+      }
+    }
+    this.txStatus = TxStatus.REJECTED;
+    throw new Error(
+      `The transaction is still not confirmed after ${maxAttempts} attempts.`,
+    );
   }
 }
 export { Transaction };

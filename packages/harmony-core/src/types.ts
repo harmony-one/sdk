@@ -11,3 +11,8 @@ export interface HarmonyModule {
   Transaction: Transaction;
   Account: Account;
 }
+
+export const enum UrlType {
+  http,
+  ws,
+}

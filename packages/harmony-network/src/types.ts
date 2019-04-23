@@ -16,7 +16,7 @@ export interface Middleware {
 export interface RPCRequestPayload<T> {
   id: number;
   jsonrpc: string;
-  method: RPCMethod;
+  method: RPCMethod | string;
   params: T;
 }
 

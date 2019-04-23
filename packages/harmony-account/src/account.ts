@@ -101,14 +101,17 @@ class Account {
    */
   async getBalance(): Promise<object> {
     if (this.messenger) {
-      const result = await this.messenger.send(RPCMethod.GetBalance, [
+      const balance = await this.messenger.send(RPCMethod.GetBalance, [
         this.address,
         'latest',
       ]);
-      if (result.responseType === 'result') {
-        this.balance = hexToNumber(result.balance);
-        this.nonce = Number.parseInt(hexToNumber(result.nonce), 10);
-      }
+      const nonce = await this.messenger.send(RPCMethod.GetTransactionCount, [
+        this.address,
+        'latest',
+      ]);
+
+      this.balance = balance;
+      this.nonce = Number.parseInt(hexToNumber(nonce), 10);
     }
     return {
       balance: this.balance,
@@ -127,7 +130,7 @@ class Account {
 
   async signTransaction(
     transaction: Transaction,
-    updateNonce: boolean = true,
+    updateNonce: boolean = false,
     encodeMode: string = 'rlp',
   ): Promise<Transaction> {
     if (!this.privateKey || !isPrivateKey(this.privateKey)) {
@@ -139,7 +142,8 @@ class Account {
       transaction.setParams({
         ...transaction.txParams,
         from: this.address || '0x',
-        nonce: balanceObject.nonce + 1,
+        // nonce is different from Zilliqa's setting, would be current nonce, not nonce + 1
+        nonce: balanceObject.nonce,
       });
     }
     if (encodeMode === 'rlp') {

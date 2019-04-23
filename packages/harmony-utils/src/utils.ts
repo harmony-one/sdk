@@ -10,6 +10,7 @@ import {
   isPublicKey,
   isPrivateKey,
   isAddress,
+  isHash,
 } from './validators';
 
 export const enum AssertType {
@@ -29,6 +30,7 @@ export const validatorArray: any = {
   isPublicKey: [isPublicKey],
   isPrivateKey: [isPrivateKey],
   isAddress: [isAddress],
+  isHash: [isHash],
 };
 
 export function validateArgs(

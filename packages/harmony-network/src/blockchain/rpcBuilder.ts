@@ -25,7 +25,7 @@ class JsonRpc {
    * @return {Object} payload object
    */
   toPayload = (
-    method: RPCMethod,
+    method: RPCMethod | string,
     params: string | undefined | any[],
   ): RPCRequestPayload<object> => {
     // FIXME: error to be done by shared/errors

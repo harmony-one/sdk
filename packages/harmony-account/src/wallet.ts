@@ -184,6 +184,9 @@ class Wallet {
     this.accountMap.delete(address);
   }
 
+  setMessenger(messenger: Messenger) {
+    this.messenger = messenger;
+  }
   /**
    * @function isValidMnemonic
    * @memberof Wallet

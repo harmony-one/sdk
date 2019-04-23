@@ -4,5 +4,6 @@
     "outDir": "dist",
     "rootDir": "src"
   },
-  "include": ["src", "../../typings/**/*.d.ts"]
+  "include": ["src", "../../typings/**/*.d.ts"],
+  "references": [{ "path": "../harmony-utils" }]
 }

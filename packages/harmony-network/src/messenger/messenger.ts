@@ -1,3 +1,4 @@
+import { HarmonyCore, ChainType, isString } from '@harmony/utils';
 import { JsonRpc } from '../blockchain/rpcbuilder';
 import { ResponseMiddleware } from './responseMiddleware';
 import { HttpProvider } from '../providers/http';
@@ -34,14 +35,19 @@ const defaultConfig = {
  * @param  {Object}  config config object
  * @return {Messenger} Messenger instance
  */
-class Messenger {
+class Messenger extends HarmonyCore {
   provider: HttpProvider;
   config?: object;
   // tslint:disable-next-line: variable-name
   Network_ID: string = 'Default';
   JsonRpc: JsonRpc;
 
-  constructor(provider: HttpProvider, config?: object) {
+  constructor(
+    provider: HttpProvider,
+    chainType: ChainType = ChainType.Harmony,
+    config?: object,
+  ) {
+    super(chainType);
     /**
      * @var {Provider} provider
      * @memberof Messenger.prototype
@@ -79,10 +85,20 @@ class Messenger {
    * @param  {Object} params - RPC method params
    * @return {Object} RPC result
    */
-  send = async (method: RPCMethod, params?: string | any[] | undefined) => {
+  send = async (
+    method: RPCMethod | string,
+    params?: string | any[] | undefined,
+    rpcPrefix?: string,
+  ) => {
     this.providerCheck();
+    let rpcMethod = method;
+    if (rpcPrefix && isString(rpcPrefix) && rpcPrefix !== this.chainPrefix) {
+      rpcMethod = this.setRPCPrefix(method, rpcPrefix);
+    } else if (!rpcPrefix || rpcPrefix === this.chainPrefix) {
+      rpcMethod = this.setRPCPrefix(method, this.chainPrefix);
+    }
     try {
-      const payload = this.JsonRpc.toPayload(method, params);
+      const payload = this.JsonRpc.toPayload(rpcMethod, params);
       this.setResMiddleware((data: any) => new ResponseMiddleware(data));
       const result = await this.provider.send(payload);
       return getResultForData(result); // getResultForData(result)
@@ -143,6 +159,15 @@ class Messenger {
    */
   setNetworkID(id: string) {
     this.Network_ID = id;
+  }
+
+  setRPCPrefix(method: RPCMethod | string, prefix: string): string {
+    const stringArray: string[] = method.split('_');
+    if (stringArray.length !== 2) {
+      throw new Error(`could not set prefix with ${method}`);
+    }
+    stringArray[0] = prefix;
+    return stringArray.join('_');
   }
 }
 export { Messenger };

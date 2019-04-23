@@ -8,6 +8,9 @@ class TransactionFactory {
   constructor(messenger: Messenger) {
     this.messenger = messenger;
   }
+  setMessenger(messenger: Messenger) {
+    this.messenger = messenger;
+  }
   getContractAddress(tx: Transaction) {
     const { from, nonce } = tx.txParams;
     return getContractAddress(from, Number.parseInt(`${nonce}`, 10));
