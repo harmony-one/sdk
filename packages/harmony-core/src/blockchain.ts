@@ -239,11 +239,7 @@ class Blockchain extends HarmonyCore {
   }
 
   async net_peerCount() {
-    const result = await this.messenger.send(
-      RPCMethod.PeerCount,
-      [],
-      this.chainPrefix,
-    );
+    const result = await this.messenger.send(RPCMethod.PeerCount, [], 'net');
     return result;
   }
 
@@ -306,15 +302,15 @@ class Blockchain extends HarmonyCore {
     return result;
   }
 
-  // async sendRawTransaction(transaction: Transaction) {
-  //   if (!transaction.isSigned || !transaction) {
-  //     throw new Error('transaction is not signed or not exist');
-  //   }
-  //   const [txn, result] = await transaction.sendTransaction();
-  //   if (txn.isPending) {
-  //     return result;
-  //   }
-  // }
+  async sendRawTransaction(transaction: Transaction) {
+    if (!transaction.isSigned || !transaction) {
+      throw new Error('transaction is not signed or not exist');
+    }
+    const [txn, result] = await transaction.sendTransaction();
+    if (txn.isPending) {
+      return result;
+    }
+  }
 }
 
 export { Blockchain };

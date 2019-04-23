@@ -35,7 +35,9 @@ server.listen(port, function(err, blockchain) {
   acc.signTransaction(txn, true).then((signed) => {
     // console.log(signed.txPayload);
 
-    harmony.
+    harmony.blockchain.sendRawTransaction(signed).then((res) => {
+      console.log(res);
+    });
   });
 
   // console.log(harmony.messenger.setRPCPrefix('eth_getPPP'));
