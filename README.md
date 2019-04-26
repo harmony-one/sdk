@@ -35,7 +35,7 @@ It's a mono-repo library, not yet published to npm.
 
 1. open examples
 2. run `node testWallet.js`
-3. you can see `monemonics` and `simple password` and 10 accounts imported
+3. you can see `mnemonic` and `simple password` and 10 accounts imported
    
 
 # Test Harmony node
