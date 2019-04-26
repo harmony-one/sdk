@@ -34,42 +34,13 @@ It's a mono-repo library, not yet published to npm.
 # Test local wallet
 
 1. open examples
+2. run `node testWallet.js`
+3. you can see `monemonics` and `simple password` and 10 accounts imported
+   
 
+# Test Harmony node
+1. install harmony-node and use branch `ricl-web3`
+2. build it and run
+3. open `examples`
+4. run `node testNode.js`
 
-# Example
-** This package is not published to npm **
-
-```js
-
-const { Account, Wallet } = require('@harmony/account');
-const { isAddress, isPrivateKey, numberToHex } = require('@harmony/utils');
-
-
-async function createAndEncrypt() {
-  const wallet = new Wallet();
-
-  const mne = wallet.generateMnemonic();
-
-  console.log('---hint: please write these down');
-  console.log(`${mne}`);
-
-  const newAcc = wallet.addByMnemonic(mne);
-
-  const password = '123456';
-  console.log('---hint: we use this dump password to encrypt, lol');
-  console.log(`${password}`);
-
-  await wallet.encryptAccount(newAcc.address, password);
-
-  console.log('---hint: Encrypting...');
-  console.log('---hint: Done!');
-  console.log('---hint: Your account address is:');
-  const encrypted = wallet.getAccount(newAcc.address);
-  console.log(`${encrypted.address}`);
-  console.log('---hint: here is your keyStore file:');
-  console.log(`${encrypted.privateKey}`);
-}
-
-createAndEncrypt();
-
-```
