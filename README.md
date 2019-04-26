@@ -14,14 +14,26 @@ It's a mono-repo library, not yet published to npm.
 6. [harmony-transaction](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-transaction)
 
 
-# Usage
-1. git clone and make sure you have `node.js` and `yarn` installed
-2. cleanup and build
+# Install and Build
+1. make sure you have latest `node.js` and `yarn` installed
+
+2. git clone
+   
+   ```bash
+   git clone git@github.com:FireStack-Lab/Harmony-sdk-core.git
+   cd Harmony-sdk-core
+   ```
+
+3. cleanup and build
    
    ```bash
    yarn install && yarn bootstrap && yarn dist
    ```
-3. open folder `examples` and `node testNode.js`
+
+
+# Test local wallet
+
+1. open examples
 
 
 # Example

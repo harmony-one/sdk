@@ -1,44 +1,46 @@
 const { Harmony } = require('@harmony/core');
-const ganache = require('ganache-cli');
+// const ganache = require('ganache-cli');
 
-var port = 18545;
+var port = 9128;
 
-var privateKey =
-  '0xe19d05c5452598e24caad4a0d85a49146f7be089515c905ae6a19e8a578a6930';
+const url = `http://localhost:${port}`;
 
-var sendTo = '0xccaed3f53bd0a55db215cc58182969e59d2242fe';
+// we use ChainType=0 to indicate we are using `harmony node`
+// if we set it to 1, we use `eth` as our settings.
+// here 0 is by default, which means we use harmony-node by default.
+const harmony = new Harmony(url, 0);
 
-var server = ganache.server({
-  accounts: [{ secretKey: privateKey, balance: '0x21e19e0c9bab2400000' }],
-  default_balance_ether: 10000,
-});
+const mne =
+  'food response winner warfare indicate visual hundred toilet jealous okay relief tornado';
 
-server.listen(port, function(err, blockchain) {
-  const harmony = new Harmony(`http://localhost:${port}`, 1);
+const acc = harmony.wallet.addByMnemonic(mne, 0);
 
-  const acc = harmony.wallet.addByPrivateKey(privateKey);
+console.log('--- hint: please write these down ---');
+console.log(`${mne}`);
 
-  // // console.log(acc.address);
+console.log(
+  '--- hint: we use this private key to as default account to test ---',
+);
+console.log(`${acc.privateKey}`);
 
-  // acc.getBalance().then((c) => {
-  //   console.log(c);
-  // });
-  const txn = harmony.transactions.newTx({
-    nonce: 1,
-    to: sendTo,
-    value: 1,
-    gasLimit: new harmony.utils.Unit('21000').asWei().toWei(),
-    gasPrice: new harmony.utils.Unit('100000000000').asWei().toWei(),
+harmony.blockchain
+  .getBlockByNumber({
+    tag: 'latest',
+    returnObject: false,
+  })
+  .then((result) => {
+    console.log('--- hint: we test hmy_getBlockNumber ---');
+    console.log(result);
+    console.log('--------------------------------------');
   });
 
-  // console.log(blockchain);
-  acc.signTransaction(txn, true).then((signed) => {
-    // console.log(signed.txPayload);
-
-    harmony.blockchain.sendRawTransaction(signed).then((res) => {
-      console.log(res);
-    });
+harmony.blockchain
+  .getBalance({
+    address: acc.address,
+    tag: 'latest',
+  })
+  .then((result) => {
+    console.log('--- hint: we test hmy_getBalance ---');
+    console.log(result);
+    console.log('-------------------------------------');
   });
-
-  // console.log(harmony.messenger.setRPCPrefix('eth_getPPP'));
-});
