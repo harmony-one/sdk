@@ -12,7 +12,7 @@ const config = {
   testMatch: [
     // '<rootDir>/packages/**/__test__/?(*.)+(spec|test).js',
     // '<rootDir>/packages/laksa-account/__test__/?(*.)+(spec|test).js',
-    // '<rootDir>/packages/laksa-blockchain/__test__/?(*.)+(spec|test).js',
+    '<rootDir>/packages/harmony-core/__test__/?(*.)+(spec|test).ts',
     // '<rootDir>/packages/laksa-core/__test__/?(*.)+(spec|test).js'
     // '<rootDir>/packages/laksa-core-contract/__test__/?(*.)+(spec|test).js'
     // '<rootDir>/packages/laksa-core-crypto/__test__/?(*.)+(spec|test).js',
@@ -44,6 +44,7 @@ const config = {
   roots: ['<rootDir>/packages', '<rootDir>/scripts'],
   collectCoverageFrom: [
     // 'packages/!(harmony-core)/src/**/*.ts',
+    'packages/harmony-core/src/**/*.ts',
     'packages/harmony-utils/src/**/*.ts',
     // 'packages/!(laksa-core-crypto)/src/*.js'
   ],

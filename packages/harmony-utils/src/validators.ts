@@ -138,3 +138,24 @@ export const isWs = (obj: any): boolean => {
   }
 };
 isWs.validator = 'isWs';
+
+export const enum DefaultBlockParams {
+  earliest = 'earliest',
+  pending = 'pending',
+  latest = 'latest',
+}
+
+export const isBlockNumber = (obj: any): boolean => {
+  const blockParams = [
+    DefaultBlockParams.earliest,
+    DefaultBlockParams.pending,
+    DefaultBlockParams.latest,
+  ];
+
+  if (!isString(obj)) {
+    throw new Error(`${obj} is not valid blockNumber`);
+  }
+
+  return isHex(obj) || blockParams.some((val) => val === obj);
+};
+isBlockNumber.validator = 'isBlockNumber';

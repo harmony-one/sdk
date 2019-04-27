@@ -5,6 +5,7 @@ import {
   AssertType,
   HarmonyCore,
   ChainType,
+  DefaultBlockParams,
 } from '@harmony/utils';
 
 import { Transaction } from '@harmony/transaction';
@@ -27,21 +28,18 @@ class Blockchain extends HarmonyCore {
    */
   @assertObject({
     address: ['isAddress', AssertType.required],
-    blockNumber: ['isHex', AssertType.optional],
-    tag: ['isString', AssertType.optional],
+    blockNumber: ['isBlockNumber', AssertType.optional],
   })
   async getBalance({
     address,
-    blockNumber,
-    tag = 'latest',
+    blockNumber = DefaultBlockParams.latest,
   }: {
     address: string;
-    blockNumber: string;
-    tag: string;
+    blockNumber?: string;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetBalance,
-      [address, blockNumber || tag],
+      [address, blockNumber],
       this.chainPrefix,
     );
     return result;
@@ -59,7 +57,7 @@ class Blockchain extends HarmonyCore {
     returnObject = true,
   }: {
     blockHash: string;
-    returnObject: boolean;
+    returnObject?: boolean;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetBlockByHash,
@@ -73,22 +71,19 @@ class Blockchain extends HarmonyCore {
    *
    */
   @assertObject({
-    blockNumber: ['isHex', AssertType.optional],
-    tag: ['isString', AssertType.optional],
+    blockNumber: ['isBlockNumber', AssertType.optional],
     returnObject: ['isBoolean', AssertType.optional],
   })
   async getBlockByNumber({
-    blockNumber,
-    tag = 'latest',
+    blockNumber = DefaultBlockParams.latest,
     returnObject = true,
   }: {
-    blockNumber: string;
-    tag: string;
-    returnObject: boolean;
+    blockNumber?: string;
+    returnObject?: boolean;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetBlockByNumber,
-      [blockNumber || tag, returnObject],
+      [blockNumber, returnObject],
       this.chainPrefix,
     );
     return result;
@@ -110,19 +105,16 @@ class Blockchain extends HarmonyCore {
    *
    */
   @assertObject({
-    blockNumber: ['isHex', AssertType.required],
-    tag: ['isString', AssertType.optional],
+    blockNumber: ['isBlockNumber', AssertType.optional],
   })
   async getBlockTransactionCountByNumber({
-    blockNumber,
-    tag = 'latest',
+    blockNumber = DefaultBlockParams.latest,
   }: {
-    blockNumber: string;
-    tag: string;
+    blockNumber?: string;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetBlockTransactionCountByNumber,
-      [blockNumber || tag],
+      [blockNumber],
       this.chainPrefix,
     );
     return result;
@@ -151,22 +143,19 @@ class Blockchain extends HarmonyCore {
   }
 
   @assertObject({
-    blockNumber: ['isHex', AssertType.required],
+    blockNumber: ['isBlockNumber', AssertType.optional],
     index: ['isHex', AssertType.required],
-    tag: ['isString', AssertType.optional],
   })
   async getTransactionByBlockNumberAndIndex({
-    blockNumber,
+    blockNumber = DefaultBlockParams.latest,
     index,
-    tag = 'latest',
   }: {
-    blockNumber: string;
+    blockNumber?: string;
     index: string;
-    tag: string;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionByBlockNumberAndIndex,
-      [blockNumber || tag, index],
+      [blockNumber, index],
       this.chainPrefix,
     );
     return result;
@@ -203,21 +192,18 @@ class Blockchain extends HarmonyCore {
    */
   @assertObject({
     address: ['isAddress', AssertType.required],
-    blockNumber: ['isHex', AssertType.optional],
-    tag: ['isString', AssertType.optional],
+    blockNumber: ['isBlockNumber', AssertType.optional],
   })
   async getCode({
     address,
-    blockNumber,
-    tag = 'latest',
+    blockNumber = DefaultBlockParams.latest,
   }: {
     address: string;
-    blockNumber: string;
-    tag: string;
+    blockNumber?: string;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetCode,
-      [address, blockNumber || tag],
+      [address, blockNumber],
       this.chainPrefix,
     );
     return result;
@@ -246,23 +232,20 @@ class Blockchain extends HarmonyCore {
   @assertObject({
     address: ['isAddress', AssertType.required],
     position: ['isHex', AssertType.required],
-    blockNumber: ['isHex', AssertType.optional],
-    tag: ['isString', AssertType.optional],
+    blockNumber: ['isBlockNumber', AssertType.optional],
   })
   async getStorageAt({
     address,
     position,
-    blockNumber,
-    tag = 'latest',
+    blockNumber = DefaultBlockParams.latest,
   }: {
     address: string;
     position: string;
-    blockNumber: string;
-    tag: string;
+    blockNumber?: string;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetStorageAt,
-      [address, position, blockNumber || tag],
+      [address, position, blockNumber],
       this.chainPrefix,
     );
     return result;
@@ -270,21 +253,18 @@ class Blockchain extends HarmonyCore {
 
   @assertObject({
     address: ['isAddress', AssertType.required],
-    blockNumber: ['isHex', AssertType.optional],
-    tag: ['isString', AssertType.optional],
+    blockNumber: ['isBlockNumber', AssertType.optional],
   })
   async getTransactionCount({
     address,
-    blockNumber,
-    tag = 'latest',
+    blockNumber = DefaultBlockParams.latest,
   }: {
     address: string;
-    blockNumber: string;
-    tag: string;
+    blockNumber?: string;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionCount,
-      [address, blockNumber || tag],
+      [address, blockNumber],
       this.chainPrefix,
     );
     return result;

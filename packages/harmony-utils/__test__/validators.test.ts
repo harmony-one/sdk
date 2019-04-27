@@ -62,6 +62,10 @@ describe('test transformer', () => {
     const beTrue = ['privateKey', 'hash'];
     mapTest({ ...advanceType }, beTrue, validators.isPrivateKey);
   });
+  it('test isHash', () => {
+    const beTrue = ['privateKey', 'hash'];
+    mapTest({ ...advanceType }, beTrue, validators.isHash);
+  });
   it('test isHex', () => {
     const beTrue = [
       'privateKey',
@@ -78,6 +82,20 @@ describe('test transformer', () => {
       validators.isHex(basicType.zero);
     } catch (error) {
       expect(error.message).toEqual(`${basicType.zero} is not string`);
+    }
+  });
+  it('test isBlockNumber', () => {
+    const testResult = validators.isBlockNumber('0x1');
+    expect(testResult).toEqual(true);
+    const testResult2 = validators.isBlockNumber('pending');
+    expect(testResult2).toEqual(true);
+    const testResult3 = validators.isBlockNumber('that would be wrong');
+    expect(testResult3).toEqual(false);
+
+    try {
+      validators.isBlockNumber(true);
+    } catch (error) {
+      expect(error.message).toEqual(`${true} is not valid blockNumber`);
     }
   });
 });
