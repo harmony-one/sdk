@@ -101,16 +101,13 @@ class Blockchain extends HarmonyCore {
     return result;
   }
 
-  /**
-   *
-   */
   @assertObject({
-    blockNumber: ['isBlockNumber', AssertType.optional],
+    blockNumber: ['isBlockNumber', AssertType.required],
   })
   async getBlockTransactionCountByNumber({
-    blockNumber = DefaultBlockParams.latest,
+    blockNumber,
   }: {
-    blockNumber?: string;
+    blockNumber: string;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetBlockTransactionCountByNumber,

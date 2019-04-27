@@ -15,32 +15,43 @@ const mne =
 
 const acc = harmony.wallet.addByMnemonic(mne, 0);
 
-console.log('--- hint: please write these down ---');
+console.log('--- hint: please write these down');
+console.log('-------------------------------------');
 console.log(`${mne}`);
+console.log('-------------------------------------');
 
-console.log(
-  '--- hint: we use this private key to as default account to test ---',
-);
+console.log('--- hint: we use this private key to as default account to test');
+console.log('-------------------------------------');
 console.log(`${acc.privateKey}`);
+console.log('-------------------------------------');
 
-harmony.blockchain
-  .getBlockByNumber({
-    tag: 'latest',
-    returnObject: false,
-  })
-  .then((result) => {
-    console.log('--- hint: we test hmy_getBlockNumber ---');
-    console.log(result);
-    console.log('--------------------------------------');
+// now it is async time
+
+async function main() {
+  const latestBlock = await harmony.blockchain.getBlockByNumber({
+    blockNumber: 'latest',
   });
+  console.log('--- testing: hmy_getBlockNumber');
+  console.log('-------------------------------------');
+  console.log(latestBlock);
+  console.log('-------------------------------------');
 
-harmony.blockchain
-  .getBalance({
+  const sameLatestBlock = await harmony.blockchain.getBlockByHash({
+    blockHash: latestBlock.hash,
+  });
+  console.log('--- testing: hmy_getBlockByHash');
+  console.log('-------------------------------------');
+  console.log(sameLatestBlock);
+  console.log('-------------------------------------');
+
+  const latestBalance = await harmony.blockchain.getBalance({
     address: acc.address,
-    tag: 'latest',
-  })
-  .then((result) => {
-    console.log('--- hint: we test hmy_getBalance ---');
-    console.log(result);
-    console.log('-------------------------------------');
+    blockNumber: latestBlock.number,
   });
+  console.log('--- testing: hmy_getBalance');
+  console.log('-------------------------------------');
+  console.log(latestBalance);
+  console.log('-------------------------------------');
+}
+
+main();
