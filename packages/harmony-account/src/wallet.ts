@@ -1,10 +1,11 @@
 import { bip39, hdkey, EncryptOptions } from '@harmony/crypto';
 import { Messenger } from '@harmony/network';
-import { isPrivateKey } from '@harmony/utils';
+import { isPrivateKey, isAddress } from '@harmony/utils';
 import { Account } from './account';
 
 class Wallet {
   messenger?: Messenger;
+  protected defaultSigner?: string;
   /**
    * @memberof Wallet
    *
@@ -16,6 +17,17 @@ class Wallet {
    */
   get accounts(): string[] {
     return [...this.accountMap.keys()];
+  }
+
+  get signer(): Account | undefined {
+    if (this.defaultSigner) {
+      return this.getAccount(this.defaultSigner);
+    } else if (!this.defaultSigner && this.accounts.length > 0) {
+      this.setSigner(this.accounts[0]);
+      return this.getAccount(this.accounts[0]);
+    } else {
+      return undefined;
+    }
   }
 
   constructor(messenger?: Messenger) {
@@ -60,6 +72,9 @@ class Wallet {
       newAcc.setMessenger(this.messenger);
       if (newAcc.address) {
         this.accountMap.set(newAcc.address, newAcc);
+        if (!this.defaultSigner) {
+          this.setSigner(newAcc.address);
+        }
         return newAcc;
       } else {
         throw new Error('add account failed');
@@ -182,10 +197,20 @@ class Wallet {
    */
   removeAccount(address: string): void {
     this.accountMap.delete(address);
+    if (this.defaultSigner === address) {
+      this.defaultSigner = undefined;
+    }
   }
 
   setMessenger(messenger: Messenger) {
     this.messenger = messenger;
+  }
+
+  setSigner(address: string): void {
+    if (!isAddress(address) || !this.getAccount(address)) {
+      throw new Error('could not set signer');
+    }
+    this.defaultSigner = address;
   }
   /**
    * @function isValidMnemonic
