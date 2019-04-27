@@ -1,6 +1,6 @@
 # Features
 
-1. [WIP] RPC methods
+1. [x] RPC methods
 2. [x] Request and Response type def.
 3. [x] Middleware for provider
 4. [x] Base Provider
