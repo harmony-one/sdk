@@ -1,4 +1,5 @@
-# Plan
+# Features
+
 1. [WIP] RPC methods
 2. [x] Request and Response type def.
 3. [x] Middleware for provider

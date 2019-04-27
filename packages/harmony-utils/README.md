@@ -1,5 +1,5 @@
-# Plan
+# Features
 
 1. [x] validators(isPrvK/isPubK/isAddr)
 2. [x] transformers(numberToHex,hexToNumberString,...)
-3. [WIP] common tools
+3. [x] common tools

@@ -12,6 +12,7 @@ console.log('--- hint: please write these down');
 console.log('-------------------------------------');
 console.log(`${mne}`);
 console.log('-------------------------------------');
+
 // we use ChainType=0 to indicate we are using `harmony node`
 // if we set it to 1, we use `eth` as our settings.
 // here 1 is used, which means we use ethereum-node.
