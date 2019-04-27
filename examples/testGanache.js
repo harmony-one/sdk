@@ -72,7 +72,7 @@ async function main() {
 
   const txn = harmony.transactions.newTx({
     to: sendTo,
-    value: 1,
+    value: new harmony.utils.Unit('1234567').asWei().toWei(),
     gasLimit: new harmony.utils.Unit('21000').asWei().toWei(),
     gasPrice: new harmony.utils.Unit('100000000000').asWei().toWei(),
   });
@@ -97,7 +97,10 @@ async function main() {
 
   console.log('--- testing: Transaction.confirm');
   console.log('-------------------------------------');
-  console.log({ confirmed: confirmed.isConfirmed() });
+  console.log({
+    confirmed: confirmed.isConfirmed(),
+    receipt: confirmed.receipt,
+  });
   console.log('-------------------------------------');
 
   const latestBlock = await harmony.blockchain.getBlockByNumber({
