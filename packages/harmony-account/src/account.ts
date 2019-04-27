@@ -110,7 +110,7 @@ class Account {
         'latest',
       ]);
 
-      this.balance = balance;
+      this.balance = hexToNumber(balance);
       this.nonce = Number.parseInt(hexToNumber(nonce), 10);
     }
     return {

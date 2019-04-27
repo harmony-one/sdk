@@ -44,13 +44,78 @@ async function main() {
   console.log(sameLatestBlock);
   console.log('-------------------------------------');
 
+  const blockTransactionCount = await harmony.blockchain.getBlockTransactionCountByHash(
+    {
+      blockHash: latestBlock.hash,
+    },
+  );
+  console.log('--- testing: hmy_getBlockTransactionCountByHash');
+  console.log('-------------------------------------');
+  console.log(blockTransactionCount);
+  console.log('-------------------------------------');
+
+  const sameBlockTransactionCount = await harmony.blockchain.getBlockTransactionCountByNumber(
+    {
+      blockNumber: latestBlock.number,
+    },
+  );
+  console.log('--- testing: hmy_getBlockTransactionCountByNumber');
+  console.log('-------------------------------------');
+  console.log(sameBlockTransactionCount);
+  console.log('-------------------------------------');
+
+  const transaction = await harmony.blockchain.getTransactionByBlockHashAndIndex(
+    {
+      blockHash: latestBlock.hash,
+      index: '0x0',
+    },
+  );
+  console.log('--- testing: hmy_getTransactionByBlockHashAndIndex');
+  console.log('-------------------------------------');
+  console.log(transaction);
+  console.log('-------------------------------------');
+
+  const sameTransaction = await harmony.blockchain.getTransactionByBlockNumberAndIndex(
+    {
+      blockNumber: latestBlock.number,
+      index: '0x0',
+    },
+  );
+  console.log('--- testing: hmy_getTransactionByBlockNumberAndIndex');
+  console.log('-------------------------------------');
+  console.log(sameTransaction);
+  console.log('-------------------------------------');
+
+  const sameTransaction2 = await harmony.blockchain.getTransactionByHash({
+    txnHash: transaction.hash,
+  });
+  console.log('--- testing: hmy_getTransactionByHash');
+  console.log('-------------------------------------');
+  console.log(sameTransaction2);
+  console.log('-------------------------------------');
+
   const latestBalance = await harmony.blockchain.getBalance({
     address: acc.address,
     blockNumber: latestBlock.number,
   });
   console.log('--- testing: hmy_getBalance');
   console.log('-------------------------------------');
-  console.log(latestBalance);
+  console.log({ balance: harmony.utils.hexToNumber(latestBalance) });
+  console.log('-------------------------------------');
+
+  const nonce = await harmony.blockchain.getTransactionCount({
+    address: acc.address,
+    blockNumber: latestBlock.number,
+  });
+  console.log('--- testing: hmy_getTransactionCount');
+  console.log('-------------------------------------');
+  console.log({ nonce: Number.parseInt(harmony.utils.hexToNumber(nonce), 10) });
+  console.log('-------------------------------------');
+
+  const balanceOfAccount = await acc.getBalance();
+  console.log('--- testing: Account.getBalance');
+  console.log('-------------------------------------');
+  console.log(balanceOfAccount);
   console.log('-------------------------------------');
 }
 
