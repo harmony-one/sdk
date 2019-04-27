@@ -268,7 +268,7 @@ class Blockchain extends HarmonyCore {
   }
 
   async sendTransaction(transaction: Transaction) {
-    if (!transaction.isSigned || !transaction) {
+    if (!transaction.isSigned() || !transaction) {
       throw new Error('transaction is not signed or not exist');
     }
     const result = await this.messenger.send(
@@ -280,7 +280,7 @@ class Blockchain extends HarmonyCore {
   }
 
   async sendRawTransaction(transaction: Transaction) {
-    if (!transaction.isSigned || !transaction) {
+    if (!transaction.isSigned() || !transaction) {
       throw new Error('transaction is not signed or not exist');
     }
     const [txn, result] = await transaction.sendTransaction();

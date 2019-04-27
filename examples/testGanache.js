@@ -17,9 +17,17 @@ console.log('-------------------------------------');
 // here 1 is used, which means we use ethereum-node.
 
 const harmony = new Harmony(url, 1);
+
+async function createAndEncrypt(words, index, password) {
+  for (let i = 0; i < index; i++) {
+    const newAcc = harmony.wallet.addByMnemonic(words, i);
+    await harmony.wallet.encryptAccount(newAcc.address, password);
+  }
+}
+
 const acc = harmony.wallet.addByMnemonic(mne, 0);
 
-console.log('--- hint: we use this private key to as default account to test');
+console.log('--- hint: we use this private key to test with ganache');
 console.log('-------------------------------------');
 console.log(`${acc.privateKey}`);
 console.log('-------------------------------------');
@@ -32,6 +40,10 @@ const server = ganache.server({
 // now it is async time
 
 async function main() {
+  const password = '1234567890123';
+
+  await createAndEncrypt(mne, 10, password);
+
   const latestBalance = await harmony.blockchain.getBalance({
     address: acc.address,
     blockNumber: 'latest',
@@ -42,7 +54,7 @@ async function main() {
   console.log('-------------------------------------');
 
   const nonce = await harmony.blockchain.getTransactionCount({
-    address: acc.address,
+    address: harmony.wallet.signer.address,
     blockNumber: 'latest',
   });
   console.log('--- testing: hmy_getTransactionCount');
@@ -50,7 +62,7 @@ async function main() {
   console.log({ nonce: Number.parseInt(harmony.utils.hexToNumber(nonce), 10) });
   console.log('-------------------------------------');
 
-  const balanceOfAccount = await acc.getBalance();
+  const balanceOfAccount = await harmony.wallet.signer.getBalance();
   console.log('--- testing: Account.getBalance');
   console.log('-------------------------------------');
   console.log(balanceOfAccount);
@@ -67,7 +79,7 @@ async function main() {
 
   // now we sign and send a transaction
 
-  const signed = await acc.signTransaction(txn, true);
+  const signed = await harmony.wallet.signTransaction(txn, undefined, password);
 
   console.log('--- testing: Account.signTransaction');
   console.log('-------------------------------------');
@@ -149,9 +161,28 @@ async function main() {
   const sameTransaction2 = await harmony.blockchain.getTransactionByHash({
     txnHash: transaction.hash,
   });
+  const { gas, gasPrice, value } = sameTransaction2;
+  const valueBN = harmony.utils.hexToBN(value);
+  const gasBN = harmony.utils.hexToBN(gas);
+  const gasPriceBN = harmony.utils.hexToBN(gasPrice);
+  const actualCost = new harmony.utils.Unit(gasBN.mul(gasPriceBN).add(valueBN))
+    .asWei()
+    .toWei();
   console.log('--- testing: hmy_getTransactionByHash');
   console.log('-------------------------------------');
-  console.log({ gas: sameTransaction2.gas });
+  console.log({
+    actualCost: actualCost.toString(),
+    gas: harmony.utils.hexToNumber(gas),
+    gasPrice: gasPriceBN.toString(),
+    value: valueBN.toString(),
+    comment: 'actualCost= gas * gasPrice + value',
+  });
+  console.log('-------------------------------------');
+
+  const getBalanceAgainObject = await harmony.wallet.signer.getBalance();
+  console.log('--- testing: get balance again');
+  console.log('-------------------------------------');
+  console.log(getBalanceAgainObject);
   console.log('-------------------------------------');
 }
 

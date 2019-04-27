@@ -24,6 +24,8 @@ async function main() {
   console.log('---hint:we added 10 accounts for you');
 
   console.log(harmony.wallet.accounts);
+
+  console.log(harmony.wallet.signer);
 }
 
 main();

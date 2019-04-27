@@ -42,6 +42,7 @@ class Account {
   nonce?: number = 0;
   shards: Shards = new Map().set('default', '');
   messenger?: Messenger;
+  encrypted: boolean = false;
 
   /**
    * @function checksumAddress checsumAddress getter
@@ -72,6 +73,7 @@ class Account {
     if (this.privateKey && isPrivateKey(this.privateKey)) {
       const file = await encrypt(this.privateKey, password, options);
       this.privateKey = file;
+      this.encrypted = true;
       return file;
     } else {
       throw new Error('Encryption failed because PrivateKey is not correct');
@@ -187,6 +189,7 @@ class Account {
     this.publicKey = getPubkeyFromPrivateKey(this.privateKey);
     this.address = getAddressFromPrivateKey(this.privateKey);
     this.shards = new Map().set('default', '');
+    this.encrypted = false;
     return this;
   }
 

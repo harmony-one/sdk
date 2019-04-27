@@ -100,6 +100,17 @@ export const hexToNumber = (hex: string): string => {
   }
 };
 
+export const hexToBN = (hex: string): BN => {
+  if (isHex(hex) && hex[0] !== '-') {
+    return new BN(strip0x(hex), 'hex');
+  } else if (isHex(hex) && hex[0] === '-') {
+    const result: BN = new BN(hex.substring(3), 16);
+    return result.mul(new BN(-1));
+  } else {
+    throw new Error(`${hex} is not hex number`);
+  }
+};
+
 export const toWei = (input: BN | string, unit: Units): BN => {
   try {
     let inputStr = numToStr(input);

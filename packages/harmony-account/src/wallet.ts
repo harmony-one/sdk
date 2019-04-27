@@ -2,6 +2,7 @@ import { bip39, hdkey, EncryptOptions } from '@harmony/crypto';
 import { Messenger } from '@harmony/network';
 import { isPrivateKey, isAddress } from '@harmony/utils';
 import { Account } from './account';
+import { Transaction } from '@harmony/transaction';
 
 class Wallet {
   messenger?: Messenger;
@@ -169,6 +170,7 @@ class Wallet {
         foundAcc.privateKey &&
         isPrivateKey(foundAcc.privateKey)
       ) {
+        foundAcc.encrypted = false;
         return foundAcc;
       } else {
         throw new Error('decrypt account failed');
@@ -202,7 +204,7 @@ class Wallet {
     }
   }
 
-  setMessenger(messenger: Messenger) {
+  setMessenger(messenger: Messenger): void {
     this.messenger = messenger;
   }
 
@@ -211,6 +213,50 @@ class Wallet {
       throw new Error('could not set signer');
     }
     this.defaultSigner = address;
+  }
+
+  async signTransaction(
+    transaction: Transaction,
+    account?: Account,
+    password?: string,
+  ): Promise<Transaction> {
+    const toSignWith = account || this.signer;
+    if (!toSignWith) {
+      throw new Error('no signer found or did not provide correct account');
+    }
+    if (
+      toSignWith instanceof Account &&
+      toSignWith.encrypted &&
+      toSignWith.address
+    ) {
+      if (!password) {
+        throw new Error('must provide password to further execution');
+      }
+      try {
+        const decrypted = await this.decryptAccount(
+          toSignWith.address,
+          password,
+        );
+        const signed = await decrypted.signTransaction(transaction, true);
+        await this.encryptAccount(toSignWith.address, password);
+        return signed;
+      } catch (error) {
+        throw error;
+      }
+    } else if (
+      toSignWith instanceof Account &&
+      !toSignWith.encrypted &&
+      toSignWith.address
+    ) {
+      try {
+        const signed = await toSignWith.signTransaction(transaction, true);
+        return signed;
+      } catch (error) {
+        throw error;
+      }
+    } else {
+      throw new Error('sign transaction failed');
+    }
   }
   /**
    * @function isValidMnemonic
