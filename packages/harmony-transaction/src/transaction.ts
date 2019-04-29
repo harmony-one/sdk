@@ -8,7 +8,7 @@ import {
   splitSignature,
 } from '@harmony/crypto';
 import { add0xToString, numberToHex } from '@harmony/utils';
-import { Messenger, RPCMethod } from '@harmony/network';
+import { Messenger, RPCMethod, getResultForData } from '@harmony/network';
 import { TxParams, TxStatus, TransasctionReceipt } from './types';
 import { recover, transactionFields, sleep } from './utils';
 
@@ -220,9 +220,8 @@ class Transaction {
     if (!this.messenger) {
       throw new Error('Messenger not found');
     }
-    const result = await this.messenger.send(
-      RPCMethod.SendRawTransaction,
-      this.txnHash,
+    const result = getResultForData(
+      await this.messenger.send(RPCMethod.SendRawTransaction, this.txnHash),
     );
 
     // temporarilly hard coded
@@ -243,9 +242,8 @@ class Transaction {
       throw new Error('Messenger not found');
     }
     // TODO: regex validation for txHash so we don't get garbage
-    const res: TransasctionReceipt = await this.messenger.send(
-      RPCMethod.GetTransactionReceipt,
-      txHash,
+    const res: TransasctionReceipt = getResultForData(
+      await this.messenger.send(RPCMethod.GetTransactionReceipt, txHash),
     );
     if (res.responseType === 'error') {
       return false;

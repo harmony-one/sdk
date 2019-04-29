@@ -27,7 +27,7 @@ It's a mono-repo library, not yet published to npm.
 3. cleanup and build
    
    ```bash
-   yarn install && yarn bootstrap && yarn dist
+   yarn global add lerna && yarn install && yarn bootstrap && yarn dist
    ```
 
 

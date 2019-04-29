@@ -1,7 +1,9 @@
 // provider related
 export * from './providers/baseProvider';
+export * from './providers/baseSocket';
 export * from './providers/defaultFetcher';
 export * from './providers/http';
+export * from './providers/ws';
 // messenger and middlewares
 export * from './messenger/messenger';
 export * from './messenger/responseMiddleware';

@@ -13,3 +13,7 @@ export function getResultForData(data: any): any {
   }
   return data.getRaw;
 }
+
+export function getRawForData(data: any): any {
+  return data.getRaw;
+}

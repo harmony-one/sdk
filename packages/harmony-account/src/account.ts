@@ -12,7 +12,7 @@ import {
 
 import { isPrivateKey, add0xToString, hexToNumber } from '@harmony/utils';
 import { Transaction } from '@harmony/transaction';
-import { Messenger, RPCMethod } from '@harmony/network';
+import { Messenger, RPCMethod, getResultForData } from '@harmony/network';
 import { Shards } from './types';
 import { RLPSign } from './utils';
 
@@ -103,14 +103,20 @@ class Account {
    */
   async getBalance(): Promise<object> {
     if (this.messenger) {
-      const balance = await this.messenger.send(RPCMethod.GetBalance, [
-        this.address,
-        'latest',
-      ]);
-      const nonce = await this.messenger.send(RPCMethod.GetTransactionCount, [
-        this.address,
-        'latest',
-      ]);
+      const balance = getResultForData(
+        await this.messenger.send(RPCMethod.GetBalance, [
+          this.address,
+          'latest',
+        ]),
+      );
+      console.log({ balance });
+      const nonce = getResultForData(
+        await this.messenger.send(RPCMethod.GetTransactionCount, [
+          this.address,
+          'latest',
+        ]),
+      );
+      console.log({ nonce });
 
       this.balance = hexToNumber(balance);
       this.nonce = Number.parseInt(hexToNumber(nonce), 10);

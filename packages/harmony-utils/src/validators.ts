@@ -134,7 +134,7 @@ export const isWs = (obj: any): boolean => {
   if (!isString(obj)) {
     throw new Error(`${obj} is not valid url`);
   } else {
-    return obj.startsWith('ws://') || obj.startsWith('websocket://');
+    return obj.startsWith('ws://') || obj.startsWith('wss://');
   }
 };
 isWs.validator = 'isWs';

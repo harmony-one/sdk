@@ -1,9 +1,12 @@
 const { Harmony } = require('@harmony/core');
 const ganache = require('ganache-cli');
+const WebSocket = require('ws');
 
-var port = 18545;
+const port = 18545;
 
 const url = `http://localhost:${port}`;
+
+const wsUrl = `ws://localhost:${port}`;
 
 const mne =
   'food response winner warfare indicate visual hundred toilet jealous okay relief tornado';
@@ -18,6 +21,8 @@ console.log('-------------------------------------');
 // here 1 is used, which means we use ethereum-node.
 
 const harmony = new Harmony(url, 1);
+
+const wsHarmony = new Harmony(wsUrl, 1);
 
 async function createAndEncrypt(words, index, password) {
   for (let i = 0; i < index; i++) {
@@ -51,7 +56,7 @@ async function main() {
   });
   console.log('--- testing: hmy_getBalance');
   console.log('-------------------------------------');
-  console.log({ balance: harmony.utils.hexToNumber(latestBalance) });
+  console.log({ balance: harmony.utils.hexToNumber(latestBalance.result) });
   console.log('-------------------------------------');
 
   const nonce = await harmony.blockchain.getTransactionCount({
@@ -60,10 +65,13 @@ async function main() {
   });
   console.log('--- testing: hmy_getTransactionCount');
   console.log('-------------------------------------');
-  console.log({ nonce: Number.parseInt(harmony.utils.hexToNumber(nonce), 10) });
+  console.log({
+    nonce: Number.parseInt(harmony.utils.hexToNumber(nonce.result), 10),
+  });
   console.log('-------------------------------------');
 
   const balanceOfAccount = await harmony.wallet.signer.getBalance();
+
   console.log('--- testing: Account.getBalance');
   console.log('-------------------------------------');
   console.log(balanceOfAccount);
@@ -109,63 +117,63 @@ async function main() {
   });
   console.log('--- testing: hmy_getBlockByNumber');
   console.log('-------------------------------------');
-  console.log({ latestBlockHash: latestBlock.hash });
+  console.log({ latestBlockHash: latestBlock.result.hash });
   console.log('-------------------------------------');
 
   const sameLatestBlock = await harmony.blockchain.getBlockByHash({
-    blockHash: latestBlock.hash,
+    blockHash: latestBlock.result.hash,
   });
   console.log('--- testing: hmy_getBlockByHash');
   console.log('-------------------------------------');
-  console.log({ sameLatestBlockNumber: sameLatestBlock.number });
+  console.log({ sameLatestBlockNumber: sameLatestBlock.result.number });
   console.log('-------------------------------------');
 
   const blockTransactionCount = await harmony.blockchain.getBlockTransactionCountByHash(
     {
-      blockHash: latestBlock.hash,
+      blockHash: latestBlock.result.hash,
     },
   );
   console.log('--- testing: hmy_getBlockTransactionCountByHash');
   console.log('-------------------------------------');
-  console.log(blockTransactionCount);
+  console.log(blockTransactionCount.result);
   console.log('-------------------------------------');
 
   const sameBlockTransactionCount = await harmony.blockchain.getBlockTransactionCountByNumber(
     {
-      blockNumber: latestBlock.number,
+      blockNumber: latestBlock.result.number,
     },
   );
   console.log('--- testing: hmy_getBlockTransactionCountByNumber');
   console.log('-------------------------------------');
-  console.log(sameBlockTransactionCount);
+  console.log(sameBlockTransactionCount.result);
   console.log('-------------------------------------');
 
   const transaction = await harmony.blockchain.getTransactionByBlockHashAndIndex(
     {
-      blockHash: latestBlock.hash,
+      blockHash: latestBlock.result.hash,
       index: '0x0',
     },
   );
   console.log('--- testing: hmy_getTransactionByBlockHashAndIndex');
   console.log('-------------------------------------');
-  console.log(transaction);
+  console.log(transaction.result);
   console.log('-------------------------------------');
 
   const sameTransaction = await harmony.blockchain.getTransactionByBlockNumberAndIndex(
     {
-      blockNumber: latestBlock.number,
+      blockNumber: latestBlock.result.number,
       index: '0x0',
     },
   );
   console.log('--- testing: hmy_getTransactionByBlockNumberAndIndex');
   console.log('-------------------------------------');
-  console.log({ gas: sameTransaction.gas });
+  console.log({ gas: sameTransaction.result.gas });
   console.log('-------------------------------------');
 
   const sameTransaction2 = await harmony.blockchain.getTransactionByHash({
-    txnHash: transaction.hash,
+    txnHash: transaction.result.hash,
   });
-  const { gas, gasPrice, value } = sameTransaction2;
+  const { gas, gasPrice, value } = sameTransaction2.result;
   const valueBN = harmony.utils.hexToBN(value);
   const gasBN = harmony.utils.hexToBN(gas);
   const gasPriceBN = harmony.utils.hexToBN(gasPrice);
@@ -191,5 +199,7 @@ async function main() {
 }
 
 server.listen(port, function(err, blockchain) {
+  // console.log(blockchain);
   main();
+  // console.log(wsHarmony.provider.connected);
 });

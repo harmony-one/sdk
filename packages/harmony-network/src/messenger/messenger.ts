@@ -2,14 +2,15 @@ import { HarmonyCore, ChainType, isString } from '@harmony/utils';
 import { JsonRpc } from '../rpcMethod/rpcbuilder';
 import { ResponseMiddleware } from './responseMiddleware';
 import { HttpProvider } from '../providers/http';
-import { getResultForData } from '../util';
+import { WSProvider } from '../providers/ws';
+// import { getResultForData } from '../util';
 import { RPCMethod } from '../rpcMethod/rpc';
 
 const defaultConfig = {
   Default: {
     CHAIN_ID: 0,
     Network_ID: 'Default',
-    nodeProviderUrl: 'http://localhost:4200',
+    nodeProviderUrl: 'http://localhost:9128',
   },
   DevNet: {
     CHAIN_ID: 333,
@@ -36,14 +37,14 @@ const defaultConfig = {
  * @return {Messenger} Messenger instance
  */
 class Messenger extends HarmonyCore {
-  provider: HttpProvider;
+  provider: HttpProvider | WSProvider;
   config?: object;
   // tslint:disable-next-line: variable-name
   Network_ID: string = 'Default';
   JsonRpc: JsonRpc;
 
   constructor(
-    provider: HttpProvider,
+    provider: HttpProvider | WSProvider,
     chainType: ChainType = ChainType.Harmony,
     config?: object,
   ) {
@@ -99,9 +100,16 @@ class Messenger extends HarmonyCore {
     }
     try {
       const payload = this.JsonRpc.toPayload(rpcMethod, params);
-      this.setResMiddleware((data: any) => new ResponseMiddleware(data));
+      this.setResMiddleware((data: any) => {
+        if (!(data instanceof ResponseMiddleware)) {
+          return new ResponseMiddleware(data);
+        } else {
+          return data;
+        }
+      });
       const result = await this.provider.send(payload);
-      return getResultForData(result); // getResultForData(result)
+      return result;
+      // return getResultForData(result); // getResultForData(result)
     } catch (e) {
       throw new Error(e);
     }
@@ -113,7 +121,7 @@ class Messenger extends HarmonyCore {
    * @description provider setter
    * @param  {Provider} provider - provider instance
    */
-  setProvider(provider: HttpProvider) {
+  setProvider(provider: HttpProvider | WSProvider) {
     this.provider = provider;
   }
 
@@ -137,7 +145,7 @@ class Messenger extends HarmonyCore {
    * @param  {String} method  - method name
    */
   setReqMiddleware(middleware: any, method = '*') {
-    return this.provider.middlewares.request.use(middleware, method);
+    this.provider.middlewares.request.use(middleware, method);
   }
 
   /**

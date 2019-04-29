@@ -1,4 +1,4 @@
-import { RPCMethod, Messenger } from '@harmony/network';
+import { RPCMethod, Messenger, ResponseMiddleware } from '@harmony/network';
 
 import {
   assertObject,
@@ -22,6 +22,13 @@ class Blockchain extends HarmonyCore {
   setMessenger(messenger: Messenger) {
     this.messenger = messenger;
   }
+  getRpcResult(result: any) {
+    if (result instanceof ResponseMiddleware) {
+      return result.getRaw;
+    } else {
+      return result;
+    }
+  }
 
   /**
    *
@@ -42,7 +49,7 @@ class Blockchain extends HarmonyCore {
       [address, blockNumber],
       this.chainPrefix,
     );
-    return result;
+    return this.getRpcResult(result);
   }
 
   /**
@@ -64,7 +71,7 @@ class Blockchain extends HarmonyCore {
       [blockHash, returnObject],
       this.chainPrefix,
     );
-    return result;
+    return this.getRpcResult(result);
   }
 
   /**
@@ -86,7 +93,7 @@ class Blockchain extends HarmonyCore {
       [blockNumber, returnObject],
       this.chainPrefix,
     );
-    return result;
+    return this.getRpcResult(result);
   }
 
   @assertObject({
@@ -98,7 +105,7 @@ class Blockchain extends HarmonyCore {
       [blockHash],
       this.chainPrefix,
     );
-    return result;
+    return this.getRpcResult(result);
   }
 
   @assertObject({
@@ -114,7 +121,7 @@ class Blockchain extends HarmonyCore {
       [blockNumber],
       this.chainPrefix,
     );
-    return result;
+    return this.getRpcResult(result);
   }
 
   /**
@@ -136,7 +143,7 @@ class Blockchain extends HarmonyCore {
       [blockHash, index],
       this.chainPrefix,
     );
-    return result;
+    return this.getRpcResult(result);
   }
 
   @assertObject({
@@ -155,7 +162,7 @@ class Blockchain extends HarmonyCore {
       [blockNumber, index],
       this.chainPrefix,
     );
-    return result;
+    return this.getRpcResult(result);
   }
 
   @assertObject({
@@ -167,7 +174,7 @@ class Blockchain extends HarmonyCore {
       [txnHash],
       this.chainPrefix,
     );
-    return result;
+    return this.getRpcResult(result);
   }
 
   /**
@@ -182,7 +189,7 @@ class Blockchain extends HarmonyCore {
       [txnHash],
       this.chainPrefix,
     );
-    return result;
+    return this.getRpcResult(result);
   }
   /**
    *
@@ -203,7 +210,7 @@ class Blockchain extends HarmonyCore {
       [address, blockNumber],
       this.chainPrefix,
     );
-    return result;
+    return this.getRpcResult(result);
   }
 
   /**
@@ -215,15 +222,14 @@ class Blockchain extends HarmonyCore {
       [],
       this.chainPrefix,
     );
-    if (result.responseType === 'raw') {
-      return result.result;
-    }
-    return result;
+
+    return this.getRpcResult(result);
   }
 
   async net_peerCount() {
     const result = await this.messenger.send(RPCMethod.PeerCount, [], 'net');
-    return result;
+
+    return this.getRpcResult(result);
   }
 
   @assertObject({
@@ -245,7 +251,7 @@ class Blockchain extends HarmonyCore {
       [address, position, blockNumber],
       this.chainPrefix,
     );
-    return result;
+    return this.getRpcResult(result);
   }
 
   @assertObject({
@@ -264,7 +270,7 @@ class Blockchain extends HarmonyCore {
       [address, blockNumber],
       this.chainPrefix,
     );
-    return result;
+    return this.getRpcResult(result);
   }
 
   async sendTransaction(transaction: Transaction) {
@@ -276,7 +282,7 @@ class Blockchain extends HarmonyCore {
       [transaction.txPayload],
       this.chainPrefix,
     );
-    return result;
+    return this.getRpcResult(result);
   }
 
   async sendRawTransaction(transaction: Transaction) {

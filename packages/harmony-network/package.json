@@ -14,8 +14,10 @@
   "author": "neeboo@firestack.one",
   "license": "ISC",
   "dependencies": {
-    "cross-fetch": "^3.0.2",
     "@harmony/core": "^0.0.1",
-    "@harmony/utils": "^0.0.1"
+    "@harmony/utils": "^0.0.1",
+    "cross-fetch": "^3.0.2",
+    "mitt": "^1.1.3",
+    "websocket": "^1.0.28"
   }
 }

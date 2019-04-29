@@ -23,7 +23,7 @@ class HttpProvider extends BaseProvider {
   options?: any;
   constructor(url: string, options?: any, fetcher?: any) {
     super(url);
-    this.url = url || 'http://localhost:4201';
+    this.url = url || 'http://localhost:9128';
     this.fetcher = fetcher || fetchRPC;
     if (options) {
       this.options = {
