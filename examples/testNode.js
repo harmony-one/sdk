@@ -103,6 +103,17 @@ async function main() {
   console.log({ balance: harmony.utils.hexToNumber(latestBalance.result) });
   console.log('-------------------------------------');
 
+  const latestBalance2 = await harmony.blockchain.getBalance({
+    address: acc.address,
+    blockNumber: 'latest',
+  });
+  console.log(
+    '--- testing: force blockNumber to "latest", should get same result as above',
+  );
+  console.log('-------------------------------------');
+  console.log({ balance: harmony.utils.hexToNumber(latestBalance2.result) });
+  console.log('-------------------------------------');
+
   const nonce = await harmony.blockchain.getTransactionCount({
     address: acc.address,
     blockNumber: latestBlock.result.number,
