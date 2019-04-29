@@ -44,3 +44,8 @@ It's a mono-repo library, not yet published to npm.
 3. open `examples`
 4. run `node testNode.js`
 
+
+# Test With `ganache-cli`
+** ganache-cli runs in js file **
+1. open `examples`
+2. run `node testGanache.js`
