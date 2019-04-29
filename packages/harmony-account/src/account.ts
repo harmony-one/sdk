@@ -109,14 +109,13 @@ class Account {
           'latest',
         ]),
       );
-      console.log({ balance });
+
       const nonce = getResultForData(
         await this.messenger.send(RPCMethod.GetTransactionCount, [
           this.address,
           'latest',
         ]),
       );
-      console.log({ nonce });
 
       this.balance = hexToNumber(balance);
       this.nonce = Number.parseInt(hexToNumber(nonce), 10);
