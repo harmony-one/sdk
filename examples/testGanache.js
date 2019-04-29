@@ -20,7 +20,7 @@ console.log('-------------------------------------');
 // if we set it to 1, we use `eth` as our settings.
 // here 1 is used, which means we use ethereum-node.
 
-const harmony = new Harmony(url, 1);
+const harmony = new Harmony(wsUrl, 1);
 
 const wsHarmony = new Harmony(wsUrl, 1);
 

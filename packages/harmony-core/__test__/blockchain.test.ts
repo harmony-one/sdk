@@ -64,28 +64,28 @@ describe('test Blockchain', () => {
 
     // should test getBlockByNumber
     const res = await bc.getBlockByNumber({ blockNumber: 'latest' });
-    expect(res.responseType).toEqual('result');
-    expect(res.size).toEqual('0x2de9');
+    expect(res.responseType).toEqual('raw');
+    expect(res.result.size).toEqual('0x2de9');
     const res2 = await bc.getBlockByNumber({ blockNumber: '0x1' });
-    expect(res2.responseType).toEqual('result');
-    expect(res2.size).toEqual('0x2de9');
+    expect(res2.responseType).toEqual('raw');
+    expect(res2.result.size).toEqual('0x2de9');
     const res3 = await bc.getBlockByNumber({ returnObject: true });
-    expect(res3.responseType).toEqual('result');
-    expect(res3.timestamp).toEqual(1556265598);
+    expect(res3.responseType).toEqual('raw');
+    expect(res3.result.timestamp).toEqual(1556265598);
 
     const res4 = await bc.getBlockByHash({
       blockHash:
         '0x7e1ef610f700805b93cf85b1e55bce84fcbd04373252a968755366a8d2215424',
     });
-    expect(res4.responseType).toEqual('result');
-    expect(res4.size).toEqual('0x2de9');
+    expect(res4.responseType).toEqual('raw');
+    expect(res4.result.size).toEqual('0x2de9');
     const res5 = await bc.getBlockByHash({
       blockHash:
         '0x7e1ef610f700805b93cf85b1e55bce84fcbd04373252a968755366a8d2215424',
       returnObject: true,
     });
-    expect(res5.responseType).toEqual('result');
-    expect(res5.timestamp).toEqual(1556265598);
+    expect(res5.responseType).toEqual('raw');
+    expect(res5.result.timestamp).toEqual(1556265598);
 
     // try some errors
   });
@@ -121,8 +121,8 @@ describe('test Blockchain', () => {
       txnHash:
         '0x9a71ea0839511c95b0818bd54a38ab56a05337a8282245d853d0ae3a1aedd7da',
     });
-    expect(res1.responseType).toEqual('result');
-    expect(res1.blockHash).toEqual(
+    expect(res1.responseType).toEqual('raw');
+    expect(res1.result.blockHash).toEqual(
       '0x359036996c7ad7fdaa42b18de2fc157ae97d4cd3f32c688af349225f7e8f8fc6',
     );
     const res2 = await bc.getTransactionByBlockHashAndIndex({
@@ -130,23 +130,23 @@ describe('test Blockchain', () => {
         '0x359036996c7ad7fdaa42b18de2fc157ae97d4cd3f32c688af349225f7e8f8fc6',
       index: '0x0',
     });
-    expect(res2.responseType).toEqual('result');
-    expect(res2.hash).toEqual(
+    expect(res2.responseType).toEqual('raw');
+    expect(res2.result.hash).toEqual(
       '0x9a71ea0839511c95b0818bd54a38ab56a05337a8282245d853d0ae3a1aedd7da',
     );
     const res3 = await bc.getTransactionByBlockNumberAndIndex({
       blockNumber: '0x1',
       index: '0x0',
     });
-    expect(res3.responseType).toEqual('result');
-    expect(res3.hash).toEqual(
+    expect(res3.responseType).toEqual('raw');
+    expect(res3.result.hash).toEqual(
       '0x9a71ea0839511c95b0818bd54a38ab56a05337a8282245d853d0ae3a1aedd7da',
     );
     const res4 = await bc.getTransactionByBlockNumberAndIndex({
       index: '0x0',
     });
-    expect(res4.responseType).toEqual('result');
-    expect(res4.hash).toEqual(
+    expect(res4.responseType).toEqual('raw');
+    expect(res4.result.hash).toEqual(
       '0x9a71ea0839511c95b0818bd54a38ab56a05337a8282245d853d0ae3a1aedd7da',
     );
   });
@@ -165,7 +165,7 @@ describe('test Blockchain', () => {
       blockHash:
         '0x7e1ef610f700805b93cf85b1e55bce84fcbd04373252a968755366a8d2215424',
     });
-    expect(res1).toEqual('0x65');
+    expect(res1.result).toEqual('0x65');
     try {
       await bc.getBlockTransactionCountByHash({ blockHash: 'wrong' });
     } catch (error) {
@@ -183,20 +183,20 @@ describe('test Blockchain', () => {
         `Validation failed for blockNumber,should be validated by isBlockNumber`,
       );
     }
-    expect(res2).toEqual('0x65');
+    expect(res2.result).toEqual('0x65');
     const res3 = await bc.getBlockTransactionCountByNumber({
       blockNumber: 'latest',
     });
-    expect(res3).toEqual('0x65');
+    expect(res3.result).toEqual('0x65');
     const res4 = await bc.getTransactionCount({
       address: '0x15a128e599b74842bccba860311efa92991bffb5',
       blockNumber: '0x1',
     });
-    expect(res4).toEqual('0x65');
+    expect(res4.result).toEqual('0x65');
     const res5 = await bc.getTransactionCount({
       address: '0x15a128e599b74842bccba860311efa92991bffb5',
     });
-    expect(res5).toEqual('0x65');
+    expect(res5.result).toEqual('0x65');
   });
 
   it('test get code', async () => {
@@ -213,11 +213,11 @@ describe('test Blockchain', () => {
       address: '0x15a128e599b74842bccba860311efa92991bffb5',
       blockNumber: '0x1',
     });
-    expect(res1).toEqual('0x');
+    expect(res1.result).toEqual('0x');
     const res2 = await bc.getCode({
       address: '0x15a128e599b74842bccba860311efa92991bffb5',
     });
-    expect(res2).toEqual('0x');
+    expect(res2.result).toEqual('0x');
   });
   it('test get storage at', async () => {
     const bc = new Blockchain(messenger);
@@ -235,14 +235,14 @@ describe('test Blockchain', () => {
       position: '0x0',
       blockNumber: '0x1',
     });
-    expect(res1).toEqual(
+    expect(res1.result).toEqual(
       '0x0000000000000000000000000000000000000000000000000000000000000000',
     );
     const res2 = await bc.getStorageAt({
       address: '0x15a128e599b74842bccba860311efa92991bffb5',
       position: '0x0',
     });
-    expect(res2).toEqual(
+    expect(res2.result).toEqual(
       '0x0000000000000000000000000000000000000000000000000000000000000000',
     );
   });
@@ -260,11 +260,11 @@ describe('test Blockchain', () => {
       address: '0x15a128e599b74842bccba860311efa92991bffb5',
       blockNumber: '0x1',
     });
-    expect(res1).toEqual('0xd3c21bcecceda1000000');
+    expect(res1.result).toEqual('0xd3c21bcecceda1000000');
     const res2 = await bc.getBalance({
       address: '0x15a128e599b74842bccba860311efa92991bffb5',
     });
-    expect(res2).toEqual('0xd3c21bcecceda1000000');
+    expect(res2.result).toEqual('0xd3c21bcecceda1000000');
   });
   // it('test get transaction receipt', async () => {
   //   const bc = new Blockchain(messenger);
