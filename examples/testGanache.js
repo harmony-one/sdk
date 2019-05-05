@@ -226,16 +226,13 @@ async function main() {
 }
 
 server.listen(port, function(err, blockchain) {
+  harmony.blockchain.newPendingTransactions().then((p) => {
+    p.onData(async (res) => {
+      const txn = await harmony.blockchain.getTransactionByHash({
+        txnHash: res.params.result,
+      });
+      console.log(txn);
+    });
+  });
   setTimeout(() => main(), 5000);
-  // console.log(wsHarmony.provider.connected);
 });
-
-// setTimeout(() => {
-//   harmony.blockchain.newPendingTransactions().then((emitter) => {
-//     emitter.on('data', (data) => {
-//       console.log('-------- ws data --------');
-//       console.log(data);
-//       console.log('-------- ws data --------');
-//     });
-//   });
-// }, 1000);

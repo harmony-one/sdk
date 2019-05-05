@@ -70,6 +70,13 @@ class WSProvider extends BaseSocket {
     }
   }
 
+  reconnect() {
+    setTimeout(() => {
+      this.removeAllSocketListeners();
+      this.connection = this.createWebsocketProvider(this.url, this.options);
+      this.registerEventListeners();
+    }, 5000);
+  }
   isConnecting() {
     return this.connection.readyState === this.connection.CONNECTING;
   }

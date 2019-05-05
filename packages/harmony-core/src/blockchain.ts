@@ -316,7 +316,7 @@ class Blockchain extends HarmonyCore {
     if (this.messenger.provider instanceof WSProvider) {
       return this.messenger.subscribe(
         RPCMethod.Subscribe,
-        ['newBlockHeaders'],
+        ['newHeads'],
         this.chainPrefix,
       );
     } else {
