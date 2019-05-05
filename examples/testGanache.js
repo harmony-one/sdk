@@ -1,6 +1,5 @@
 const { Harmony } = require('@harmony/core');
 const ganache = require('ganache-cli');
-const WebSocket = require('ws');
 
 const port = 18545;
 
@@ -49,6 +48,8 @@ async function main() {
   const password = '1234567890123';
 
   await createAndEncrypt(mne, 10, password);
+
+  // harmony.blockchain.newPendingTransacitons();
 
   const latestBalance = await harmony.blockchain.getBalance({
     address: acc.address,
@@ -196,10 +197,45 @@ async function main() {
   console.log('-------------------------------------');
   console.log(getBalanceAgainObject);
   console.log('-------------------------------------');
+
+  setTimeout(async () => {
+    const s2 = await harmony.wallet.signTransaction(txn, undefined, password);
+    await s2.sendTransaction();
+  }, 5000);
+
+  setTimeout(async () => {
+    const s3 = await harmony.wallet.signTransaction(txn, undefined, password);
+    await s3.sendTransaction();
+  }, 10000);
+  setTimeout(async () => {
+    const s3 = await harmony.wallet.signTransaction(txn, undefined, password);
+    await s3.sendTransaction();
+  }, 15000);
+  setTimeout(async () => {
+    const s4 = await harmony.wallet.signTransaction(txn, undefined, password);
+    await s4.sendTransaction();
+  }, 20000);
+  setTimeout(async () => {
+    const s5 = await harmony.wallet.signTransaction(txn, undefined, password);
+    await s5.sendTransaction();
+  }, 25000);
+  setTimeout(async () => {
+    const s6 = await harmony.wallet.signTransaction(txn, undefined, password);
+    await s6.sendTransaction();
+  }, 30000);
 }
 
 server.listen(port, function(err, blockchain) {
-  // console.log(blockchain);
-  main();
+  setTimeout(() => main(), 5000);
   // console.log(wsHarmony.provider.connected);
 });
+
+// setTimeout(() => {
+//   harmony.blockchain.newPendingTransactions().then((emitter) => {
+//     emitter.on('data', (data) => {
+//       console.log('-------- ws data --------');
+//       console.log(data);
+//       console.log('-------- ws data --------');
+//     });
+//   });
+// }, 1000);

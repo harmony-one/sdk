@@ -27,7 +27,7 @@ class JsonRpc {
   toPayload = (
     method: RPCMethod | string,
     params: string | undefined | any[],
-  ): RPCRequestPayload<object> => {
+  ): RPCRequestPayload<any> => {
     // FIXME: error to be done by shared/errors
     if (!method) throw new Error('jsonrpc method should be specified!');
 

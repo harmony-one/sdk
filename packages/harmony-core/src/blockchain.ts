@@ -1,4 +1,9 @@
-import { RPCMethod, Messenger, ResponseMiddleware } from '@harmony/network';
+import {
+  RPCMethod,
+  Messenger,
+  ResponseMiddleware,
+  WSProvider,
+} from '@harmony/network';
 
 import {
   assertObject,
@@ -292,6 +297,30 @@ class Blockchain extends HarmonyCore {
     const [txn, result] = await transaction.sendTransaction();
     if (txn.isPending) {
       return result;
+    }
+  }
+
+  newPendingTransactions() {
+    if (this.messenger.provider instanceof WSProvider) {
+      return this.messenger.subscribe(
+        RPCMethod.Subscribe,
+        ['newPendingTransactions'],
+        this.chainPrefix,
+      );
+    } else {
+      throw new Error('HttpProvider does not support this feature');
+    }
+  }
+
+  newBlockHeaders() {
+    if (this.messenger.provider instanceof WSProvider) {
+      return this.messenger.subscribe(
+        RPCMethod.Subscribe,
+        ['newBlockHeaders'],
+        this.chainPrefix,
+      );
+    } else {
+      throw new Error('HttpProvider does not support this feature');
     }
   }
 }

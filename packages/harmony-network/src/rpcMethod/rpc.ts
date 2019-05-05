@@ -31,6 +31,8 @@ export const enum RPCMethod {
   SendTransaction = 'hmy_sendTransaction',
   // 15. hmy_sendRawTransaction
   SendRawTransaction = 'hmy_sendRawTransaction',
+  // 16. hmy_subscribe
+  Subscribe = 'hmy_subscribe',
 }
 
 export const enum RPCErrorCode {

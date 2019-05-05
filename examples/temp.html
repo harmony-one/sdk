@@ -36,6 +36,41 @@
     </div>
    
     <script src="../dist/HarmonyJs.browser.js"></script>
-    
+    <script>
+      
+       const harmony= new HarmonyJs.Harmony('ws://localhost:18545',1);
+      
+       
+      
+
+
+
+      const diu = async () => {
+  const p= await harmony.blockchain.newPendingTransactions()
+  // harmony.blockchain.newBlockHeaders()
+
+  
+    p.onData(res=>{
+      console.log(res)
+    }).on('error',error=>{
+      console.log(error)
+    })
+    setTimeout(()=>{
+      if(p.subscriptions!=={}){
+      p.clearSubscriptions('eth_unsubscribe').then(res=>{
+        if(res){
+          console.log('Successfully unsubscribed!')
+        }
+      })
+    }
+    },50000)
+   
+}
+
+setTimeout(diu, 100);
+      
+      
+      
+    </script>
   </body>
 </html>

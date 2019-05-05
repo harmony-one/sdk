@@ -156,7 +156,7 @@ class Messenger extends HarmonyCore {
    * @param  {String} method  - method name
    */
   setResMiddleware(middleware: any, method = '*') {
-    return this.provider.middlewares.response.use(middleware, method);
+    this.provider.middlewares.response.use(middleware, method);
   }
 
   /**
@@ -177,5 +177,64 @@ class Messenger extends HarmonyCore {
     stringArray[0] = prefix;
     return stringArray.join('_');
   }
+
+  subscribe = async (
+    method: RPCMethod | string,
+    params?: string | any[] | undefined,
+    rpcPrefix?: string,
+  ) => {
+    let rpcMethod = method;
+    if (rpcPrefix && isString(rpcPrefix) && rpcPrefix !== this.chainPrefix) {
+      rpcMethod = this.setRPCPrefix(method, rpcPrefix);
+    } else if (!rpcPrefix || rpcPrefix === this.chainPrefix) {
+      rpcMethod = this.setRPCPrefix(method, this.chainPrefix);
+    }
+    if (this.provider instanceof WSProvider) {
+      const provider = this.provider;
+      try {
+        const payload = this.JsonRpc.toPayload(rpcMethod, params);
+        const id = await provider.subscribe(payload);
+        provider.on(id, (result: any) => {
+          provider.emitter.emit('data', result);
+        });
+        provider.once('error', (error) => {
+          provider.removeEventListener(id);
+          provider.emitter.emit('error', error);
+          provider.removeEventListener('*');
+        });
+      } catch (error) {
+        provider.emitter.emit('error', error);
+        provider.removeEventListener('*');
+      }
+      return provider;
+    } else {
+      throw new Error('HttpProvider does not support this');
+    }
+  };
+
+  unsubscribe = async (
+    method: RPCMethod | string,
+    params?: string | any[] | undefined,
+    rpcPrefix?: string,
+  ) => {
+    let rpcMethod = method;
+    if (rpcPrefix && isString(rpcPrefix) && rpcPrefix !== this.chainPrefix) {
+      rpcMethod = this.setRPCPrefix(method, rpcPrefix);
+    } else if (!rpcPrefix || rpcPrefix === this.chainPrefix) {
+      rpcMethod = this.setRPCPrefix(method, this.chainPrefix);
+    }
+    if (this.provider instanceof WSProvider) {
+      const provider = this.provider;
+      try {
+        const payload = this.JsonRpc.toPayload(rpcMethod, params);
+        const response = await provider.unsubscribe(payload);
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    } else {
+      throw new Error('HttpProvider does not support this');
+    }
+  };
 }
 export { Messenger };

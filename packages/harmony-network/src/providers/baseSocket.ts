@@ -19,10 +19,14 @@ export const enum SocketState {
   SOCKET_ACCOUNTS_CHANGED = 'socket_accountsChanged',
 }
 
+export const enum EmittType {
+  INSTANCE = 'instance',
+  PUBSUB = 'pubsub',
+}
+
 class BaseSocket extends BaseProvider {
   url: string;
   emitter: mitt.Emitter;
-  subscriptions: any = {};
   handlers: any = {};
   constructor(url: string) {
     super(url);
@@ -41,10 +45,14 @@ class BaseSocket extends BaseProvider {
 
   once(type: string, handler: mitt.Handler) {
     this.emitter.on(type, handler);
-    this.removeListener(type);
+    this.removeEventListener(type);
   }
 
-  removeListener(type?: string, handler?: mitt.Handler) {
+  addEventListener(type: string, handler: mitt.Handler) {
+    this.emitter.on(type, handler);
+  }
+
+  removeEventListener(type?: string, handler?: mitt.Handler) {
     if (!type) {
       this.handlers = {};
       return;
@@ -56,32 +64,32 @@ class BaseSocket extends BaseProvider {
     }
   }
   reset() {
-    this.removeListener('*');
+    this.removeEventListener('*');
     // this.registerEventListeners();
   }
   removeAllSocketListeners() {
-    this.removeListener(SocketState.SOCKET_MESSAGE);
-    this.removeListener(SocketState.SOCKET_READY);
-    this.removeListener(SocketState.SOCKET_CLOSE);
-    this.removeListener(SocketState.SOCKET_ERROR);
-    this.removeListener(SocketState.SOCKET_CONNECT);
+    this.removeEventListener(SocketState.SOCKET_MESSAGE);
+    this.removeEventListener(SocketState.SOCKET_READY);
+    this.removeEventListener(SocketState.SOCKET_CLOSE);
+    this.removeEventListener(SocketState.SOCKET_ERROR);
+    this.removeEventListener(SocketState.SOCKET_CONNECT);
   }
 
   onReady(event: any) {
-    this.emitter.on(SocketConnection.READY, () => event);
-    this.emitter.on(SocketState.SOCKET_READY, () => event);
+    this.emitter.emit(SocketConnection.READY, event);
+    this.emitter.emit(SocketState.SOCKET_READY, event);
   }
   onError(error: any) {
-    this.emitter.on(SocketConnection.ERROR, () => error);
-    this.emitter.on(SocketState.SOCKET_ERROR, () => error);
+    this.emitter.emit(SocketConnection.ERROR, error);
+    this.emitter.emit(SocketState.SOCKET_ERROR, error);
     this.removeAllSocketListeners();
-    this.removeListener('*');
+    this.removeEventListener('*');
   }
   onClose(error = null) {
-    this.emitter.on(SocketConnection.CLOSE, () => error);
-    this.emitter.on(SocketState.SOCKET_CLOSE, () => error);
+    this.emitter.emit(SocketConnection.CLOSE, error);
+    this.emitter.emit(SocketState.SOCKET_CLOSE, error);
     this.removeAllSocketListeners();
-    this.removeListener('*');
+    this.removeEventListener('*');
   }
 }
 
