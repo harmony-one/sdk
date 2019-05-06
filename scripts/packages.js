@@ -3,6 +3,7 @@ export default [
   'harmony-utils',
   'harmony-crypto',
   'harmony-account',
+  'harmony-contract',
   'harmony-network',
   'harmony-transaction',
 ];

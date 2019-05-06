@@ -15,7 +15,7 @@ const config = {
     '<rootDir>/packages/harmony-core/__test__/?(*.)+(spec|test).ts',
     // '<rootDir>/packages/laksa-core/__test__/?(*.)+(spec|test).js'
     // '<rootDir>/packages/laksa-core-contract/__test__/?(*.)+(spec|test).js'
-    // '<rootDir>/packages/laksa-core-crypto/__test__/?(*.)+(spec|test).js',
+    '<rootDir>/packages/harmony-crypto/__test__/?(*.)+(spec|test).ts',
     // '<rootDir>/packages/laksa-core-messenger/__test__/?(*.)+(spec|test).js'
     // '<rootDir>/packages/laksa-core-provider/__test__/?(*.)+(spec|test).js',
     // '<rootDir>/packages/laksa-core-transaction/__test__/?(*.)+(spec|test).js',
@@ -46,7 +46,7 @@ const config = {
     // 'packages/!(harmony-core)/src/**/*.ts',
     'packages/harmony-core/src/**/*.ts',
     'packages/harmony-utils/src/**/*.ts',
-    // 'packages/!(laksa-core-crypto)/src/*.js'
+    'packages/harmony-crypto/src/**/*.ts',
   ],
   timers: 'fake',
   setupFiles: ['<rootDir>/scripts/jest/jest.setup.js'],

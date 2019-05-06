@@ -6,6 +6,7 @@ const packages = [
   'harmony-crypto',
   'harmony-account',
   'harmony-network',
+  'harmony-contract',
   'harmony-utils',
   'harmony-transaction',
 ];
