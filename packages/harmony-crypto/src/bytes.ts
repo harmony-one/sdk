@@ -336,6 +336,43 @@ export function hexZeroPad(value: string, length: number): string {
   return value;
 }
 
+export function bytesPadLeft(value: string, byteLength: number): string {
+  if (!isHexString(value)) {
+    errors.throwError('invalid hex string', errors.INVALID_ARGUMENT, {
+      arg: 'value',
+      value,
+    });
+  }
+
+  const striped = value.substring(2);
+  if (striped.length > byteLength * 2) {
+    throw new Error(
+      `hex string length = ${striped.length} beyond byteLength=${byteLength}`,
+    );
+  }
+  const padLength = byteLength * 2 - striped.length;
+  const returnValue = '0x' + '0'.repeat(padLength) + striped;
+  return returnValue;
+}
+export function bytesPadRight(value: string, byteLength: number): string {
+  if (!isHexString(value)) {
+    errors.throwError('invalid hex string', errors.INVALID_ARGUMENT, {
+      arg: 'value',
+      value,
+    });
+  }
+
+  const striped = value.substring(2);
+  if (striped.length > byteLength * 2) {
+    throw new Error(
+      `hex string length = ${striped.length} beyond byteLength=${byteLength}`,
+    );
+  }
+  const padLength = byteLength * 2 - striped.length;
+  const returnValue = '0x' + striped + '0'.repeat(padLength);
+  return returnValue;
+}
+
 export function isSignature(value: any): value is Signature {
   return value && value.r != null && value.s != null;
 }

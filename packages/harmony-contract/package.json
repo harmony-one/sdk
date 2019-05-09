@@ -18,6 +18,8 @@
   "license": "ISC",
   "dependencies": {
     "@harmony/crypto": "^0.0.1",
-    "@harmony/utils": "^0.0.1"
+    "@harmony/utils": "^0.0.1",
+    "abi-decoder": "^1.2.0"
+    
   }
 }

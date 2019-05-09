@@ -1,4 +1,7 @@
-// this file is mainly ported from `ether.js`, but done some fixes with types and lint
+// this file is mainly ported from `ethers.js`, but done some fixes
+// 1. added bytesPadRight support
+// 2. ts-lint
+// 3. use BN as default Bignumber instance
 
 import {
   BN,
@@ -14,6 +17,7 @@ import {
   checkNormalize,
   Arrayish,
   checkNew,
+  bytesPadRight,
 } from '@harmony/crypto';
 import { hexToBN } from '@harmony/utils';
 
@@ -230,28 +234,28 @@ function parseParam(param: string, allowIndexed?: boolean): ParamType {
         break;
 
       case '[':
+        if (!node.state || !node.state.allowArray) {
+          throwError(i);
+        }
         if (node.state) {
           node.type += c;
           node.state.allowArray = false;
           node.state.allowName = false;
           node.state.readArray = true;
         }
-        if (!node.state || !node.state.allowArray) {
-          throwError(i);
-        }
 
         break;
 
       case ']':
+        if (!node.state || !node.state.readArray) {
+          throwError(i);
+        }
         if (node.state) {
           node.type += c;
 
           node.state.readArray = false;
           node.state.allowArray = true;
           node.state.allowName = true;
-        }
-        if (!node.state || !node.state.readArray) {
-          throwError(i);
         }
 
         break;
@@ -556,7 +560,7 @@ class CoderNumber extends Coder {
     this.signed = signed;
   }
 
-  encode(value: BN): Uint8Array {
+  encode(value: BN | number | string): Uint8Array {
     let result;
     try {
       let v = new BN(value);
@@ -578,7 +582,8 @@ class CoderNumber extends Coder {
         v = v.fromTwos(this.size * 8).toTwos(256);
       }
       const vString = v.toString('hex');
-      result = padZeros(arrayify(vString) || new Uint8Array(), 32);
+
+      result = padZeros(arrayify(`0x${vString}`) || new Uint8Array(), 32);
     } catch (error) {
       throwError('invalid number value', INVALID_ARGUMENT, {
         arg: this.localName,
@@ -602,10 +607,9 @@ class CoderNumber extends Coder {
       );
     }
     const junkLength = 32 - this.size;
-    const dataValue = hexlify(
-      data.slice(offset + junkLength, offset + 32),
-    ).substring(2);
-    let value = new BN(dataValue);
+    const dataValue = hexlify(data.slice(offset + junkLength, offset + 32));
+
+    let value = hexToBN(dataValue);
     // tslint:disable-next-line: prefer-conditional-expression
     if (this.signed) {
       value = value.fromTwos(this.size * 8);
@@ -669,10 +673,18 @@ class CoderFixedBytes extends Coder {
   }
 
   encode(value: Arrayish): Uint8Array {
-    const result = new Uint8Array(32);
+    const result = new Uint8Array(this.length);
 
     try {
-      const data = arrayify(value);
+      const arrayied = arrayify(value);
+      let data = null;
+      if (arrayied !== null) {
+        const valueToByte = hexlify(arrayied);
+        data = arrayify(bytesPadRight(valueToByte, this.length));
+      } else {
+        throw new Error('cannot arraify data');
+      }
+
       if (data === null || data.length !== this.length) {
         throw new Error('incorrect data length');
       }
@@ -684,7 +696,6 @@ class CoderFixedBytes extends Coder {
         value: error.value || value,
       });
     }
-
     return result;
   }
 
@@ -765,6 +776,7 @@ function _decodeDynamicBytes(
   }
 
   let length = uint256Coder.decode(data, offset).value;
+
   try {
     length = length.toNumber();
   } catch (error) {
@@ -880,6 +892,7 @@ function pack(coders: Coder[], values: any[]): Uint8Array {
       dynamicSize += alignSize(part.value.length);
     } else {
       staticSize += alignSize(part.value.length);
+      // todo : is it to be static size not alignSize?
     }
   });
 
@@ -1530,8 +1543,10 @@ export class AbiCoder {
 
       coders.push(getParamCoder(this.coerceFunc, typeObject));
     }, this);
-
-    return hexlify(new CoderTuple(this.coerceFunc, coders, '_').encode(values));
+    const encodedArray = new CoderTuple(this.coerceFunc, coders, '_').encode(
+      values,
+    );
+    return hexlify(encodedArray);
   }
 
   decode(types: Array<string | ParamType>, data: Arrayish): any {
