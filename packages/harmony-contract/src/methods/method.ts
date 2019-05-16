@@ -95,12 +95,12 @@ export class ContractMethod {
           blockNumber,
         ]),
       );
-      if (result.responseType === 'result') {
-        return this.afterCall(result);
+      if (result.responseType === 'raw') {
+        return this.afterCall(undefined);
       } else if (result.responseType === 'error') {
         throw result.message;
       } else {
-        return this.afterCall(undefined);
+        return this.afterCall(result);
       }
     } catch (error) {
       throw error;
@@ -116,12 +116,13 @@ export class ContractMethod {
           },
         ]),
       );
-      if (result.responseType === 'result') {
-        return result;
-      } else if (result.responseType === 'error') {
+
+      if (result.responseType === 'error') {
         throw result.message;
       } else if (result.responseType === 'raw') {
         throw new Error('Get estimateGas fail');
+      } else {
+        return result;
       }
     } catch (error) {
       throw error;

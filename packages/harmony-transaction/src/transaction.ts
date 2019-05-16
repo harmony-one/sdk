@@ -267,11 +267,9 @@ class Transaction {
     );
     if (res.responseType === 'error') {
       return false;
-    }
-    if (res.responseType === 'raw') {
+    } else if (res.responseType === 'raw') {
       return false;
-    }
-    if (res.responseType === 'result') {
+    } else {
       this.receipt = res;
       this.emitReceipt(this.receipt);
       this.id = res.transactionHash;

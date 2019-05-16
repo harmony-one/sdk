@@ -1,6 +1,6 @@
 const { Harmony } = require('@harmony/core');
 
-const harmony = new Harmony('https://localhost:9128');
+const harmony = new Harmony('https://localhost:9015');
 
 async function createAndEncrypt(words, index, password) {
   for (let i = 0; i < index; i++) {

@@ -40,14 +40,32 @@ for (var contractName in output.contracts[fileName]) {
   }
 }
 
-// const harmony = new Harmony('ws://localhost:18545', 1);
-const harmony = new Harmony(
-  // 'https://ropsten.infura.io/v3/4f3be7f5bbe644b7a8d95c151c8f52ec',
-  'wss://Ropsten.infura.io/ws/v3/4f3be7f5bbe644b7a8d95c151c8f52ec',
-  // 'https://testnet-rpc.thundercore.com:8544',
-  ChainType.Ethereum,
-  ChainID.Ropsten,
-);
+const Settings = {
+  Ropsten: {
+    http: 'https://ropsten.infura.io/v3/4f3be7f5bbe644b7a8d95c151c8f52ec',
+    ws: 'wss://ropsten.infura.io/ws/v3/4f3be7f5bbe644b7a8d95c151c8f52ec',
+    type: ChainType.Ethereum,
+    id: ChainID.Ropsten,
+  },
+  Rinkeby: {
+    http: 'https://rinkeby.infura.io/v3/4f3be7f5bbe644b7a8d95c151c8f52ec',
+    ws: 'wss://rinkeby.infura.io/ws/v3/4f3be7f5bbe644b7a8d95c151c8f52ec',
+    type: ChainType.Ethereum,
+    id: ChainID.Ropsten,
+  },
+  Ganache: {
+    http: 'http://localhost:18545',
+    ws: 'ws://localhost:18545',
+    type: ChainType.Ethereum,
+    id: ChainID.Ganache,
+  },
+};
+
+function useSetting(setting, providerType) {
+  return [setting[providerType], setting.type, setting.id];
+}
+
+const harmony = new Harmony(...useSetting(Settings.Ganache, 'ws'));
 
 const mne =
   'food response winner warfare indicate visual hundred toilet jealous okay relief tornado';
@@ -137,76 +155,3 @@ deployContract().then((deployed) => {
     }
   });
 });
-
-// harmony.blockchain.newPendingTransactions().then((p) => {
-//   console.log({ txns: p });
-//   p.onData(async (res) => {
-//     const txn = await harmony.blockchain.getTransactionByHash({
-//       txnHash: res.params.result,
-//     });
-//     console.log(txn);
-//   });
-// });
-
-// const getValue = async (address) => {
-//   const newContract = harmony.contracts.createContract(abi, address);
-
-//   const value = await newContract.methods
-//     .getValue()
-//     .call({ from: acc1.address });
-//   return value;
-// };
-
-// async function setValue(address) {
-//   const newContract = harmony.contracts.createContract(abi, address);
-
-//   await newContract.methods.setValue('KKKK').call({
-//     from: acc1.address,
-//   });
-// }
-
-// async function myfunc(address) {
-//   const newContract = harmony.contracts.createContract(abi, address);
-//   const result = await newContract.methods
-//     .myFunction()
-//     .call({ from: acc1.address });
-//   return result;
-// }
-
-// const contractAddress = '0xbdce52076e5d8b95cadf5086ff429e33ce641374';
-
-// const newContract = harmony.contracts.createContract(abi, contractAddress);
-
-// harmony.blockchain.getCode({ address: contractAddress }).then(console.log);
-
-// newContract.methods
-//   .myFunction()
-//   .call({ from: acc1.address, gas: new harmony.crypto.BN(30000000) }, 'latest')
-//   .then(console.log);
-
-// deployContract().then((deployed) => {
-//   deployed.methods
-//     .add(1, 3)
-//     .call()
-//     .then(console.log);
-// });
-
-// myContract.methods
-//   .getValue()
-//   .call({ from: acc1.address })
-//   .then((res) => {
-//     console.log(res);
-//   });
-// myContract.methods
-//   .setValue('shit!')
-//   .call({ from: acc1.address })
-//   .then((res) => {
-//     console.log(res);
-//   });
-
-// .on('confirmation', (e) => {
-//   console.log(e);
-// });
-// .then((res) => {
-//   console.log(res);
-// });
