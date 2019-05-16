@@ -25,7 +25,8 @@ async function main() {
 
   console.log(harmony.wallet.accounts);
 
-  console.log(harmony.wallet.signer);
+  console.log('---hint:now the signer has been encrypted');
+  console.log(harmony.wallet.signer.privateKey);
 }
 
 main();

@@ -1,5 +1,7 @@
+import { HttpProvider, Messenger } from '@harmony/network';
 import { Transaction, TxParams } from '@harmony/transaction';
 import { sign, keccak256, Signature } from '@harmony/crypto';
+import { ChainType } from '@harmony/utils';
 
 export const RLPSign = (
   transaction: Transaction,
@@ -15,3 +17,8 @@ export const RLPSign = (
   const signed = transaction.getRLPSigned(raw, signature);
   return [signature, signed];
 };
+
+export const defaultMessenger = new Messenger(
+  new HttpProvider('http://localhost:8545'),
+  ChainType.Harmony,
+);

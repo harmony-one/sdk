@@ -17,9 +17,11 @@
   },
   "license": "ISC",
   "dependencies": {
+    "@harmony/account": "^0.0.1",
     "@harmony/crypto": "^0.0.1",
+    "@harmony/network": "^0.0.1",
+    "@harmony/transaction": "^0.0.1",
     "@harmony/utils": "^0.0.1",
     "abi-decoder": "^1.2.0"
-    
   }
 }

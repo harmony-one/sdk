@@ -1,7 +1,7 @@
 import { isObject, isArray } from '@harmony/utils';
 import { BN } from '@harmony/crypto';
 
-export const jsonInterfaceMethodToString = (json: any) => {
+export const jsonInterfaceMethodToString = (json: any): string => {
   if (isObject(json) && json.name && json.name.includes('(')) {
     return json.name;
   }

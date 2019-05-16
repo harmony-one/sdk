@@ -16,6 +16,7 @@ const config = {
     // '<rootDir>/packages/laksa-core/__test__/?(*.)+(spec|test).js'
     // '<rootDir>/packages/laksa-core-contract/__test__/?(*.)+(spec|test).js'
     '<rootDir>/packages/harmony-crypto/__test__/?(*.)+(spec|test).ts',
+    '<rootDir>/packages/harmony-contract/__test__/?(*.)+(spec|test).ts',
     // '<rootDir>/packages/laksa-core-messenger/__test__/?(*.)+(spec|test).js'
     // '<rootDir>/packages/laksa-core-provider/__test__/?(*.)+(spec|test).js',
     // '<rootDir>/packages/laksa-core-transaction/__test__/?(*.)+(spec|test).js',

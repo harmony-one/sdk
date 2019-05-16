@@ -1,0 +1,103 @@
+import { Wallet } from '@harmony/account';
+// import { Emitter } from '@harmony/network';
+import { Transaction } from '@harmony/transaction';
+import { AbiCoder } from './abi/index';
+import { abiMapper } from './utils/mapper';
+import { ContractOptions } from './utils/options';
+import { AbiModel } from './models/types';
+import { AbiCoderClass } from './abi/api';
+import { MethodFactory } from './methods/methodFactory';
+import { EventFactory } from './events/eventFactory';
+import { ContractStatus } from './utils/status';
+
+// class Contract
+export class Contract {
+  methods: any;
+  events: any;
+  abiModel: any | AbiModel;
+  abiCoder: AbiCoderClass;
+  options: ContractOptions | any;
+  wallet: Wallet;
+  transaction?: Transaction;
+  status: ContractStatus;
+
+  constructor(
+    abi: any = [],
+    address: string = '0x',
+    options: ContractOptions = {},
+    wallet: Wallet,
+    status: ContractStatus = ContractStatus.INITIALISED,
+  ) {
+    // super();
+    this.abiCoder = AbiCoder();
+    this.abiModel = abiMapper(abi, this.abiCoder);
+    this.options = options;
+    this.address = this.options.address || address;
+    this.wallet = wallet;
+    this.methods = {};
+    this.events = {};
+    this.runMethodFactory();
+    this.runEventFactory();
+    this.status = status;
+    // tslint:disable-next-line: no-unused-expression
+  }
+  isInitialised() {
+    return this.status === ContractStatus.INITIALISED;
+  }
+  isSigned() {
+    return this.status === ContractStatus.SIGNED;
+  }
+  isSent() {
+    return this.status === ContractStatus.SENT;
+  }
+  isDeployed() {
+    return this.status === ContractStatus.DEPLOYED;
+  }
+  isRejected() {
+    return this.status === ContractStatus.REJECTED;
+  }
+  isCalled() {
+    return this.status === ContractStatus.CALLED;
+  }
+  setStatus(status: ContractStatus) {
+    this.status = status;
+  }
+
+  get jsonInterface(): any[] {
+    return this.abiModel;
+  }
+
+  set jsonInterface(value: any[]) {
+    this.abiModel = abiMapper(value, this.abiCoder);
+    this.runMethodFactory();
+    this.runEventFactory();
+  }
+
+  get address() {
+    return this.options.address || this.address;
+  }
+
+  set address(value: string) {
+    this.options.address = value;
+  }
+
+  get data() {
+    return this.options.data;
+  }
+
+  set data(value) {
+    this.options.data = value;
+  }
+
+  // deploy
+  deploy(options: any) {
+    return this.methods.contractConstructor(options);
+  }
+
+  runMethodFactory(): Contract {
+    return new MethodFactory(this).addMethodsToContract();
+  }
+  runEventFactory(): Contract {
+    return new EventFactory(this).addEventsToContract();
+  }
+}

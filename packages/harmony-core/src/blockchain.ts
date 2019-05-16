@@ -9,7 +9,6 @@ import {
   assertObject,
   AssertType,
   HarmonyCore,
-  ChainType,
   DefaultBlockParams,
 } from '@harmony/utils';
 
@@ -17,12 +16,10 @@ import { Transaction } from '@harmony/transaction';
 
 class Blockchain extends HarmonyCore {
   messenger: Messenger;
-  chainType: ChainType;
 
-  constructor(messenger: Messenger, chainType: ChainType = ChainType.Harmony) {
-    super(chainType);
+  constructor(messenger: Messenger) {
+    super(messenger.chainType);
     this.messenger = messenger;
-    this.chainType = chainType;
   }
   setMessenger(messenger: Messenger) {
     this.messenger = messenger;
@@ -298,6 +295,27 @@ class Blockchain extends HarmonyCore {
     if (txn.isPending) {
       return result;
     }
+  }
+  @assertObject({
+    to: ['isAddress', AssertType.optional],
+    data: ['isHex', AssertType.optional],
+  })
+  async estimateGas({ to, data }: { to: string; data: string }) {
+    const result = await this.messenger.send(
+      RPCMethod.EstimateGas,
+      [{ to, data }],
+      this.chainPrefix,
+    );
+    return this.getRpcResult(result);
+  }
+
+  async gasPrice() {
+    const result = await this.messenger.send(
+      RPCMethod.GasPrice,
+      [],
+      this.chainPrefix,
+    );
+    return this.getRpcResult(result);
   }
 
   newPendingTransactions() {

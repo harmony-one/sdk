@@ -1,4 +1,10 @@
-import { hexToNumber, isHex, isAddress, strip0x } from '@harmony/utils';
+import {
+  hexToNumber,
+  isHex,
+  isAddress,
+  strip0x,
+  ChainType,
+} from '@harmony/utils';
 import {
   decode,
   encode,
@@ -8,6 +14,7 @@ import {
   hexZeroPad,
   recoverAddress,
 } from '@harmony/crypto';
+import { HttpProvider, Messenger } from '@harmony/network';
 import { TxParams } from './types';
 
 export const transactionFields = [
@@ -127,3 +134,15 @@ export const sleep = async (ms: number) =>
   new Promise((resolve) => {
     setTimeout(() => resolve(), ms);
   });
+
+export enum TransactionEvents {
+  transactionHash = 'transactionHash',
+  error = 'error',
+  confirmation = 'confirmation',
+  receipt = 'receipt',
+}
+
+export const defaultMessenger = new Messenger(
+  new HttpProvider('http://localhost:8545'),
+  ChainType.Harmony,
+);

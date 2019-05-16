@@ -5,3 +5,6 @@ export {
   formatBytes32String,
   parseBytes32String,
 } from './abi/abiCoder';
+
+export { Contract } from './contract';
+export { ContractFactory } from './contractFactory';

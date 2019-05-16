@@ -8,12 +8,24 @@ import {
   splitSignature,
 } from '@harmony/crypto';
 import { add0xToString, numberToHex } from '@harmony/utils';
-import { Messenger, RPCMethod, getResultForData } from '@harmony/network';
+import {
+  Messenger,
+  RPCMethod,
+  getResultForData,
+  Emitter,
+} from '@harmony/network';
 import { TxParams, TxStatus, TransasctionReceipt } from './types';
-import { recover, transactionFields, sleep } from './utils';
+import {
+  recover,
+  transactionFields,
+  sleep,
+  TransactionEvents,
+  defaultMessenger,
+} from './utils';
 
 class Transaction {
-  messenger?: Messenger;
+  emitter: Emitter;
+  messenger: Messenger;
   txStatus: TxStatus;
   receipt?: TransasctionReceipt;
   private id: string;
@@ -32,9 +44,14 @@ class Transaction {
   // constructor
   constructor(
     params?: TxParams,
-    messenger?: Messenger,
+    messenger: Messenger = defaultMessenger,
     txStatus = TxStatus.INTIALIZED,
   ) {
+    this.messenger = messenger;
+    this.txStatus = txStatus;
+    this.emitter = new Emitter();
+
+    // intialize transaction
     this.id = params ? params.id : '0x';
     this.from = params ? params.from : '0x';
     this.nonce = params ? params.nonce : 0;
@@ -43,7 +60,8 @@ class Transaction {
     this.to = params ? params.to : '0x';
     this.value = params ? params.value : new BN(0);
     this.data = params ? params.data : '0x';
-    this.chainId = params ? params.chainId : 0;
+    // chainid should change with different network settings
+    this.chainId = params ? params.chainId : this.messenger.chainId;
     this.txnHash = params ? params.txnHash : '0x';
     this.unsignedTxnHash = params ? params.unsignedTxnHash : '0x';
     this.signature = params
@@ -55,8 +73,6 @@ class Transaction {
           v: 0,
         };
     this.receipt = params ? params.receipt : undefined;
-    this.messenger = messenger;
-    this.txStatus = txStatus;
   }
 
   setMessenger(messenger: Messenger) {
@@ -127,13 +143,15 @@ class Transaction {
   // use when using eth_sendTransaction
   get txPayload() {
     return {
-      from: this.from,
-      to: this.to,
-      gas: numberToHex(this.gasLimit),
-      gasPrice: numberToHex(this.gasPrice),
-      value: numberToHex(this.value),
-      data: this.data || '0x',
-      nonce: numberToHex(this.nonce),
+      from: this.txParams.from || '0x',
+      to: this.txParams.to || '0x',
+      gas: this.txParams.gasLimit ? numberToHex(this.txParams.gasLimit) : '0x',
+      gasPrice: this.txParams.gasPrice
+        ? numberToHex(this.txParams.gasPrice)
+        : '0x',
+      value: this.txParams.value ? numberToHex(this.txParams.value) : '0x',
+      data: this.txParams.data || '0x',
+      nonce: this.txParams.nonce ? numberToHex(this.nonce) : '0x',
     };
   }
 
@@ -223,16 +241,18 @@ class Transaction {
     const result = getResultForData(
       await this.messenger.send(RPCMethod.SendRawTransaction, this.txnHash),
     );
-
     // temporarilly hard coded
-    if (typeof result === 'string') {
+    if (typeof result === 'string' || result === null) {
       this.id = result;
+      this.emitTransactionHash(this.id);
       this.setTxStatus(TxStatus.PENDING);
       return [this, result];
     } else if (typeof result !== 'string' && result.responseType === 'error') {
+      this.emitConfirm(`transaction failed:${result.message}`);
       this.setTxStatus(TxStatus.REJECTED);
       return [this, `transaction failed:${result.message}`];
     } else {
+      this.emitError('transaction failed');
       throw new Error('transaction failed');
     }
   }
@@ -248,14 +268,26 @@ class Transaction {
     if (res.responseType === 'error') {
       return false;
     }
-    this.receipt = res;
-    this.id = res.transactionHash;
+    if (res.responseType === 'raw') {
+      return false;
+    }
+    if (res.responseType === 'result') {
+      this.receipt = res;
+      this.emitReceipt(this.receipt);
+      this.id = res.transactionHash;
 
-    this.txStatus =
-      this.receipt.status && this.receipt.status === '0x1'
-        ? TxStatus.CONFIRMED
-        : TxStatus.REJECTED;
-    return true;
+      if (this.receipt) {
+        if (this.receipt.status && this.receipt.status === '0x1') {
+          this.txStatus = TxStatus.CONFIRMED;
+        } else if (this.receipt.status && this.receipt.status === '0x0') {
+          this.txStatus = TxStatus.REJECTED;
+        }
+        return true;
+      } else {
+        this.txStatus = TxStatus.PENDING;
+        return false;
+      }
+    }
   }
 
   async confirm(
@@ -267,10 +299,12 @@ class Transaction {
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
       try {
         if (await this.trackTx(txHash)) {
+          this.emitConfirm(this.txStatus);
           return this;
         }
       } catch (err) {
         this.txStatus = TxStatus.REJECTED;
+        this.emitConfirm(this.txStatus);
         throw err;
       }
       if (attempt + 1 < maxAttempts) {
@@ -278,9 +312,23 @@ class Transaction {
       }
     }
     this.txStatus = TxStatus.REJECTED;
+    this.emitConfirm(this.txStatus);
     throw new Error(
       `The transaction is still not confirmed after ${maxAttempts} attempts.`,
     );
+  }
+
+  emitTransactionHash(transactionHash: string) {
+    this.emitter.emit(TransactionEvents.transactionHash, transactionHash);
+  }
+  emitReceipt(receipt: any) {
+    this.emitter.emit(TransactionEvents.receipt, receipt);
+  }
+  emitError(error: any) {
+    this.emitter.emit(TransactionEvents.error, error);
+  }
+  emitConfirm(data: any) {
+    this.emitter.emit(TransactionEvents.confirmation, data);
   }
 }
 export { Transaction };

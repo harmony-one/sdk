@@ -1,9 +1,12 @@
+import mitt from 'mitt';
+export { mitt };
 // provider related
 export * from './providers/baseProvider';
 export * from './providers/baseSocket';
 export * from './providers/defaultFetcher';
 export * from './providers/http';
 export * from './providers/ws';
+export * from './providers/emitter';
 // messenger and middlewares
 export * from './messenger/messenger';
 export * from './messenger/responseMiddleware';

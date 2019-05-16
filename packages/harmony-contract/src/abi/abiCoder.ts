@@ -79,7 +79,8 @@ export const defaultCoerceFunc: CoerceFunc = (
 ): any => {
   const match = type.match(paramTypeNumber);
   if (match && parseInt(match[2], 10) <= 48) {
-    return value.toNumber();
+    // return value.toNumber();
+    return value.toString('hex');
   }
   return value;
 };
@@ -1092,6 +1093,7 @@ class CoderTuple extends Coder {
   decode(data: Uint8Array, offset: number): DecodedResult {
     const result = unpack(this.coders, data, offset);
     result.value = this.coerceFunc(this.type, result.value);
+
     return result;
   }
 }
@@ -1563,11 +1565,11 @@ export class AbiCoder {
 
       coders.push(getParamCoder(this.coerceFunc, typeObject));
     }, this);
-
-    return new CoderTuple(this.coerceFunc, coders, '_').decode(
+    const result = new CoderTuple(this.coerceFunc, coders, '_').decode(
       arrayify(data) || new Uint8Array(),
       0,
     ).value;
+    return result;
   }
 }
 

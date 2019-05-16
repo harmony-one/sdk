@@ -14,7 +14,7 @@ import { isPrivateKey, add0xToString, hexToNumber } from '@harmony/utils';
 import { Transaction } from '@harmony/transaction';
 import { Messenger, RPCMethod, getResultForData } from '@harmony/network';
 import { Shards } from './types';
-import { RLPSign } from './utils';
+import { RLPSign, defaultMessenger } from './utils';
 
 class Account {
   /**
@@ -41,7 +41,7 @@ class Account {
   balance?: string = '0';
   nonce?: number = 0;
   shards: Shards = new Map().set('default', '');
-  messenger?: Messenger;
+  messenger: Messenger;
   encrypted: boolean = false;
 
   /**
@@ -60,7 +60,7 @@ class Account {
     return this.shards.size;
   }
 
-  constructor(key?: string, messenger?: Messenger) {
+  constructor(key?: string, messenger: Messenger = defaultMessenger) {
     this.messenger = messenger;
     if (!key) {
       this._new();
@@ -101,19 +101,19 @@ class Account {
    * @function getBalance get Account's balance
    * @return {type} {description}
    */
-  async getBalance(): Promise<object> {
+  async getBalance(blockNumber: string = 'latest'): Promise<object> {
     if (this.messenger) {
       const balance = getResultForData(
         await this.messenger.send(RPCMethod.GetBalance, [
           this.address,
-          'latest',
+          blockNumber,
         ]),
       );
 
       const nonce = getResultForData(
         await this.messenger.send(RPCMethod.GetTransactionCount, [
           this.address,
-          'latest',
+          blockNumber,
         ]),
       );
 
@@ -139,13 +139,14 @@ class Account {
     transaction: Transaction,
     updateNonce: boolean = false,
     encodeMode: string = 'rlp',
+    blockNumber: string = 'latest',
   ): Promise<Transaction> {
     if (!this.privateKey || !isPrivateKey(this.privateKey)) {
       throw new Error(`${this.privateKey} is not found or not correct`);
     }
     // let signed = '';
     if (updateNonce) {
-      const balanceObject: any = await this.getBalance();
+      const balanceObject: any = await this.getBalance(blockNumber);
       transaction.setParams({
         ...transaction.txParams,
         from: this.address || '0x',
@@ -166,7 +167,7 @@ class Account {
       return transaction;
     }
   }
-  setMessenger(messenger?: Messenger) {
+  setMessenger(messenger: Messenger) {
     this.messenger = messenger;
   }
   /**

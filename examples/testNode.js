@@ -1,14 +1,15 @@
 const { Harmony } = require('@harmony/core');
 // const ganache = require('ganache-cli');
 
-var port = 9128;
+var port = 9015;
 
 const url = `http://localhost:${port}`;
+// const url = `https://testnet-rpc.thundercore.com:8544`;
 
 // we use ChainType=0 to indicate we are using `harmony node`
 // if we set it to 1, we use `eth` as our settings.
 // here 0 is by default, which means we use harmony-node by default.
-const harmony = new Harmony(url, 0);
+const harmony = new Harmony(url);
 
 const mne =
   'food response winner warfare indicate visual hundred toilet jealous okay relief tornado';

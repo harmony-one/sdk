@@ -3,9 +3,10 @@ import { Messenger } from '@harmony/network';
 import { isPrivateKey, isAddress } from '@harmony/utils';
 import { Account } from './account';
 import { Transaction } from '@harmony/transaction';
+import { defaultMessenger } from './utils';
 
 class Wallet {
-  messenger?: Messenger;
+  messenger: Messenger;
   protected defaultSigner?: string;
   /**
    * @memberof Wallet
@@ -31,7 +32,7 @@ class Wallet {
     }
   }
 
-  constructor(messenger?: Messenger) {
+  constructor(messenger: Messenger = defaultMessenger) {
     this.messenger = messenger;
   }
   /**
@@ -220,6 +221,9 @@ class Wallet {
     transaction: Transaction,
     account?: Account,
     password?: string,
+    updateNonce: boolean = true,
+    encodeMode: string = 'rlp',
+    blockNumber: string = 'latest',
   ): Promise<Transaction> {
     const toSignWith = account || this.signer;
     if (!toSignWith) {
@@ -238,7 +242,12 @@ class Wallet {
           toSignWith.address,
           password,
         );
-        const signed = await decrypted.signTransaction(transaction, true);
+        const signed = await decrypted.signTransaction(
+          transaction,
+          updateNonce,
+          encodeMode,
+          blockNumber,
+        );
         await this.encryptAccount(toSignWith.address, password);
         return signed;
       } catch (error) {
@@ -250,7 +259,12 @@ class Wallet {
       toSignWith.address
     ) {
       try {
-        const signed = await toSignWith.signTransaction(transaction, true);
+        const signed = await toSignWith.signTransaction(
+          transaction,
+          updateNonce,
+          encodeMode,
+          blockNumber,
+        );
         return signed;
       } catch (error) {
         throw error;

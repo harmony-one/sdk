@@ -18,6 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "@harmony/account": "^0.0.1",
+    "@harmony/contract": "^0.0.1",
     "@harmony/crypto": "^0.0.1",
     "@harmony/network": "^0.0.1",
     "@harmony/transaction": "^0.0.1",

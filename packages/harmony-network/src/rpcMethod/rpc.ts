@@ -33,6 +33,28 @@ export const enum RPCMethod {
   SendRawTransaction = 'hmy_sendRawTransaction',
   // 16. hmy_subscribe
   Subscribe = 'hmy_subscribe',
+  // 17. hmy_getlogs
+  GetPastLogs = 'hmy_getLogs',
+  // 18. hmy_getWork
+  GetWork = 'hmy_getWork',
+  // 19. hmy_submitWork
+  // SubmitWork = 'hmy_submitWork',
+  // 20. hmy_getProof
+  GetProof = 'hmy_getProof',
+  // 21, hmy_getFilterChanges
+  GetFilterChanges = 'hmy_getFilterChanges',
+  // 22. hmy_newPendingTransactionFilter
+  NewPendingTransactionFilter = 'hmy_newPendingTransactionFilter',
+  // 23. hmy_newBlockFilter
+  NewBlockFilter = 'hmy_newBlockFilter',
+  // 24. hmy_newFilter
+  NewFilter = 'hmy_newFilter',
+  // 25. hmy_call
+  Call = 'hmy_call',
+  // 26. hmy_estimateGas
+  EstimateGas = 'hmy_estimateGas',
+  // 27. hmy_gasPrice
+  GasPrice = 'hmy_gasPrice',
 }
 
 export const enum RPCErrorCode {

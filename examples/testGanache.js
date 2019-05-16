@@ -1,4 +1,6 @@
 const { Harmony } = require('@harmony/core');
+const { ChainID, ChainType } = require('@harmony/utils');
+
 const ganache = require('ganache-cli');
 
 const port = 18545;
@@ -19,9 +21,11 @@ console.log('-------------------------------------');
 // if we set it to 1, we use `eth` as our settings.
 // here 1 is used, which means we use ethereum-node.
 
-const harmony = new Harmony(wsUrl, 1);
+console.log(ChainType);
 
-const wsHarmony = new Harmony(wsUrl, 1);
+const harmony = new Harmony(wsUrl, ChainType.Ethereum, ChainID.Geth);
+
+const wsHarmony = new Harmony(wsUrl, ChainType.Ethereum, ChainID.Geth);
 
 async function createAndEncrypt(words, index, password) {
   for (let i = 0; i < index; i++) {
@@ -40,6 +44,8 @@ console.log('-------------------------------------');
 const server = ganache.server({
   accounts: [{ secretKey: acc.privateKey, balance: '0x21e19e0c9bab2400000' }],
   default_balance_ether: 10000,
+  gasLimit: '0x3000000',
+  allowUnlimitedContractSize: true,
 });
 
 // now it is async time
@@ -234,5 +240,5 @@ server.listen(port, function(err, blockchain) {
       console.log(txn);
     });
   });
-  setTimeout(() => main(), 5000);
+  main();
 });

@@ -1,4 +1,4 @@
-import { HarmonyCore, ChainType, isString } from '@harmony/utils';
+import { HarmonyCore, ChainType, isString, ChainID } from '@harmony/utils';
 import { JsonRpc } from '../rpcMethod/rpcbuilder';
 import { ResponseMiddleware } from './responseMiddleware';
 import { HttpProvider } from '../providers/http';
@@ -46,9 +46,10 @@ class Messenger extends HarmonyCore {
   constructor(
     provider: HttpProvider | WSProvider,
     chainType: ChainType = ChainType.Harmony,
+    chainId: ChainID = ChainID.Default,
     config?: object,
   ) {
-    super(chainType);
+    super(chainType, chainId);
     /**
      * @var {Provider} provider
      * @memberof Messenger.prototype
@@ -181,7 +182,7 @@ class Messenger extends HarmonyCore {
   subscribe = async (
     method: RPCMethod | string,
     params?: string | any[] | undefined,
-    rpcPrefix?: string,
+    rpcPrefix: string = this.chainPrefix,
   ) => {
     let rpcMethod = method;
     if (rpcPrefix && isString(rpcPrefix) && rpcPrefix !== this.chainPrefix) {

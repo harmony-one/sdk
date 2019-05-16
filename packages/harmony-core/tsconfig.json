@@ -10,6 +10,7 @@
     { "path": "../harmony-crypto" },
     { "path": "../harmony-utils" },
     { "path": "../harmony-network" },
-    { "path": "../harmony-transaction" }
+    { "path": "../harmony-transaction" },
+    { "path": "../harmony-contract" }
   ]
 }
