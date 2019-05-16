@@ -70,7 +70,9 @@ node testNode.js
 # Test with `ganache-cli`
 ** ganache-cli runs in js file **, 
 
-In this case, we use geth to simulate the result, we don't need harmony's testnode running.
+In this case, we use ganache and ethereum's setting to simulate the result
+
+We don't need harmony's testnode running.
 
 1. open `examples`
 2. run `node testGanache.js`
