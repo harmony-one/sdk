@@ -13,7 +13,7 @@ packages/*/package-lock.json
 packages/*/babel.rc
 
 # lerna
-lerna.json
+# lerna.json
 lib/
 node/
 *.log
