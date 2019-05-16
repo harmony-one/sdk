@@ -1,6 +1,6 @@
 {
   "name": "@harmony/transaction",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "transaction package for harmony",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -14,9 +14,9 @@
   "author": "neeboo@firestack.one",
   "license": "ISC",
   "dependencies": {
-    "@harmony/core": "^0.0.1",
-    "@harmony/crypto": "^0.0.1",
-    "@harmony/network": "^0.0.1",
-    "@harmony/utils": "^0.0.1"
+    "@harmony/core": "^0.0.2",
+    "@harmony/crypto": "^0.0.2",
+    "@harmony/network": "^0.0.2",
+    "@harmony/utils": "^0.0.2"
   }
 }
