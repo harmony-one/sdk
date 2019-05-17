@@ -3,13 +3,13 @@
 // Then we can use `Contract.methods.call()` to call a method
 
 // Import Main Class
-const { Harmony } = require('@harmony/core');
-// You can import BN from `@harmony/crypto` or use `Harmony.utils.BN`instead
-const { BN } = require('@harmony/crypto');
+const { Harmony } = require('@harmony-js/core');
+// You can import BN from `@harmony-js/crypto` or use `Harmony.utils.BN`instead
+const { BN } = require('@harmony-js/crypto');
 // import more utils
-const { isArray, ChainType, ChainID } = require('@harmony/utils');
+const { isArray, ChainType, ChainID } = require('@harmony-js/utils');
 // contract specific utils
-const { toUtf8String, toUtf8Bytes } = require('@harmony/contract');
+const { toUtf8String, toUtf8Bytes } = require('@harmony-js/contract');
 
 // we import `fs` and `solc` to complile the contract. you can do it in another js file
 // but we show it here anyway.

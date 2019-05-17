@@ -1,6 +1,6 @@
-const { Harmony } = require('@harmony/core');
-const { ChainID, ChainType } = require('@harmony/utils');
-const { SubscribeBlockTracker } = require('@harmony/network');
+const { Harmony } = require('@harmony-js/core');
+const { ChainID, ChainType } = require('@harmony-js/utils');
+const { SubscribeBlockTracker } = require('@harmony-js/network');
 
 const ganache = require('ganache-cli');
 

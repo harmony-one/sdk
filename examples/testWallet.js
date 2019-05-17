@@ -1,4 +1,4 @@
-const { Harmony } = require('@harmony/core');
+const { Harmony } = require('@harmony-js/core');
 
 const harmony = new Harmony('https://localhost:9015');
 
