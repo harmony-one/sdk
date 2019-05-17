@@ -1,11 +1,11 @@
-import { Wallet } from '@harmony/account';
+import { Wallet } from '@harmony-js/account';
 import {
   TransactionFactory,
   Transaction,
   // TxStatus,
-} from '@harmony/transaction';
-import { RPCMethod, getResultForData, Emitter } from '@harmony/network';
-import { hexToNumber, hexToBN } from '@harmony/utils';
+} from '@harmony-js/transaction';
+import { RPCMethod, getResultForData, Emitter } from '@harmony-js/network';
+import { hexToNumber, hexToBN } from '@harmony-js/utils';
 import { AbiItemModel } from '../models/types';
 import { Contract } from '../contract';
 import { methodEncoder } from '../utils/encoder';

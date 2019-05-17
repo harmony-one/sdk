@@ -1,4 +1,4 @@
-import { isHex, hexToNumber } from '@harmony/utils';
+import { isHex, hexToNumber } from '@harmony-js/utils';
 import { Emitter } from '../providers/emitter';
 
 const sec = 1000;

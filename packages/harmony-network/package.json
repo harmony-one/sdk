@@ -1,5 +1,5 @@
 {
-  "name": "@harmony/network",
+  "name": "@harmony-js/network",
   "version": "0.0.6",
   "description": "network suites for harmony",
   "main": "dist/index.js",
@@ -17,11 +17,11 @@
   "author": "neeboo@firestack.one",
   "license": "ISC",
   "dependencies": {
-    "@harmony/core": "0.0.6",
-    "@harmony/utils": "0.0.6",
+    "@harmony-js/core": "0.0.6",
+    "@harmony-js/utils": "0.0.6",
     "cross-fetch": "^3.0.2",
     "mitt": "^1.1.3",
     "websocket": "^1.0.28"
   },
-  "gitHead": "fcb10df63e2369534342a235edd70091154e2390"
+  "gitHead": "4e20cd3884ccf4199497737b2bd474cb479c24c1"
 }

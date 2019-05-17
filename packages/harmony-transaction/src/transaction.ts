@@ -6,9 +6,9 @@ import {
   stripZeros,
   Signature,
   splitSignature,
-} from '@harmony/crypto';
-import { add0xToString, numberToHex } from '@harmony/utils';
-import { Messenger, RPCMethod, Emitter } from '@harmony/network';
+} from '@harmony-js/crypto';
+import { add0xToString, numberToHex } from '@harmony-js/utils';
+import { Messenger, RPCMethod, Emitter } from '@harmony-js/network';
 import { TxParams, TxStatus, TransasctionReceipt } from './types';
 import {
   recover,

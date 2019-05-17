@@ -1,4 +1,4 @@
-import { isWs } from '@harmony/utils';
+import { isWs } from '@harmony-js/utils';
 import mitt from 'mitt';
 import { BaseProvider } from './baseProvider';
 

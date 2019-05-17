@@ -1,6 +1,6 @@
 import { AbiCoder } from '../src/abi/abiCoder';
-import { BN } from '@harmony/crypto';
-import { isArray } from '@harmony/utils';
+import { BN } from '@harmony-js/crypto';
+import { isArray } from '@harmony-js/utils';
 import { abis } from './fixtures/abiv2';
 
 function getValues(object: any, format?: any, named?: any): any {

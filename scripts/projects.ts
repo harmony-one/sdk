@@ -65,7 +65,7 @@ export const projects = fs
     const pkgGlobalName = camelCase(pkgName);
     const pkgPath = path.join(packagesPath, p);
     const pkgSrc = path.join(pkgPath, 'src');
-    const pkgScopedName = `@harmony/${p.replace('harmony-', '')}`;
+    const pkgScopedName = `@harmony-js/${p.replace('harmony-', '')}`;
     const pkgDist = path.join(pkgPath, 'dist');
 
     const pkgUmd = path.join(pkgDist, 'index.umd.js');

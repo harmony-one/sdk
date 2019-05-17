@@ -1,5 +1,5 @@
-import { getContractAddress } from '@harmony/crypto';
-import { Messenger } from '@harmony/network';
+import { getContractAddress } from '@harmony-js/crypto';
+import { Messenger } from '@harmony-js/network';
 import { Transaction } from './transaction';
 import { TxParams, TxStatus } from './types';
 

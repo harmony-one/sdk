@@ -3,16 +3,16 @@ import {
   Messenger,
   ResponseMiddleware,
   WSProvider,
-} from '@harmony/network';
+} from '@harmony-js/network';
 
 import {
   assertObject,
   AssertType,
   HarmonyCore,
   DefaultBlockParams,
-} from '@harmony/utils';
+} from '@harmony-js/utils';
 
-import { Transaction } from '@harmony/transaction';
+import { Transaction } from '@harmony-js/transaction';
 
 class Blockchain extends HarmonyCore {
   messenger: Messenger;

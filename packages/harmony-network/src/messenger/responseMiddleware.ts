@@ -1,5 +1,5 @@
 import { RPCResponseBody } from '../types';
-import { isObject } from '@harmony/utils';
+import { isObject } from '@harmony-js/utils';
 /**
  * @class ResponseMiddleware
  * @description Response middleware of RPC

@@ -1,4 +1,4 @@
-import { HarmonyCore, ChainType, isString, ChainID } from '@harmony/utils';
+import { HarmonyCore, ChainType, isString, ChainID } from '@harmony-js/utils';
 import { JsonRpc } from '../rpcMethod/rpcbuilder';
 import { ResponseMiddleware } from './responseMiddleware';
 import { HttpProvider } from '../providers/http';

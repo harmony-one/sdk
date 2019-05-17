@@ -1,6 +1,6 @@
-import { Wallet } from '@harmony/account';
-// import { Emitter } from '@harmony/network';
-import { Transaction } from '@harmony/transaction';
+import { Wallet } from '@harmony-js/account';
+// import { Emitter } from '@harmony-js/network';
+import { Transaction } from '@harmony-js/transaction';
 import { AbiCoder } from './abi/index';
 import { abiMapper } from './utils/mapper';
 import { ContractOptions } from './utils/options';

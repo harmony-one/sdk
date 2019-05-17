@@ -5,7 +5,7 @@ export const basicType = {
   float: 0.1,
   text: 'testString',
   jsonString:
-    '{"name":"@harmony/utils","version":"0.0.48","description":"utils for harmony"}',
+    '{"name":"@harmony-js/utils","version":"0.0.48","description":"utils for harmony"}',
   hexNumber: 0x123,
   hexString: '0x123',
   bool: true,

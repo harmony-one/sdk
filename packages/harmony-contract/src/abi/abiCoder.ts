@@ -18,8 +18,8 @@ import {
   Arrayish,
   checkNew,
   bytesPadRight,
-} from '@harmony/crypto';
-import { hexToBN } from '@harmony/utils';
+} from '@harmony-js/crypto';
+import { hexToBN } from '@harmony-js/utils';
 
 const NegativeOne: BN = new BN(-1);
 const One: BN = new BN(1);

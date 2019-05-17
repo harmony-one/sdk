@@ -1,5 +1,5 @@
 import { AbiItemModel } from '../models/types';
-import { Messenger, RPCMethod, WSProvider } from '@harmony/network';
+import { Messenger, RPCMethod, WSProvider } from '@harmony-js/network';
 import { Contract } from '../contract';
 import { decode as eventLogDecoder } from '../utils/decoder';
 import { inputLogFormatter, outputLogFormatter } from '../utils/formatter';

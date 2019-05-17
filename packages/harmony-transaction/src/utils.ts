@@ -4,7 +4,7 @@ import {
   isAddress,
   strip0x,
   ChainType,
-} from '@harmony/utils';
+} from '@harmony-js/utils';
 import {
   decode,
   encode,
@@ -13,8 +13,8 @@ import {
   BN,
   hexZeroPad,
   recoverAddress,
-} from '@harmony/crypto';
-import { HttpProvider, Messenger } from '@harmony/network';
+} from '@harmony-js/crypto';
+import { HttpProvider, Messenger } from '@harmony-js/network';
 import { TxParams } from './types';
 
 export const transactionFields = [

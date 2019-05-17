@@ -1,4 +1,4 @@
-import { isArray } from '@harmony/utils';
+import { isArray } from '@harmony-js/utils';
 import { AbiItemModel, AbiOutput, AbiInput } from './types';
 
 export class AbiItem {

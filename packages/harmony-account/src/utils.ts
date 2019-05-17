@@ -1,7 +1,7 @@
-import { HttpProvider, Messenger } from '@harmony/network';
-import { Transaction, TxParams } from '@harmony/transaction';
-import { sign, keccak256, Signature } from '@harmony/crypto';
-import { ChainType } from '@harmony/utils';
+import { HttpProvider, Messenger } from '@harmony-js/network';
+import { Transaction, TxParams } from '@harmony-js/transaction';
+import { sign, keccak256, Signature } from '@harmony-js/crypto';
+import { ChainType } from '@harmony-js/utils';
 
 export const RLPSign = (
   transaction: Transaction,

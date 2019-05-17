@@ -1,6 +1,6 @@
 import { AbiCoder as ABICoder, ParamType, toUtf8Bytes } from './abiCoder';
-import { isObject, isArray } from '@harmony/utils';
-import { keccak256, Arrayish } from '@harmony/crypto';
+import { isObject, isArray } from '@harmony-js/utils';
+import { keccak256, Arrayish } from '@harmony-js/crypto';
 import { jsonInterfaceMethodToString, bnToString } from './utils';
 
 export class AbiCoderClass {

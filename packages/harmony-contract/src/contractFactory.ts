@@ -1,4 +1,4 @@
-import { Wallet } from '@harmony/account';
+import { Wallet } from '@harmony-js/account';
 import { Contract } from './contract';
 import { ContractOptions } from './utils/options';
 

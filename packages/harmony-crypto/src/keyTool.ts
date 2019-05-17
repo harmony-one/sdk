@@ -4,7 +4,7 @@ import * as errors from './errors';
 
 import { keccak256 } from './keccak256';
 import { randomBytes } from './random';
-import { isPrivateKey, strip0x } from '@harmony/utils';
+import { isPrivateKey, strip0x } from '@harmony-js/utils';
 import { encode } from './rlp';
 
 const secp256k1 = elliptic.ec('secp256k1');

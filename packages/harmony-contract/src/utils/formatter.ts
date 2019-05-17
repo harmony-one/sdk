@@ -3,14 +3,14 @@ import {
   isHexString,
   keccak256,
   toChecksumAddress,
-} from '@harmony/crypto';
+} from '@harmony-js/crypto';
 import {
   numberToHex,
   isArray,
   hexToNumber,
   isString,
   isAddress,
-} from '@harmony/utils';
+} from '@harmony-js/utils';
 import { toUtf8Bytes } from '../abi/abiCoder';
 
 export const inputLogFormatter = (options: any) => {

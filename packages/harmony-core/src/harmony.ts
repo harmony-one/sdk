@@ -1,10 +1,10 @@
-import * as crypto from '@harmony/crypto';
-import * as utils from '@harmony/utils';
+import * as crypto from '@harmony-js/crypto';
+import * as utils from '@harmony-js/utils';
 
-import { HttpProvider, Messenger, WSProvider } from '@harmony/network';
-import { TransactionFactory, Transaction } from '@harmony/transaction';
-import { ContractFactory, Contract } from '@harmony/contract';
-import { Wallet, Account } from '@harmony/account';
+import { HttpProvider, Messenger, WSProvider } from '@harmony-js/network';
+import { TransactionFactory, Transaction } from '@harmony-js/transaction';
+import { ContractFactory, Contract } from '@harmony-js/contract';
+import { Wallet, Account } from '@harmony-js/account';
 import { Blockchain } from './blockchain';
 
 export class Harmony extends utils.HarmonyCore {
