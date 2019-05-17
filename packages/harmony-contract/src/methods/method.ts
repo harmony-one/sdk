@@ -89,18 +89,19 @@ export class ContractMethod {
         };
       });
 
-      const result = getResultForData(
-        await this.wallet.messenger.send(RPCMethod.Call, [
-          this.transaction.txPayload,
-          blockNumber,
-        ]),
-      );
-      if (result.responseType === 'raw') {
-        return this.afterCall(undefined);
-      } else if (result.responseType === 'error') {
+      const result = await this.wallet.messenger.send(RPCMethod.Call, [
+        this.transaction.txPayload,
+        blockNumber,
+      ]);
+
+      if (result.isError()) {
         throw result.message;
-      } else {
-        return this.afterCall(result);
+      } else if (result.isResult()) {
+        if (result.result === null) {
+          return this.afterCall(undefined);
+        } else {
+          return this.afterCall(result.result);
+        }
       }
     } catch (error) {
       throw error;
