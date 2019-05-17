@@ -1,6 +1,6 @@
 {
   "name": "@harmony/account",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "account and wallet for harmony",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -17,11 +17,11 @@
   "author": "neeboo@firestack.one",
   "license": "ISC",
   "dependencies": {
-    "@harmony/core": "0.0.4",
-    "@harmony/crypto": "0.0.4",
-    "@harmony/network": "0.0.4",
-    "@harmony/transaction": "0.0.4",
-    "@harmony/utils": "0.0.4"
+    "@harmony/core": "0.0.5",
+    "@harmony/crypto": "0.0.5",
+    "@harmony/network": "0.0.5",
+    "@harmony/transaction": "0.0.5",
+    "@harmony/utils": "0.0.5"
   },
   "gitHead": "75235c58b12b8fe512165903008c469ebf46e803"
 }
