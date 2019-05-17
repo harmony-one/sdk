@@ -253,11 +253,12 @@ export class Unit {
     return new Unit(str).asTether();
   }
 
-  wei?: BN;
+  wei: BN;
   unit: BN | string;
 
   constructor(str: BN | string) {
     this.unit = str;
+    this.wei = new BN(this.unit);
   }
 
   asWei() {

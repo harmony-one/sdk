@@ -16,5 +16,6 @@
   "dependencies": {
     "@types/bn.js": "^4.11.3",
     "bn.js": "^4.11.8"
-  }
+  },
+  "gitHead": "cf2beed66ef7a97f223311349ba7547bbc927402"
 }

@@ -55,6 +55,10 @@ export const enum RPCMethod {
   EstimateGas = 'hmy_estimateGas',
   // 27. hmy_gasPrice
   GasPrice = 'hmy_gasPrice',
+  // 28. hmy_blockNumber
+  BlockNumber = 'hmy_blockNumber',
+  // 29. hmy_unsubscribe
+  UnSubscribe = 'hmy_unsubscribe',
 }
 
 export const enum RPCErrorCode {

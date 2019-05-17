@@ -18,5 +18,6 @@
     "@harmony/crypto": "^0.0.2",
     "@harmony/network": "^0.0.2",
     "@harmony/utils": "^0.0.2"
-  }
+  },
+  "gitHead": "cf2beed66ef7a97f223311349ba7547bbc927402"
 }

@@ -8,12 +8,7 @@ import {
   splitSignature,
 } from '@harmony/crypto';
 import { add0xToString, numberToHex } from '@harmony/utils';
-import {
-  Messenger,
-  RPCMethod,
-  getResultForData,
-  Emitter,
-} from '@harmony/network';
+import { Messenger, RPCMethod, Emitter } from '@harmony/network';
 import { TxParams, TxStatus, TransasctionReceipt } from './types';
 import {
   recover,
@@ -238,19 +233,21 @@ class Transaction {
     if (!this.messenger) {
       throw new Error('Messenger not found');
     }
-    const result = getResultForData(
-      await this.messenger.send(RPCMethod.SendRawTransaction, this.txnHash),
+    const res = await this.messenger.send(
+      RPCMethod.SendRawTransaction,
+      this.txnHash,
     );
+
     // temporarilly hard coded
-    if (typeof result === 'string' || result === null) {
-      this.id = result;
+    if (res.isResult()) {
+      this.id = res.result;
       this.emitTransactionHash(this.id);
       this.setTxStatus(TxStatus.PENDING);
-      return [this, result];
-    } else if (typeof result !== 'string' && result.responseType === 'error') {
-      this.emitConfirm(`transaction failed:${result.message}`);
+      return [this, res.result];
+    } else if (res.isError()) {
+      this.emitConfirm(`transaction failed:${res.message}`);
       this.setTxStatus(TxStatus.REJECTED);
-      return [this, `transaction failed:${result.message}`];
+      return [this, `transaction failed:${res.message}`];
     } else {
       this.emitError('transaction failed');
       throw new Error('transaction failed');
@@ -262,17 +259,15 @@ class Transaction {
       throw new Error('Messenger not found');
     }
     // TODO: regex validation for txHash so we don't get garbage
-    const res: TransasctionReceipt = getResultForData(
-      await this.messenger.send(RPCMethod.GetTransactionReceipt, txHash),
+    const res = await this.messenger.send(
+      RPCMethod.GetTransactionReceipt,
+      txHash,
     );
-    if (res.responseType === 'error') {
-      return false;
-    } else if (res.responseType === 'raw') {
-      return false;
-    } else {
-      this.receipt = res;
+
+    if (res.isResult() && res.result !== null) {
+      this.receipt = res.result;
       this.emitReceipt(this.receipt);
-      this.id = res.transactionHash;
+      this.id = res.result.transactionHash;
 
       if (this.receipt) {
         if (this.receipt.status && this.receipt.status === '0x1') {
@@ -285,6 +280,8 @@ class Transaction {
         this.txStatus = TxStatus.PENDING;
         return false;
       }
+    } else {
+      return false;
     }
   }
 

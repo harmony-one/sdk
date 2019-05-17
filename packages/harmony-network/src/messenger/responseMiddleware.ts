@@ -1,4 +1,5 @@
 import { RPCResponseBody } from '../types';
+import { isObject } from '@harmony/utils';
 /**
  * @class ResponseMiddleware
  * @description Response middleware of RPC
@@ -9,26 +10,51 @@ class ResponseMiddleware {
   result: any;
   error: any;
   raw: any;
+  responseType: string;
   constructor(ResponseBody: RPCResponseBody<any, any>) {
     this.result = ResponseBody.result;
     this.error = ResponseBody.error;
     this.raw = ResponseBody;
+    this.responseType = this.getResponseType();
   }
 
   get getResult() {
-    return typeof this.result === 'string'
-      ? this.result
-      : { ...this.result, responseType: 'result' };
+    return isObject(this.result)
+      ? { ...this.result, responseType: 'result' }
+      : this.result;
   }
 
   get getError() {
-    return typeof this.error === 'string'
-      ? this.error
-      : { ...this.error, responseType: 'error' };
+    return isObject(this.error)
+      ? { ...this.error, responseType: 'error' }
+      : this.error;
   }
 
   get getRaw() {
     return { ...this.raw, responseType: 'raw' };
+  }
+
+  getResponseType(): string {
+    if (this.error) {
+      return 'error';
+    } else if (
+      this.result ||
+      (this.result === null && this.result !== undefined)
+    ) {
+      return 'result';
+    } else {
+      return 'raw';
+    }
+  }
+
+  isError(): boolean {
+    return this.responseType === 'error';
+  }
+  isResult(): boolean {
+    return this.responseType === 'result';
+  }
+  isRaw(): boolean {
+    return this.responseType === 'raw';
   }
 }
 export { ResponseMiddleware };

@@ -19,5 +19,6 @@
     "cross-fetch": "^3.0.2",
     "mitt": "^1.1.3",
     "websocket": "^1.0.28"
-  }
+  },
+  "gitHead": "cf2beed66ef7a97f223311349ba7547bbc927402"
 }

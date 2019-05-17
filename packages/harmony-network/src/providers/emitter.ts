@@ -61,6 +61,15 @@ class Emitter {
     this.emitter.on('data', data);
     this.removeEventListener('*');
   }
+  listenerCount(listenKey: any) {
+    let count = 0;
+    Object.keys(this.handlers).forEach((val) => {
+      if (listenKey === val) {
+        count += 1;
+      }
+    });
+    return count;
+  }
 }
 
 export { Emitter };

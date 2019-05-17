@@ -1,9 +1,23 @@
+// This example shows how you extract a contract's ABI
+// And how to use `Contract.deploy().send()` to deploy the contract
+// Then we can use `Contract.methods.call()` to call a method
+
+// Import Main Class
 const { Harmony } = require('@harmony/core');
+// You can import BN from `@harmony/crypto` or use `Harmony.utils.BN`instead
 const { BN } = require('@harmony/crypto');
+// import more utils
 const { isArray, ChainType, ChainID } = require('@harmony/utils');
+// contract specific utils
+const { toUtf8String, toUtf8Bytes } = require('@harmony/contract');
+
+// we import `fs` and `solc` to complile the contract. you can do it in another js file
+// but we show it here anyway.
 const fs = require('fs');
 const solc = require('solc');
 
+// consturct the input function, here the solidity file lives in `./contracts/`
+// we just type the file name as inpnut
 function constructInput(file) {
   const content = fs.readFileSync(`./contracts/${file}`, { encoding: 'utf8' });
   const input = {
@@ -21,12 +35,16 @@ function constructInput(file) {
   input.sources[file] = { content };
   return JSON.stringify(input);
 }
+
+// we try to comple this solidty file
 const fileName = 'MyContract.sol';
 
+// now we get the output
 const output = JSON.parse(solc.compile(constructInput(fileName)));
 
 let abi;
 let bin;
+
 // `output` here contains the JSON output as specified in the documentation
 for (var contractName in output.contracts[fileName]) {
   let contractAbi = output.contracts[fileName][contractName].abi;
@@ -39,6 +57,8 @@ for (var contractName in output.contracts[fileName]) {
     bin = contractBin;
   }
 }
+
+// To test with different settings, here is some config.
 
 const Settings = {
   Ropsten: {
@@ -61,18 +81,27 @@ const Settings = {
   },
 };
 
+// a function that will map the setting to harmony class constructor inputs
 function useSetting(setting, providerType) {
   return [setting[providerType], setting.type, setting.id];
 }
 
-const harmony = new Harmony(...useSetting(Settings.Ganache, 'ws'));
+// simply change `Ropsten` to `Rinkeby` to test with different testnet
+// and switch `ws` or `http` as RPC provider
 
+const harmony = new Harmony(...useSetting(Settings.Ropsten, 'ws'));
+
+// import our preset mnes
 const mne =
   'food response winner warfare indicate visual hundred toilet jealous okay relief tornado';
+
+// now we have the mnes added to wallet
 const acc1 = harmony.wallet.addByMnemonic(mne, 0);
 
+// now we create contract using extracted abi
 const myContract = harmony.contracts.createContract(abi);
 
+// first we get the account's balance to see if we have enough token on the testnet
 acc1.getBalance().then((res) => {
   console.log(`-- hint: account balance of ${acc1.address}`);
   console.log(``);
@@ -81,16 +110,29 @@ acc1.getBalance().then((res) => {
   console.log(``);
 });
 
+// a deploy contract function
 const deployContract = async () => {
+  //`Contract.deploy().send()`
   const deployed = await myContract
     .deploy({
+      // the data key puts in the bin file with `0x` prefix
       data: `0x${bin}`,
+      // we don't have any initial arguments to put in of this contract, so we leave blank
       arguments: [],
     })
     .send({
-      gasLimit: new harmony.crypto.BN('1000000'),
+      // gasLimit defines the max value that blockchain will consume
+      // here we show that you can use Unit as calculator
+      // because we use BN as our save integer as default input
+      // use Unit converter is much safer
+      gasLimit: new harmony.utils.Unit('1000000').asWei().toWei(),
+      // gasPrice defines how many weis should be consumed each gas
+      // you can use `new BN(string)` directly,
+      // if you are sure about the amount is calculated in `wei`
       gasPrice: new harmony.crypto.BN('10000'),
     })
+    // we use event emitter to listen the result when event happen
+    // here comes in the `transactionHash`
     .on('transactionHash', (transactionHash) => {
       console.log(`-- hint: we got Transaction Hash`);
       console.log(``);
@@ -110,6 +152,7 @@ const deployContract = async () => {
           console.log(``);
         });
     })
+    // when we get receipt, it will emmit
     .on('receipt', (receipt) => {
       console.log(`-- hint: we got transaction receipt`);
       console.log(``);
@@ -117,6 +160,8 @@ const deployContract = async () => {
       console.log(``);
       console.log(``);
     })
+    // the http and websocket provider will be poll result and try get confirmation from time to time.
+    // when `confirmation` comes in, it will be emitted
     .on('confirmation', (confirmation) => {
       console.log(`-- hint: the transaction is`);
       console.log(``);
@@ -124,8 +169,9 @@ const deployContract = async () => {
       console.log(``);
       console.log(``);
     })
+    // if something wrong happens, the error will be emitted
     .on('error', (error) => {
-      console.log(`-- hint: someting wrong happens`);
+      console.log(`-- hint: something wrong happens`);
       console.log(``);
       console.log(error);
       console.log(``);
@@ -134,7 +180,10 @@ const deployContract = async () => {
   return deployed;
 };
 
+// now we call our deploy contract function
 deployContract().then((deployed) => {
+  // after the contract is deployed ,we can get contract information
+  // first we can get the contract Code
   harmony.blockchain.getCode({ address: deployed.address }).then((res) => {
     if (res.result) {
       console.log(`--hint: contract :${deployed.address}--`);
@@ -142,6 +191,8 @@ deployContract().then((deployed) => {
       console.log(`${res.result}`);
       console.log(``);
       console.log(``);
+      console.log(toUtf8String(res.result));
+
       deployed.methods
         .myFunction()
         .call()

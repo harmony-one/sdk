@@ -12,7 +12,7 @@ import {
 
 import { isPrivateKey, add0xToString, hexToNumber } from '@harmony/utils';
 import { Transaction } from '@harmony/transaction';
-import { Messenger, RPCMethod, getResultForData } from '@harmony/network';
+import { Messenger, RPCMethod } from '@harmony/network';
 import { Shards } from './types';
 import { RLPSign, defaultMessenger } from './utils';
 
@@ -102,29 +102,37 @@ class Account {
    * @return {type} {description}
    */
   async getBalance(blockNumber: string = 'latest'): Promise<object> {
-    if (this.messenger) {
-      const balance = getResultForData(
-        await this.messenger.send(RPCMethod.GetBalance, [
+    try {
+      if (this.messenger) {
+        const balance = await this.messenger.send(RPCMethod.GetBalance, [
           this.address,
           blockNumber,
-        ]),
-      );
+        ]);
 
-      const nonce = getResultForData(
-        await this.messenger.send(RPCMethod.GetTransactionCount, [
+        const nonce = await this.messenger.send(RPCMethod.GetTransactionCount, [
           this.address,
           blockNumber,
-        ]),
-      );
+        ]);
+        if (balance.isError()) {
+          throw balance.error.message;
+        }
+        if (nonce.isError()) {
+          throw nonce.error.message;
+        }
 
-      this.balance = hexToNumber(balance);
-      this.nonce = Number.parseInt(hexToNumber(nonce), 10);
+        this.balance = hexToNumber(balance.result);
+        this.nonce = Number.parseInt(hexToNumber(nonce.result), 10);
+      } else {
+        throw new Error('No Messenger found');
+      }
+      return {
+        balance: this.balance,
+        nonce: this.nonce,
+        shards: this.shards,
+      };
+    } catch (error) {
+      throw error;
     }
-    return {
-      balance: this.balance,
-      nonce: this.nonce,
-      shards: this.shards,
-    };
   }
 
   /**

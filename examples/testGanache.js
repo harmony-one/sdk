@@ -1,5 +1,6 @@
 const { Harmony } = require('@harmony/core');
 const { ChainID, ChainType } = require('@harmony/utils');
+const { SubscribeBlockTracker } = require('@harmony/network');
 
 const ganache = require('ganache-cli');
 
@@ -232,13 +233,19 @@ async function main() {
 }
 
 server.listen(port, function(err, blockchain) {
-  harmony.blockchain.newPendingTransactions().then((p) => {
-    p.onData(async (res) => {
-      const txn = await harmony.blockchain.getTransactionByHash({
-        txnHash: res.params.result,
-      });
-      console.log(txn);
-    });
-  });
+  // harmony.blockchain.newPendingTransactions().then((p) => {
+  //   p.onData(async (res) => {
+  //     const txn = await harmony.blockchain.getTransactionByHash({
+  //       txnHash: res.params.result,
+  //     });
+  //     console.log(txn);
+  //   });
+  // });
+  const blockTracker = new SubscribeBlockTracker(harmony.messenger);
+  console.log(`--------------------asdfasdfasfasdfasdf----------------`);
+  const blocks = [];
+  blockTracker.on('latest', (block) => blocks.push(block));
+  console.log(blockTracker.isRunning());
+  console.log(`--------------------asdfasdfasfasdfasdf----------------`);
   main();
 });
