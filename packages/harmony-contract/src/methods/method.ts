@@ -4,7 +4,7 @@ import {
   Transaction,
   // TxStatus,
 } from '@harmony/transaction';
-import { RPCMethod, getResultForData } from '@harmony/network';
+import { RPCMethod, getResultForData, Emitter } from '@harmony/network';
 import { hexToNumber, hexToBN } from '@harmony/utils';
 import { AbiItemModel } from '../models/types';
 import { Contract } from '../contract';
@@ -36,7 +36,7 @@ export class ContractMethod {
 
     // this.addEventListeners();
   }
-  send(params: any) {
+  send(params: any): Emitter {
     try {
       this.transaction = this.transaction.map((tx: any) => {
         return { ...tx, ...params };
@@ -128,7 +128,14 @@ export class ContractMethod {
       throw error;
     }
   }
-  encodeABI() {}
+
+  encodeABI() {
+    return methodEncoder(
+      this.contract.abiCoder,
+      this.abiItem,
+      this.contract.data,
+    );
+  }
 
   protected async signTransaction() {
     try {
@@ -188,7 +195,7 @@ export class ContractMethod {
       const txObject = {
         ...this.params[0],
         to: this.contract.address,
-        data: this.encodeData(),
+        data: this.encodeABI(),
       };
 
       const result = new TransactionFactory(this.wallet.messenger).newTx(
@@ -198,14 +205,6 @@ export class ContractMethod {
     } else {
       throw new Error('Messenger is not found');
     }
-  }
-
-  protected encodeData() {
-    return methodEncoder(
-      this.contract.abiCoder,
-      this.abiItem,
-      this.contract.data,
-    );
   }
 
   protected afterCall(response: any) {
