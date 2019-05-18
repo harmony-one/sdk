@@ -21,10 +21,9 @@ describe('test Blockchain', () => {
     fetch.resetMocks();
   });
   it('should test get block methods', async () => {
-    const chainType = 0;
     // test constructors
     const bc = new Blockchain(messenger);
-    const bc2 = new Blockchain(messenger, chainType);
+    const bc2 = new Blockchain(messenger);
     // test setMessenger
     bc2.setMessenger(messenger);
 

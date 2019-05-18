@@ -19,6 +19,7 @@ class Emitter {
       this.reject = reject;
     });
     this.then = this.promise.then.bind(this.promise);
+    this.emit('newListener', 'newListener');
   }
 
   resetHandlers() {

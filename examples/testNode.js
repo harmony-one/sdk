@@ -1,4 +1,4 @@
-const { Harmony } = require('@harmony-js/core');
+const { Harmony } = require('../packages/harmony-core/dist');
 // const ganache = require('ganache-cli');
 
 var port = 9015;
