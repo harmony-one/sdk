@@ -1,6 +1,6 @@
 {
   "name": "@harmony-js/contract",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "contract libraries for harmony",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -17,11 +17,11 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@harmony-js/account": "0.0.9",
-    "@harmony-js/crypto": "0.0.9",
-    "@harmony-js/network": "0.0.9",
-    "@harmony-js/transaction": "0.0.9",
-    "@harmony-js/utils": "0.0.9",
+    "@harmony-js/account": "0.0.10",
+    "@harmony-js/crypto": "0.0.10",
+    "@harmony-js/network": "0.0.10",
+    "@harmony-js/transaction": "0.0.10",
+    "@harmony-js/utils": "0.0.10",
     "abi-decoder": "^1.2.0"
   },
   "gitHead": "ce4ee6889f5781f7468c8d18b08a311b5d9df014"
