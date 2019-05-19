@@ -37,7 +37,8 @@ export class BaseBlockTracker extends Emitter {
     // this._onRemoveListener = this._onRemoveListener.bind(this);
     // this._resetCurrentBlock = this._resetCurrentBlock.bind(this);
     // listen for handler changes
-    this._setupInternalEvents();
+    // this._setupInternalEvents();
+    this._maybeStart();
   }
 
   isRunning() {

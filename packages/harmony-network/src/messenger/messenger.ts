@@ -5,6 +5,7 @@ import { HttpProvider } from '../providers/http';
 import { WSProvider } from '../providers/ws';
 // import { getResultForData } from '../util';
 import { RPCMethod } from '../rpcMethod/rpc';
+import { SubscribeReturns } from '../types';
 
 const defaultConfig = {
   Default: {
@@ -182,6 +183,7 @@ class Messenger extends HarmonyCore {
   subscribe = async (
     method: RPCMethod | string,
     params?: string | any[] | undefined,
+    returnType: SubscribeReturns = SubscribeReturns.all,
     rpcPrefix: string = this.chainPrefix,
   ) => {
     let rpcMethod = method;
@@ -190,11 +192,13 @@ class Messenger extends HarmonyCore {
     } else if (!rpcPrefix || rpcPrefix === this.chainPrefix) {
       rpcMethod = this.setRPCPrefix(method, this.chainPrefix);
     }
+    let id: any = null;
     if (this.provider instanceof WSProvider) {
       const provider = this.provider;
+
       try {
         const payload = this.JsonRpc.toPayload(rpcMethod, params);
-        const id = await provider.subscribe(payload);
+        id = await provider.subscribe(payload);
         provider.on(id, (result: any) => {
           provider.emitter.emit('data', result);
         });
@@ -207,7 +211,15 @@ class Messenger extends HarmonyCore {
         provider.emitter.emit('error', error);
         provider.removeEventListener('*');
       }
-      return provider;
+      if (returnType === SubscribeReturns.all) {
+        return [provider, id];
+      } else if (returnType === SubscribeReturns.method) {
+        return provider;
+      } else if (returnType === SubscribeReturns.id) {
+        return id;
+      } else {
+        throw new Error('Invalid returns');
+      }
     } else {
       throw new Error('HttpProvider does not support this');
     }

@@ -8,6 +8,12 @@ export const enum MiddlewareType {
   RES,
 }
 
+export const enum SubscribeReturns {
+  all = 'all',
+  id = 'id',
+  method = 'method',
+}
+
 export interface Middleware {
   request: object;
   response: object;

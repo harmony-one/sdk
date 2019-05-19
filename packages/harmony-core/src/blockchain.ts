@@ -3,6 +3,7 @@ import {
   Messenger,
   ResponseMiddleware,
   WSProvider,
+  SubscribeReturns,
 } from '@harmony-js/network';
 
 import {
@@ -323,6 +324,7 @@ class Blockchain extends HarmonyCore {
       return this.messenger.subscribe(
         RPCMethod.Subscribe,
         ['newPendingTransactions'],
+        SubscribeReturns.method,
         this.chainPrefix,
       );
     } else {
@@ -335,6 +337,7 @@ class Blockchain extends HarmonyCore {
       return this.messenger.subscribe(
         RPCMethod.Subscribe,
         ['newHeads'],
+        SubscribeReturns.method,
         this.chainPrefix,
       );
     } else {

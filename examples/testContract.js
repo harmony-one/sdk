@@ -6,6 +6,10 @@
 const { Harmony } = require('../packages/harmony-core/dist');
 // You can import BN from `@harmony-js/crypto` or use `Harmony.utils.BN`instead
 const { BN } = require('../packages/harmony-crypto/dist');
+const {
+  SubscribeBlockTracker,
+  RPCMethod,
+} = require('../packages/harmony-network/dist');
 // import more utils
 const {
   isArray,
@@ -108,6 +112,14 @@ const acc1 = harmony.wallet.addByMnemonic(mne, 0);
 // now we create contract using extracted abi
 const myContract = harmony.contracts.createContract(abi);
 
+// harmony.messenger.send(RPCMethod.BlockNumber, []).then(console.log);
+
+// harmony.messenger.subscribe(RPCMethod.Subscribe, ['newHeads']).then((res) => {
+//   res.onData((data) => {
+//     console.log(data);
+//   });
+// });
+
 // first we get the account's balance to see if we have enough token on the testnet
 acc1.getBalance().then((res) => {
   console.log(`-- hint: account balance of ${acc1.address}`);
@@ -198,8 +210,6 @@ deployContract().then((deployed) => {
       console.log(`${res.result}`);
       console.log(``);
       console.log(``);
-      console.log(toUtf8String(res.result));
-
       deployed.methods
         .myFunction()
         .call()

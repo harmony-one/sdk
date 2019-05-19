@@ -8,7 +8,13 @@ import {
   splitSignature,
 } from '@harmony-js/crypto';
 import { add0xToString, numberToHex } from '@harmony-js/utils';
-import { Messenger, RPCMethod, Emitter } from '@harmony-js/network';
+import {
+  Messenger,
+  RPCMethod,
+  Emitter,
+  HttpProvider,
+  SubscribeReturns,
+} from '@harmony-js/network';
 import { TxParams, TxStatus, TransasctionReceipt } from './types';
 import {
   recover,
@@ -22,6 +28,8 @@ class Transaction {
   emitter: Emitter;
   messenger: Messenger;
   txStatus: TxStatus;
+  blockNumbers: string[] = [];
+  confirmationCheck: number = 0;
   receipt?: TransasctionReceipt;
   private id: string;
   private from: string;
@@ -290,27 +298,91 @@ class Transaction {
     maxAttempts: number = 20,
     interval: number = 1000,
   ) {
-    this.txStatus = TxStatus.PENDING;
-    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-      try {
-        if (await this.trackTx(txHash)) {
+    if (this.messenger.provider instanceof HttpProvider) {
+      this.txStatus = TxStatus.PENDING;
+      for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+        try {
+          if (await this.trackTx(txHash)) {
+            this.emitConfirm(this.txStatus);
+            return this;
+          }
+        } catch (err) {
+          this.txStatus = TxStatus.REJECTED;
           this.emitConfirm(this.txStatus);
-          return this;
+          throw err;
         }
-      } catch (err) {
-        this.txStatus = TxStatus.REJECTED;
-        this.emitConfirm(this.txStatus);
-        throw err;
+        if (attempt + 1 < maxAttempts) {
+          await sleep(interval * attempt);
+        }
       }
-      if (attempt + 1 < maxAttempts) {
-        await sleep(interval * attempt);
-      }
+      this.txStatus = TxStatus.REJECTED;
+      this.emitConfirm(this.txStatus);
+      throw new Error(
+        `The transaction is still not confirmed after ${maxAttempts} attempts.`,
+      );
+    } else {
+      await this.socketConfirm(txHash, maxAttempts, interval);
+      return this;
     }
-    this.txStatus = TxStatus.REJECTED;
-    this.emitConfirm(this.txStatus);
-    throw new Error(
-      `The transaction is still not confirmed after ${maxAttempts} attempts.`,
-    );
+  }
+
+  async socketConfirm(
+    txHash: string,
+    maxAttempts: number = 20,
+    interval: number = 1000,
+  ) {
+    try {
+      const [newHeads, subscriptionId] = await this.messenger.subscribe(
+        RPCMethod.Subscribe,
+        ['newHeads'],
+        SubscribeReturns.all,
+      );
+
+      newHeads
+        .onData(async (data: any) => {
+          const currentBlock = await this.messenger.send(
+            RPCMethod.BlockNumber,
+            [],
+          );
+
+          if (currentBlock.isError()) {
+            throw currentBlock.message;
+          }
+
+          if (!this.blockNumbers.includes(data.number)) {
+            const tracker = await this.trackTx(txHash);
+            if (tracker) {
+              this.emitConfirm(this.txStatus);
+
+              await this.messenger.unsubscribe(RPCMethod.UnSubscribe, [
+                subscriptionId,
+              ]);
+            } else {
+              this.blockNumbers.push(currentBlock.result);
+              this.confirmationCheck += 1;
+
+              if (this.confirmationCheck === maxAttempts * interval) {
+                this.txStatus = TxStatus.REJECTED;
+                this.emitConfirm(this.txStatus);
+                await this.messenger.unsubscribe(RPCMethod.UnSubscribe, [
+                  subscriptionId,
+                ]);
+              }
+            }
+          }
+        })
+        .onError(async (error: any) => {
+          this.txStatus = TxStatus.REJECTED;
+          this.emitConfirm(this.txStatus);
+          this.emitError(error);
+          await this.messenger.unsubscribe(RPCMethod.UnSubscribe, [
+            subscriptionId,
+          ]);
+          throw new Error(error);
+        });
+    } catch (error) {
+      throw error;
+    }
   }
 
   emitTransactionHash(transactionHash: string) {

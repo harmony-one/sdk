@@ -31,7 +31,7 @@ export class SubscribeBlockTracker extends BaseBlockTracker {
   async _start() {
     try {
       const blockNumber = await this.messenger.send(RPCMethod.BlockNumber, []);
-      console.log({ blockNumber });
+
       if (blockNumber.isError()) {
         throw blockNumber.message;
       } else if (blockNumber.isResult()) {
@@ -39,7 +39,7 @@ export class SubscribeBlockTracker extends BaseBlockTracker {
           'newHeads',
         ]);
         this.subscriptionId = subs;
-        subs.onData(this._handleSubData);
+        subs[0].onData(this._handleSubData);
 
         this._newPotentialLatest(blockNumber);
       }

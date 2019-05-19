@@ -241,11 +241,6 @@ server.listen(port, function(err, blockchain) {
   //     console.log(txn);
   //   });
   // });
-  const blockTracker = new SubscribeBlockTracker(harmony.messenger);
-  console.log(`--------------------asdfasdfasfasdfasdf----------------`);
-  const blocks = [];
-  blockTracker.on('latest', (block) => blocks.push(block));
-  console.log(blockTracker.isRunning());
-  console.log(`--------------------asdfasdfasfasdfasdf----------------`);
+
   main();
 });
