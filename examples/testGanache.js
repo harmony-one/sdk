@@ -209,7 +209,8 @@ async function main() {
   console.log('-------------------------------------');
 
   setTimeout(async () => {
-    const s2 = await harmony.wallet.signTransaction(txn, undefined, password);
+    const txn2 = harmony.transactions.clone(txn);
+    const s2 = await harmony.wallet.signTransaction(txn2, undefined, password);
     const [sentTxn, TranID] = await s2.sendTransaction();
     await sentTxn.confirm(TranID, 20, 1000);
     console.log({
@@ -219,7 +220,8 @@ async function main() {
   }, 5000);
 
   setTimeout(async () => {
-    const s3 = await harmony.wallet.signTransaction(txn, undefined, password);
+    const txn3 = harmony.transactions.clone(txn);
+    const s3 = await harmony.wallet.signTransaction(txn3, undefined, password);
     const [sentTxn, TranID] = await s3.sendTransaction();
     await sentTxn.confirm(TranID, 20, 1000);
     console.log({
@@ -228,7 +230,8 @@ async function main() {
     });
   }, 10000);
   setTimeout(async () => {
-    const s3 = await harmony.wallet.signTransaction(txn, undefined, password);
+    const txns3 = harmony.transactions.clone(txn);
+    const s3 = await harmony.wallet.signTransaction(txns3, undefined, password);
     const [sentTxn, TranID] = await s3.sendTransaction();
     await sentTxn.confirm(TranID, 20, 1000);
     console.log({
@@ -237,7 +240,8 @@ async function main() {
     });
   }, 15000);
   setTimeout(async () => {
-    const s4 = await harmony.wallet.signTransaction(txn, undefined, password);
+    const txn4 = harmony.transactions.clone(txn);
+    const s4 = await harmony.wallet.signTransaction(txn4, undefined, password);
     const [sentTxn, TranID] = await s4.sendTransaction();
     await sentTxn.confirm(TranID, 20, 1000);
     console.log({
@@ -246,7 +250,8 @@ async function main() {
     });
   }, 20000);
   setTimeout(async () => {
-    const s5 = await harmony.wallet.signTransaction(txn, undefined, password);
+    const txn5 = harmony.transactions.clone(txn);
+    const s5 = await harmony.wallet.signTransaction(txn5, undefined, password);
     const [sentTxn, TranID] = await s5.sendTransaction();
     await sentTxn.confirm(TranID, 20, 1000);
     console.log({
@@ -255,8 +260,9 @@ async function main() {
     });
   }, 25000);
   setTimeout(async () => {
-    const s6 = await harmony.wallet.signTransaction(txn, undefined, password);
-    await s6.sendTransaction();
+    const txn6 = harmony.transactions.clone(txn);
+    const s6 = await harmony.wallet.signTransaction(txn6, undefined, password);
+    const [sentTxn, TranID] = await s6.sendTransaction();
     await sentTxn.confirm(TranID, 20, 1000);
     console.log({
       blockNumbers: sentTxn.blockNumbers,

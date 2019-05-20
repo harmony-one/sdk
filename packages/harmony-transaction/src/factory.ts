@@ -20,6 +20,15 @@ class TransactionFactory {
   newTx(txParams?: TxParams | any): Transaction {
     return new Transaction(txParams, this.messenger, TxStatus.INTIALIZED);
   }
+
+  clone(transaction: Transaction): Transaction {
+    return new Transaction(
+      transaction.txParams,
+      this.messenger,
+      TxStatus.INTIALIZED,
+    );
+  }
+
   recover(txHash: string): Transaction {
     const newTxn = new Transaction(
       undefined,
