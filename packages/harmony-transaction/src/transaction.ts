@@ -31,6 +31,7 @@ class Transaction {
   messenger: Messenger;
   txStatus: TxStatus;
   blockNumbers: string[] = [];
+  confirmations: number = 0;
   confirmationCheck: number = 0;
   receipt?: TransasctionReceipt;
   private id: string;
@@ -279,6 +280,7 @@ class Transaction {
       this.receipt = res.result;
       this.emitReceipt(this.receipt);
       this.id = res.result.transactionHash;
+      this.confirmations += 1;
 
       if (this.receipt) {
         if (this.receipt.status && this.receipt.status === '0x1') {
@@ -289,6 +291,9 @@ class Transaction {
         return true;
       } else {
         this.txStatus = TxStatus.PENDING;
+        const currentBlock = await this.getBlockNumber();
+        this.blockNumbers.push(currentBlock);
+        this.confirmationCheck += 1;
         return false;
       }
     } else {
@@ -303,19 +308,41 @@ class Transaction {
   ) {
     if (this.messenger.provider instanceof HttpProvider) {
       this.txStatus = TxStatus.PENDING;
+      const oldBlock = await this.getBlockNumber();
+      let checkBlock = oldBlock;
+
       for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
         try {
-          if (await this.trackTx(txHash)) {
-            this.emitConfirm(this.txStatus);
-            return this;
+          const newBlock = await this.getBlockNumber();
+
+          const nextBlock =
+            '0x' +
+            new BN(checkBlock.substring(2), 'hex')
+              .add(new BN(attempt === 0 ? attempt : 1))
+              .toString('hex');
+
+          if (
+            new BN(newBlock.substring(2), 'hex').gte(
+              new BN(nextBlock.substring(2), 'hex'),
+            )
+          ) {
+            checkBlock = newBlock;
+            if (await this.trackTx(txHash)) {
+              this.emitConfirm(this.txStatus);
+              return this;
+            }
+          } else {
+            attempt = attempt - 1 >= 0 ? attempt - 1 : 0;
           }
         } catch (err) {
           this.txStatus = TxStatus.REJECTED;
           this.emitConfirm(this.txStatus);
           throw err;
         }
+
         if (attempt + 1 < maxAttempts) {
-          await sleep(interval * attempt);
+          // await sleep(interval * attempt);
+          await sleep(interval);
         }
       }
       this.txStatus = TxStatus.REJECTED;
@@ -326,17 +353,10 @@ class Transaction {
     } else {
       try {
         if (await this.trackTx(txHash)) {
-          const currentBlock = await this.getBlockNumber();
-          this.blockNumbers.push(currentBlock);
-          this.confirmationCheck += 1;
           this.emitConfirm(this.txStatus);
           return this;
         } else {
-          const result = await this.socketConfirm(
-            txHash,
-            maxAttempts,
-            interval,
-          );
+          const result = await this.socketConfirm(txHash, maxAttempts);
           return result;
         }
       } catch (error) {
@@ -353,7 +373,6 @@ class Transaction {
   socketConfirm(
     txHash: string,
     maxAttempts: number = 20,
-    interval: number = 1000,
   ): Promise<Transaction> {
     return new Promise((resolve, reject) => {
       const newHeads = Promise.resolve(
@@ -361,17 +380,13 @@ class Transaction {
       );
       newHeads.then((p) => {
         p.onData(async (data: any) => {
-          const currentBlock = await this.getBlockNumber();
           if (!this.blockNumbers.includes(data.number)) {
             if (await this.trackTx(txHash)) {
               this.emitConfirm(this.txStatus);
               await p.unsubscribe();
               resolve(this);
             } else {
-              this.blockNumbers.push(currentBlock);
-              this.confirmationCheck += 1;
-
-              if (this.confirmationCheck === maxAttempts * interval) {
+              if (this.confirmationCheck === maxAttempts) {
                 this.txStatus = TxStatus.REJECTED;
                 this.emitConfirm(this.txStatus);
                 await p.unsubscribe();
@@ -404,11 +419,29 @@ class Transaction {
   }
 
   async getBlockNumber() {
-    const currentBlock = await this.messenger.send(RPCMethod.BlockNumber, []);
-    if (currentBlock.isError()) {
-      throw currentBlock.message;
+    try {
+      const currentBlock = await this.messenger.send(RPCMethod.BlockNumber, []);
+      if (currentBlock.isError()) {
+        throw currentBlock.message;
+      }
+      return currentBlock.result;
+    } catch (error) {
+      throw error;
     }
-    return currentBlock.result;
+  }
+  async getBlockByNumber(blockNumber: string) {
+    try {
+      const block = await this.messenger.send(RPCMethod.GetBlockByNumber, [
+        blockNumber,
+        true,
+      ]);
+      if (block.isError()) {
+        throw block.message;
+      }
+      return block.result;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 export { Transaction };

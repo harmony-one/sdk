@@ -216,6 +216,8 @@ async function main() {
     console.log({
       blockNumbers: sentTxn.blockNumbers,
       txStatus: sentTxn.txStatus,
+      confirmations: sentTxn.confirmations,
+      confirmationCheck: sentTxn.confirmationCheck,
     });
   }, 5000);
 
@@ -227,6 +229,8 @@ async function main() {
     console.log({
       blockNumbers: sentTxn.blockNumbers,
       txStatus: sentTxn.txStatus,
+      confirmations: sentTxn.confirmations,
+      confirmationCheck: sentTxn.confirmationCheck,
     });
   }, 10000);
   setTimeout(async () => {
@@ -237,6 +241,8 @@ async function main() {
     console.log({
       blockNumbers: sentTxn.blockNumbers,
       txStatus: sentTxn.txStatus,
+      confirmations: sentTxn.confirmations,
+      confirmationCheck: sentTxn.confirmationCheck,
     });
   }, 15000);
   setTimeout(async () => {
@@ -247,6 +253,8 @@ async function main() {
     console.log({
       blockNumbers: sentTxn.blockNumbers,
       txStatus: sentTxn.txStatus,
+      confirmations: sentTxn.confirmations,
+      confirmationCheck: sentTxn.confirmationCheck,
     });
   }, 20000);
   setTimeout(async () => {
@@ -257,6 +265,8 @@ async function main() {
     console.log({
       blockNumbers: sentTxn.blockNumbers,
       txStatus: sentTxn.txStatus,
+      confirmations: sentTxn.confirmations,
+      confirmationCheck: sentTxn.confirmationCheck,
     });
   }, 25000);
   setTimeout(async () => {
@@ -267,6 +277,8 @@ async function main() {
     console.log({
       blockNumbers: sentTxn.blockNumbers,
       txStatus: sentTxn.txStatus,
+      confirmations: sentTxn.confirmations,
+      confirmationCheck: sentTxn.confirmationCheck,
     });
   }, 30000);
 }
