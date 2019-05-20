@@ -18,6 +18,9 @@ export * from './rpcMethod/rpc';
 export * from './tracker/baseTracker';
 export * from './tracker/pollingTracker';
 export * from './tracker/subscribeTracker';
+
+// subscriptinos
+export * from './subscriptions/Subscription';
 // utils
 export * from './util';
 // types

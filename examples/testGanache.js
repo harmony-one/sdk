@@ -1,6 +1,9 @@
 const { Harmony } = require('../packages/harmony-core/dist');
 const { ChainID, ChainType } = require('../packages/harmony-utils/dist');
-const { SubscribeBlockTracker } = require('../packages/harmony-network/dist');
+const {
+  SubscribeBlockTracker,
+  SubscriptionMethod,
+} = require('../packages/harmony-network/dist');
 
 const ganache = require('ganache-cli');
 
@@ -207,28 +210,58 @@ async function main() {
 
   setTimeout(async () => {
     const s2 = await harmony.wallet.signTransaction(txn, undefined, password);
-    await s2.sendTransaction();
+    const [sentTxn, TranID] = await s2.sendTransaction();
+    await sentTxn.confirm(TranID, 20, 1000);
+    console.log({
+      blockNumbers: sentTxn.blockNumbers,
+      txStatus: sentTxn.txStatus,
+    });
   }, 5000);
 
   setTimeout(async () => {
     const s3 = await harmony.wallet.signTransaction(txn, undefined, password);
-    await s3.sendTransaction();
+    const [sentTxn, TranID] = await s3.sendTransaction();
+    await sentTxn.confirm(TranID, 20, 1000);
+    console.log({
+      blockNumbers: sentTxn.blockNumbers,
+      txStatus: sentTxn.txStatus,
+    });
   }, 10000);
   setTimeout(async () => {
     const s3 = await harmony.wallet.signTransaction(txn, undefined, password);
-    await s3.sendTransaction();
+    const [sentTxn, TranID] = await s3.sendTransaction();
+    await sentTxn.confirm(TranID, 20, 1000);
+    console.log({
+      blockNumbers: sentTxn.blockNumbers,
+      txStatus: sentTxn.txStatus,
+    });
   }, 15000);
   setTimeout(async () => {
     const s4 = await harmony.wallet.signTransaction(txn, undefined, password);
-    await s4.sendTransaction();
+    const [sentTxn, TranID] = await s4.sendTransaction();
+    await sentTxn.confirm(TranID, 20, 1000);
+    console.log({
+      blockNumbers: sentTxn.blockNumbers,
+      txStatus: sentTxn.txStatus,
+    });
   }, 20000);
   setTimeout(async () => {
     const s5 = await harmony.wallet.signTransaction(txn, undefined, password);
-    await s5.sendTransaction();
+    const [sentTxn, TranID] = await s5.sendTransaction();
+    await sentTxn.confirm(TranID, 20, 1000);
+    console.log({
+      blockNumbers: sentTxn.blockNumbers,
+      txStatus: sentTxn.txStatus,
+    });
   }, 25000);
   setTimeout(async () => {
     const s6 = await harmony.wallet.signTransaction(txn, undefined, password);
     await s6.sendTransaction();
+    await sentTxn.confirm(TranID, 20, 1000);
+    console.log({
+      blockNumbers: sentTxn.blockNumbers,
+      txStatus: sentTxn.txStatus,
+    });
   }, 30000);
 }
 
@@ -238,8 +271,22 @@ server.listen(port, function(err, blockchain) {
   //     const txn = await harmony.blockchain.getTransactionByHash({
   //       txnHash: res.params.result,
   //     });
-  //     console.log(txn);
+  //     console.log({ res, txn });
   //   });
+  // });
+  // const newPending = new SubscriptionMethod(
+  //   ['newPendingTransactions'],
+  //   harmony.messenger,
+  // );
+  // newPending.onData(async (res) => {
+  //   const txn = await harmony.blockchain.getTransactionByHash({
+  //     txnHash: res.params.result,
+  //   });
+  //   console.log({ res, txn });
+  // });
+  // const newHeads = new SubscriptionMethod(['newHeads'], harmony.messenger);
+  // newHeads.onData((res) => {
+  //   console.log(res.params.result.number);
   // });
 
   main();

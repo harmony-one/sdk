@@ -13,7 +13,9 @@ import {
   RPCMethod,
   Emitter,
   HttpProvider,
-  SubscribeReturns,
+  // WSProvider,
+  // SubscribeReturns,
+  SubscriptionMethod,
 } from '@harmony-js/network';
 import { TxParams, TxStatus, TransasctionReceipt } from './types';
 import {
@@ -251,6 +253,7 @@ class Transaction {
       this.id = res.result;
       this.emitTransactionHash(this.id);
       this.setTxStatus(TxStatus.PENDING);
+      // await this.confirm(this.id, 20, 1000);
       return [this, res.result];
     } else if (res.isError()) {
       this.emitConfirm(`transaction failed:${res.message}`);
@@ -321,68 +324,70 @@ class Transaction {
         `The transaction is still not confirmed after ${maxAttempts} attempts.`,
       );
     } else {
-      await this.socketConfirm(txHash, maxAttempts, interval);
-      return this;
+      try {
+        if (await this.trackTx(txHash)) {
+          const currentBlock = await this.getBlockNumber();
+          this.blockNumbers.push(currentBlock);
+          this.confirmationCheck += 1;
+          this.emitConfirm(this.txStatus);
+          return this;
+        } else {
+          const result = await this.socketConfirm(
+            txHash,
+            maxAttempts,
+            interval,
+          );
+          return result;
+        }
+      } catch (error) {
+        this.txStatus = TxStatus.REJECTED;
+        this.emitConfirm(this.txStatus);
+        throw new Error(
+          `The transaction is still not confirmed after ${maxAttempts *
+            interval} mil seconds.`,
+        );
+      }
     }
   }
 
-  async socketConfirm(
+  socketConfirm(
     txHash: string,
     maxAttempts: number = 20,
     interval: number = 1000,
-  ) {
-    try {
-      const [newHeads, subscriptionId] = await this.messenger.subscribe(
-        RPCMethod.Subscribe,
-        ['newHeads'],
-        SubscribeReturns.all,
+  ): Promise<Transaction> {
+    return new Promise((resolve, reject) => {
+      const newHeads = Promise.resolve(
+        new SubscriptionMethod(['newHeads'], this.messenger),
       );
-
-      newHeads
-        .onData(async (data: any) => {
-          const currentBlock = await this.messenger.send(
-            RPCMethod.BlockNumber,
-            [],
-          );
-
-          if (currentBlock.isError()) {
-            throw currentBlock.message;
-          }
-
+      newHeads.then((p) => {
+        p.onData(async (data: any) => {
+          const currentBlock = await this.getBlockNumber();
           if (!this.blockNumbers.includes(data.number)) {
-            const tracker = await this.trackTx(txHash);
-            if (tracker) {
+            if (await this.trackTx(txHash)) {
               this.emitConfirm(this.txStatus);
-
-              await this.messenger.unsubscribe(RPCMethod.UnSubscribe, [
-                subscriptionId,
-              ]);
+              await p.unsubscribe();
+              resolve(this);
             } else {
-              this.blockNumbers.push(currentBlock.result);
+              this.blockNumbers.push(currentBlock);
               this.confirmationCheck += 1;
 
               if (this.confirmationCheck === maxAttempts * interval) {
                 this.txStatus = TxStatus.REJECTED;
                 this.emitConfirm(this.txStatus);
-                await this.messenger.unsubscribe(RPCMethod.UnSubscribe, [
-                  subscriptionId,
-                ]);
+                await p.unsubscribe();
+                resolve(this);
               }
             }
           }
-        })
-        .onError(async (error: any) => {
+        }).onError(async (error: any) => {
           this.txStatus = TxStatus.REJECTED;
           this.emitConfirm(this.txStatus);
           this.emitError(error);
-          await this.messenger.unsubscribe(RPCMethod.UnSubscribe, [
-            subscriptionId,
-          ]);
-          throw new Error(error);
+          await p.unsubscribe();
+          reject(error);
         });
-    } catch (error) {
-      throw error;
-    }
+      });
+    });
   }
 
   emitTransactionHash(transactionHash: string) {
@@ -396,6 +401,14 @@ class Transaction {
   }
   emitConfirm(data: any) {
     this.emitter.emit(TransactionEvents.confirmation, data);
+  }
+
+  async getBlockNumber() {
+    const currentBlock = await this.messenger.send(RPCMethod.BlockNumber, []);
+    if (currentBlock.isError()) {
+      throw currentBlock.message;
+    }
+    return currentBlock.result;
   }
 }
 export { Transaction };

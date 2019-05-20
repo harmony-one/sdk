@@ -167,6 +167,7 @@ export class ContractMethod {
   protected async confirm(id: string) {
     try {
       const result = await this.transaction.confirm(id);
+
       if (result.receipt && result.receipt.status === '0x1') {
         if (this.methodKey === 'contractConstructor') {
           this.contract.setStatus(ContractStatus.DEPLOYED);

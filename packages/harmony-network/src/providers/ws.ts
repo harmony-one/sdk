@@ -175,7 +175,6 @@ class WSProvider extends BaseSocket {
     if (msg && msg.data) {
       let result;
       let event;
-
       try {
         result = isObject(msg.data) ? msg.data : JSON.parse(msg.data);
 
