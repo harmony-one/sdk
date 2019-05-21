@@ -31,7 +31,8 @@ export class SubscriptionMethod extends WSProvider {
       const id = await super.subscribe(subscribePayload);
       this.subscriptionId = id;
       this.on(id, (result: any) => {
-        this.emitter.emit('data', result);
+        const output = this.onNewSubscriptionItem(result);
+        this.emitter.emit('data', output);
       });
       this.once('error', (error) => {
         this.removeEventListener(id);
@@ -49,5 +50,8 @@ export class SubscriptionMethod extends WSProvider {
       this.subscriptionId,
     ]);
     return super.unsubscribe(unsubscribePayload);
+  }
+  onNewSubscriptionItem(subscriptionItem: any) {
+    return subscriptionItem;
   }
 }

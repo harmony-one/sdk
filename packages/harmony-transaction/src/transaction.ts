@@ -314,7 +314,7 @@ class Transaction {
       for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
         try {
           const newBlock = await this.getBlockNumber();
-
+          // TODO: this is super ugly, must be a better way doing this
           const nextBlock =
             '0x' +
             new BN(checkBlock.substring(2), 'hex')

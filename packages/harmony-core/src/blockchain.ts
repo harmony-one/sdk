@@ -3,7 +3,8 @@ import {
   Messenger,
   ResponseMiddleware,
   WSProvider,
-  SubscribeReturns,
+  // SubscribeReturns,
+  SubscriptionMethod,
 } from '@harmony-js/network';
 
 import {
@@ -321,12 +322,13 @@ class Blockchain extends HarmonyCore {
 
   newPendingTransactions() {
     if (this.messenger.provider instanceof WSProvider) {
-      return this.messenger.subscribe(
-        RPCMethod.Subscribe,
-        ['newPendingTransactions'],
-        SubscribeReturns.method,
-        this.chainPrefix,
-      );
+      // return this.messenger.subscribe(
+      //   RPCMethod.Subscribe,
+      //   ['newPendingTransactions'],
+      //   SubscribeReturns.method,
+      //   this.chainPrefix,
+      // );
+      return new SubscriptionMethod(['newPendingTransactions'], this.messenger);
     } else {
       throw new Error('HttpProvider does not support this feature');
     }
@@ -334,12 +336,13 @@ class Blockchain extends HarmonyCore {
 
   newBlockHeaders() {
     if (this.messenger.provider instanceof WSProvider) {
-      return this.messenger.subscribe(
-        RPCMethod.Subscribe,
-        ['newHeads'],
-        SubscribeReturns.method,
-        this.chainPrefix,
-      );
+      // return this.messenger.subscribe(
+      //   RPCMethod.Subscribe,
+      //   ['newHeads'],
+      //   SubscribeReturns.method,
+      //   this.chainPrefix,
+      // );
+      return new SubscriptionMethod(['newHeads'], this.messenger);
     } else {
       throw new Error('HttpProvider does not support this feature');
     }
