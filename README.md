@@ -52,48 +52,9 @@ yarn add tslib
    ```
 
 
-# Test local wallet
+# Examples
 
-1. open examples
-2. run `node testWallet.js`
-3. you can see `mnemonic` and `simple password` and 10 accounts imported
-   
-
-# Test with Harmony node
-
-First you have to run harmony's test node.
-
-1. git clone
-   
-    ``` bash
-    git clone git@github.com:harmony-one/harmony.git
-    ```
-
-2. follow the `Build all executables` instruction, [here](https://github.com/harmony-one/harmony/tree/master)
-3. open your editor, inside `core/resharding.go` , edit `GenesisShardSize = 50` to `GenesisShardSize = 5`
-4. use this script to run
-   
-   ```bash
-   ./test/deploy.sh ./test/configs/ten-oneshard.txt
-   ```
-
-Wait for the test-node running for 30 seconds,
-
-Then **open another console** , go back to our `Harmony-sdk-core/examples` folder, 
-
-Run:
-
-``` bash
-node testNode.js
-```
+* [harmony-sdk-examples](https://github.com/FireStack-Lab/harmony-sdk-examples)
 
 
-# Test with `ganache-cli`
-** ganache-cli runs in js file **, 
 
-In this case, we use ganache and ethereum's setting to simulate the result
-
-We don't need harmony's testnode running.
-
-1. open `examples`
-2. run `node testGanache.js`
