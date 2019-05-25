@@ -15,7 +15,7 @@ import {
   HttpProvider,
   // WSProvider,
   // SubscribeReturns,
-  SubscriptionMethod,
+  NewHeaders,
 } from '@harmony-js/network';
 import { TxParams, TxStatus, TransasctionReceipt } from './types';
 import {
@@ -375,9 +375,7 @@ class Transaction {
     maxAttempts: number = 20,
   ): Promise<Transaction> {
     return new Promise((resolve, reject) => {
-      const newHeads = Promise.resolve(
-        new SubscriptionMethod(['newHeads'], this.messenger),
-      );
+      const newHeads = Promise.resolve(new NewHeaders(this.messenger));
       newHeads.then((p) => {
         p.onData(async (data: any) => {
           if (!this.blockNumbers.includes(data.number)) {
