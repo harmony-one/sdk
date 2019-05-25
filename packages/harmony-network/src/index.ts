@@ -21,6 +21,10 @@ export * from './tracker/subscribeTracker';
 
 // subscriptinos
 export * from './subscriptions/Subscription';
+export * from './subscriptions/LogSub';
+export * from './subscriptions/NewHeadersSub';
+export * from './subscriptions/NewPendingTransactionsSub';
+export * from './subscriptions/SyncingSub';
 // utils
 export * from './util';
 // types

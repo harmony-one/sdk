@@ -3,8 +3,10 @@ import {
   Messenger,
   ResponseMiddleware,
   WSProvider,
-  // SubscribeReturns,
-  SubscriptionMethod,
+  NewPendingTransactions,
+  NewHeaders,
+  LogSub,
+  Syncing,
 } from '@harmony-js/network';
 
 import {
@@ -217,19 +219,6 @@ class Blockchain extends HarmonyCore {
     return this.getRpcResult(result);
   }
 
-  /**
-   *
-   */
-  async syncing() {
-    const result = await this.messenger.send(
-      RPCMethod.Syncing,
-      [],
-      this.chainPrefix,
-    );
-
-    return this.getRpcResult(result);
-  }
-
   async net_peerCount() {
     const result = await this.messenger.send(RPCMethod.PeerCount, [], 'net');
 
@@ -322,13 +311,7 @@ class Blockchain extends HarmonyCore {
 
   newPendingTransactions() {
     if (this.messenger.provider instanceof WSProvider) {
-      // return this.messenger.subscribe(
-      //   RPCMethod.Subscribe,
-      //   ['newPendingTransactions'],
-      //   SubscribeReturns.method,
-      //   this.chainPrefix,
-      // );
-      return new SubscriptionMethod(['newPendingTransactions'], this.messenger);
+      return new NewPendingTransactions(this.messenger);
     } else {
       throw new Error('HttpProvider does not support this feature');
     }
@@ -336,13 +319,23 @@ class Blockchain extends HarmonyCore {
 
   newBlockHeaders() {
     if (this.messenger.provider instanceof WSProvider) {
-      // return this.messenger.subscribe(
-      //   RPCMethod.Subscribe,
-      //   ['newHeads'],
-      //   SubscribeReturns.method,
-      //   this.chainPrefix,
-      // );
-      return new SubscriptionMethod(['newHeads'], this.messenger);
+      return new NewHeaders(this.messenger);
+    } else {
+      throw new Error('HttpProvider does not support this feature');
+    }
+  }
+
+  syncing() {
+    if (this.messenger.provider instanceof WSProvider) {
+      return new Syncing(this.messenger);
+    } else {
+      throw new Error('HttpProvider does not support this feature');
+    }
+  }
+
+  logs(options: any) {
+    if (this.messenger.provider instanceof WSProvider) {
+      return new LogSub(options, this.messenger);
     } else {
       throw new Error('HttpProvider does not support this feature');
     }
