@@ -4,19 +4,29 @@ import { WSProvider } from '../providers/ws';
 import { RPCRequestPayload } from '../types';
 
 export class SubscriptionMethod extends WSProvider {
-  params: any[];
+  param: any;
+  options: any;
   messenger: Messenger;
 
   subscriptionId: any = null;
-  constructor(params: any[], messenger: Messenger) {
+  constructor(param: any, options: any, messenger: Messenger) {
     super(messenger.provider.url);
-    this.params = params;
+    this.param = param;
+    this.options = options;
     this.messenger = messenger;
-    this.start();
   }
 
-  constructPayload(method: string, payload: any): RPCRequestPayload<any> {
+  constructPayload(
+    method: string,
+    param: any,
+    options?: any,
+  ): RPCRequestPayload<any> {
     let rpcMethod = method;
+    const payload: any = [];
+    payload.push(param);
+    if (options) {
+      payload.push(options);
+    }
     rpcMethod = this.messenger.setRPCPrefix(method, this.messenger.chainPrefix);
     return this.jsonRpc.toPayload(rpcMethod, payload);
   }
@@ -24,8 +34,8 @@ export class SubscriptionMethod extends WSProvider {
   async start() {
     const subscribePayload = this.constructPayload(
       RPCMethod.Subscribe,
-
-      this.params,
+      this.param,
+      this.options,
     );
     try {
       const id = await super.subscribe(subscribePayload);
@@ -46,9 +56,10 @@ export class SubscriptionMethod extends WSProvider {
     return this;
   }
   unsubscribe() {
-    const unsubscribePayload = this.constructPayload(RPCMethod.UnSubscribe, [
+    const unsubscribePayload = this.constructPayload(
+      RPCMethod.UnSubscribe,
       this.subscriptionId,
-    ]);
+    );
     return super.unsubscribe(unsubscribePayload);
   }
   onNewSubscriptionItem(subscriptionItem: any) {

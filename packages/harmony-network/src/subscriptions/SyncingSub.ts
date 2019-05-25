@@ -3,13 +3,14 @@ import { SubscriptionMethod } from './Subscription';
 
 export class Syncing extends SubscriptionMethod {
   isSyncing: boolean | null;
-  constructor(params: any[] = ['syncing'], messenger: Messenger) {
-    super(params, messenger);
+  constructor(messenger: Messenger) {
+    super('syncing', undefined, messenger);
     this.isSyncing = null;
+    this.start();
   }
 
   onNewSubscriptionItem(subscriptionItem: any) {
-    const isSyncing = subscriptionItem.result.syncing;
+    const isSyncing = subscriptionItem.params.result.syncing;
 
     if (this.isSyncing === null) {
       this.isSyncing = isSyncing;
