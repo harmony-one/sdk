@@ -1,5 +1,5 @@
-import { AbiItemModel } from '../models/types';
 import { LogSub } from '@harmony-js/network';
+import { AbiItemModel } from '../models/types';
 import { Contract } from '../contract';
 import { decode as eventLogDecoder } from '../utils/decoder';
 import { inputLogFormatter, outputLogFormatter } from '../utils/formatter';

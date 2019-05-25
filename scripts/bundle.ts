@@ -54,9 +54,9 @@ async function bundles() {
           preferBuiltins: true,
         }),
         // babel(browserConfig),
+        commonjs(),
         globals(),
         builtins(),
-        commonjs(),
         json(),
         typescript2({
           typescript: ts, // ensure we're using the same typescript (3.x) for rollup as for regular builds etc

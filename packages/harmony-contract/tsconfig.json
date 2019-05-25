@@ -4,7 +4,8 @@
     "baseUrl": ".",
     "paths": { "*": ["types/*"] },
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "declarationDir": "dist"
   },
   "include": ["src", "../../typings/**/*.d.ts"]
 }
