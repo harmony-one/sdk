@@ -4,6 +4,7 @@
 *.lock
 *.tsbuildinfo
 .vscode/
+devTestOnly/
 
 # package.json
 
