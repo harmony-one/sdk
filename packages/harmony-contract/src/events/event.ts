@@ -19,7 +19,7 @@ export class EventMethod extends LogSub {
     this.contract = contract;
     this.params = params;
     this.abiItem = abiItem;
-    super.subscribe();
+    // this.subscribe();
   }
 
   // call() {}
@@ -27,11 +27,15 @@ export class EventMethod extends LogSub {
   // encodeABI() {}
 
   onNewSubscriptionItem(subscriptionItem: any) {
-    // const log = outputLogFormatter(subscriptionItem);
+    const formatted = outputLogFormatter(
+      subscriptionItem.method !== undefined
+        ? subscriptionItem.params.result
+        : subscriptionItem,
+    );
     const log = eventLogDecoder(
       this.contract.abiCoder,
       this.abiItem,
-      outputLogFormatter(subscriptionItem),
+      formatted,
     );
 
     if (log.removed && this.emitter) {

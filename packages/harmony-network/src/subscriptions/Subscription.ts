@@ -39,6 +39,7 @@ export class SubscriptionMethod extends WSProvider {
     );
     try {
       const id = await super.subscribe(subscribePayload);
+
       this.subscriptionId = id;
       this.on(id, (result: any) => {
         const output = this.onNewSubscriptionItem(result);

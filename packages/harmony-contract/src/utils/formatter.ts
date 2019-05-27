@@ -7,9 +7,10 @@ import {
 import {
   numberToHex,
   isArray,
-  hexToNumber,
+  // hexToNumber,
   isString,
   isAddress,
+  hexToBN,
 } from '@harmony-js/utils';
 import { toUtf8Bytes } from '../abi/abiCoder';
 
@@ -58,7 +59,8 @@ export const outputLogFormatter = (log: any) => {
     typeof log.logIndex === 'string'
   ) {
     const shaId = keccak256(
-      log.blockHash.replace('0x', '') +
+      '0x' +
+        log.blockHash.replace('0x', '') +
         log.transactionHash.replace('0x', '') +
         log.logIndex.replace('0x', ''),
     );
@@ -71,15 +73,15 @@ export const outputLogFormatter = (log: any) => {
   }
 
   if (log.blockNumber !== null) {
-    log.blockNumber = hexToNumber(log.blockNumber);
+    log.blockNumber = hexToBN(log.blockNumber).toNumber();
   }
 
   if (log.transactionIndex !== null) {
-    log.transactionIndex = hexToNumber(log.transactionIndex);
+    log.transactionIndex = hexToBN(log.transactionIndex).toNumber();
   }
 
   if (log.logIndex !== null) {
-    log.logIndex = hexToNumber(log.logIndex);
+    log.logIndex = hexToBN(log.logIndex).toNumber();
   }
 
   if (log.address) {

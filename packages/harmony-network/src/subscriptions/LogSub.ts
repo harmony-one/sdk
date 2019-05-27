@@ -9,35 +9,35 @@ export class LogSub extends SubscriptionMethod {
   }
 
   async subscribe() {
-    // if (
-    //   (this.options.fromBlock && this.options.fromBlock !== 'latest') ||
-    //   this.options.fromBlock === 0
-    // ) {
-    try {
-      const getPastLogs = await this.messenger.send(RPCMethod.GetPastLogs, [
-        ...this.options,
-      ]);
+    if (
+      (this.options.fromBlock && this.options.fromBlock !== 'latest') ||
+      (this.options.fromBlock === 0 || this.options.fromBlock === '0x')
+    ) {
+      try {
+        const getPastLogs = await this.messenger.send(RPCMethod.GetPastLogs, [
+          ...this.options,
+        ]);
 
-      if (getPastLogs.isError()) {
-        this.emitter.emit('error', getPastLogs.message);
+        if (getPastLogs.isError()) {
+          this.emitter.emit('error', getPastLogs.error.message);
+        }
+
+        const logs = getPastLogs.result;
+
+        logs.forEach((log: any) => {
+          const formattedLog = this.onNewSubscriptionItem(log);
+          this.emitter.emit('data', formattedLog);
+        });
+
+        delete this.options.fromBlock;
+        // const sub = this.start();
+        return this.start();
+      } catch (error) {
+        this.emitter.emit('error', error);
+        throw error;
       }
-
-      const logs = getPastLogs.result;
-
-      logs.forEach((log: any) => {
-        const formattedLog = this.onNewSubscriptionItem(log);
-
-        this.emitter.emit('data', formattedLog);
-      });
-
-      delete this.options.fromBlock;
-      super.start();
-      return this;
-    } catch (error) {
-      this.emitter.emit('error', error);
     }
-    // }
-    // return this;
+    return this.start();
   }
 
   onNewSubscriptionItem(subscriptionItem: any) {

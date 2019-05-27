@@ -1,3 +1,4 @@
+import { isArray } from '@harmony-js/utils';
 import { AbiItemModel } from '../models/types';
 import { AbiCoderClass } from '../abi/api';
 
@@ -30,4 +31,36 @@ export const methodEncoder = (
   }
 
   return encodedParameters;
+};
+
+export const eventFilterEncoder = (
+  abiCoder: AbiCoderClass,
+  abiItemModel: AbiItemModel,
+  filter: any,
+) => {
+  const topics: any[] = [];
+
+  abiItemModel.getIndexedInputs().forEach((input) => {
+    if (filter[input.name]) {
+      let filterItem = filter[input.name];
+
+      if (isArray(filterItem)) {
+        filterItem = filterItem.map((item: any) => {
+          return abiCoder.encodeParameter(input.type, item);
+        });
+
+        topics.push(filterItem);
+
+        return;
+      }
+
+      topics.push(abiCoder.encodeParameter(input.type, filterItem));
+
+      return;
+    }
+
+    topics.push(null);
+  });
+
+  return topics;
 };

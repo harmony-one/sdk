@@ -21,7 +21,6 @@ class WSProvider extends BaseSocket {
   options: any;
   connection: W3CWebsocket | WebSocket;
   jsonRpc: JsonRpc;
-  on: any;
 
   // ws: w3cwebsocket;
   constructor(url: string, options: any = {}) {
@@ -35,9 +34,13 @@ class WSProvider extends BaseSocket {
     this.jsonRpc = new JsonRpc();
     this.subscriptions = {};
     this.registerEventListeners();
-    this.on = this.emitter.on.bind(this);
+    // this.on = this.emitter.on.bind(this);
   }
 
+  on(type: string, handler: mitt.Handler) {
+    this.emitter.on(type, handler);
+    return this;
+  }
   onData(handler: any) {
     this.emitter.on('data', handler);
     return this;

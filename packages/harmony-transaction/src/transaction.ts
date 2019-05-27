@@ -257,9 +257,9 @@ class Transaction {
       // await this.confirm(this.id, 20, 1000);
       return [this, res.result];
     } else if (res.isError()) {
-      this.emitConfirm(`transaction failed:${res.message}`);
+      this.emitConfirm(`transaction failed:${res.error.message}`);
       this.setTxStatus(TxStatus.REJECTED);
-      return [this, `transaction failed:${res.message}`];
+      return [this, `transaction failed:${res.error.message}`];
     } else {
       this.emitError('transaction failed');
       throw new Error('transaction failed');
