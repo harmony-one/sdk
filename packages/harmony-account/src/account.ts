@@ -11,10 +11,10 @@ import {
 } from '@harmony-js/crypto';
 
 import { isPrivateKey, add0xToString, hexToNumber } from '@harmony-js/utils';
-import { Transaction } from '@harmony-js/transaction';
+import { Transaction, RLPSign } from '@harmony-js/transaction';
 import { Messenger, RPCMethod } from '@harmony-js/network';
 import { Shards } from './types';
-import { RLPSign, defaultMessenger } from './utils';
+import { defaultMessenger } from './utils';
 
 class Account {
   /**

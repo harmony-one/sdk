@@ -8,6 +8,7 @@
     { "path": "packages/harmony-crypto" },
     { "path": "packages/harmony-utils" },
     { "path": "packages/harmony-network" },
-    { "path": "packages/harmony-transaction" }
+    { "path": "packages/harmony-transaction" },
+    { "path": "packages/harmony-contract" }
   ]
 }

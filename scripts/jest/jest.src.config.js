@@ -10,22 +10,22 @@ const config = {
     },
   },
   testMatch: [
-    // '<rootDir>/packages/**/__test__/?(*.)+(spec|test).js',
-    // '<rootDir>/packages/laksa-account/__test__/?(*.)+(spec|test).js',
-    '<rootDir>/packages/harmony-core/__test__/?(*.)+(spec|test).ts',
-    // '<rootDir>/packages/laksa-core/__test__/?(*.)+(spec|test).js'
-    // '<rootDir>/packages/laksa-core-contract/__test__/?(*.)+(spec|test).js'
-    '<rootDir>/packages/harmony-crypto/__test__/?(*.)+(spec|test).ts',
-    '<rootDir>/packages/harmony-contract/__test__/?(*.)+(spec|test).ts',
-    // '<rootDir>/packages/laksa-core-messenger/__test__/?(*.)+(spec|test).js'
-    // '<rootDir>/packages/laksa-core-provider/__test__/?(*.)+(spec|test).js',
-    // '<rootDir>/packages/laksa-core-transaction/__test__/?(*.)+(spec|test).js',
-    // '<rootDir>/packages/laksa-extend-keystore/__test__/?(*.)+(spec|test).js',
-    // '<rootDir>/packages/laksa-providers-http/__test__/?(*.)+(spec|test).js',
-    // '<rootDir>/packages/laksa-shared/__test__/?(*.)+(spec|test).js'
-    '<rootDir>/packages/harmony-utils/__test__/?(*.)+(spec|test).ts',
-    // '<rootDir>/packages/laksa-wallet/__test__/?(*.)+(spec|test).js'
-    // '<rootDir>/packages/laksa/__test__/?(*.)+(spec|test).js'
+    // '<rootDir>/packages/**/test/?(*.)+(spec|test).js',
+    // '<rootDir>/packages/laksa-account/test/?(*.)+(spec|test).js',
+    '<rootDir>/packages/harmony-core/test/?(*.)+(spec|test).ts',
+    // '<rootDir>/packages/laksa-core/test/?(*.)+(spec|test).js'
+    // '<rootDir>/packages/laksa-core-contract/test/?(*.)+(spec|test).js'
+    '<rootDir>/packages/harmony-crypto/test/?(*.)+(spec|test).ts',
+    '<rootDir>/packages/harmony-contract/test/?(*.)+(spec|test).ts',
+    // '<rootDir>/packages/laksa-core-messenger/test/?(*.)+(spec|test).js'
+    // '<rootDir>/packages/laksa-core-provider/test/?(*.)+(spec|test).js',
+    '<rootDir>/packages/harmony-transaction/test/?(*.)+(spec|test).ts',
+    // '<rootDir>/packages/laksa-extend-keystore/test/?(*.)+(spec|test).js',
+    // '<rootDir>/packages/laksa-providers-http/test/?(*.)+(spec|test).js',
+    // '<rootDir>/packages/laksa-shared/test/?(*.)+(spec|test).js'
+    '<rootDir>/packages/harmony-utils/test/?(*.)+(spec|test).ts',
+    // '<rootDir>/packages/laksa-wallet/test/?(*.)+(spec|test).js'
+    // '<rootDir>/packages/laksa/test/?(*.)+(spec|test).js'
   ],
   moduleDirectories: ['src', 'node_modules'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
@@ -48,6 +48,7 @@ const config = {
     'packages/harmony-core/src/**/*.ts',
     'packages/harmony-utils/src/**/*.ts',
     'packages/harmony-crypto/src/**/*.ts',
+    'packages/harmony-transaction/src/**/*.ts',
   ],
   timers: 'fake',
   setupFiles: ['<rootDir>/scripts/jest/jest.setup.js'],

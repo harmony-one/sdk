@@ -6,6 +6,7 @@ export interface TxParams {
   nonce: number | string;
   gasLimit: BN;
   gasPrice: BN;
+  shardID: number | string;
   data: string;
   value: BN;
   chainId: number;

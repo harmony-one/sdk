@@ -3,7 +3,7 @@ import { Messenger } from '@harmony-js/network';
 import { Transaction } from './transaction';
 import { TxParams, TxStatus } from './types';
 
-class TransactionFactory {
+export class TransactionFactory {
   static getContractAddress(tx: Transaction) {
     const { from, nonce } = tx.txParams;
     return getContractAddress(from, Number.parseInt(`${nonce}`, 10));
@@ -39,5 +39,3 @@ class TransactionFactory {
     return newTxn;
   }
 }
-
-export { TransactionFactory };

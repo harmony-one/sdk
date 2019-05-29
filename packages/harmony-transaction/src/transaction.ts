@@ -7,7 +7,7 @@ import {
   Signature,
   splitSignature,
 } from '@harmony-js/crypto';
-import { add0xToString, numberToHex } from '@harmony-js/utils';
+import { add0xToString, numberToHex, ChainType } from '@harmony-js/utils';
 import {
   Messenger,
   RPCMethod,
@@ -24,6 +24,8 @@ import {
   sleep,
   TransactionEvents,
   defaultMessenger,
+  transactionFieldsETH,
+  recoverETH,
 } from './utils';
 
 class Transaction {
@@ -38,6 +40,7 @@ class Transaction {
   private from: string;
   private nonce: number | string;
   private to: string;
+  private shardID: number | string;
   private gasLimit: BN;
   private gasPrice: BN;
   private data: string;
@@ -49,7 +52,7 @@ class Transaction {
 
   // constructor
   constructor(
-    params?: TxParams,
+    params?: TxParams | any,
     messenger: Messenger = defaultMessenger,
     txStatus = TxStatus.INTIALIZED,
   ) {
@@ -63,6 +66,7 @@ class Transaction {
     this.nonce = params ? params.nonce : 0;
     this.gasPrice = params ? params.gasPrice : new BN(0);
     this.gasLimit = params ? params.gasLimit : new BN(0);
+    this.shardID = params ? params.shardID : 0;
     this.to = params ? params.to : '0x';
     this.value = params ? params.value : new BN(0);
     this.data = params ? params.data : '0x';
@@ -88,7 +92,13 @@ class Transaction {
   getRLPUnsigned(): [string, any[]] {
     const raw: Array<string | Uint8Array> = [];
 
-    transactionFields.forEach((field: any) => {
+    // temp setting to be compatible with eth
+    const fields =
+      this.messenger.chainType === ChainType.Harmony
+        ? transactionFields
+        : transactionFieldsETH;
+
+    fields.forEach((field: any) => {
       let value = (<any>this.txParams)[field.name] || [];
       value = arrayify(
         hexlify(
@@ -126,9 +136,11 @@ class Transaction {
   }
 
   getRLPSigned(raw: any[], signature: Signature): string {
+    // temp setting to be compatible with eth
+    const rawLength = this.messenger.chainType === ChainType.Harmony ? 10 : 9;
     const sig = splitSignature(signature);
     let v = 27 + (sig.recoveryParam || 0);
-    if (raw.length === 9) {
+    if (raw.length === rawLength) {
       raw.pop();
       raw.pop();
       raw.pop();
@@ -143,7 +155,12 @@ class Transaction {
   }
 
   recover(txnHash: string): Transaction {
-    this.setParams(recover(txnHash));
+    // temp setting to be compatible with eth
+    const recovered =
+      this.messenger.chainType === ChainType.Harmony
+        ? recover(txnHash)
+        : recoverETH(txnHash);
+    this.setParams(recovered);
     return this;
   }
   // use when using eth_sendTransaction
@@ -151,6 +168,7 @@ class Transaction {
     return {
       from: this.txParams.from || '0x',
       to: this.txParams.to || '0x',
+      shardID: this.txParams.shardID ? numberToHex(this.shardID) : '0x',
       gas: this.txParams.gasLimit ? numberToHex(this.txParams.gasLimit) : '0x',
       gasPrice: this.txParams.gasPrice
         ? numberToHex(this.txParams.gasPrice)
@@ -168,6 +186,7 @@ class Transaction {
       nonce: this.nonce || 0,
       gasPrice: this.gasPrice || new BN(0),
       gasLimit: this.gasLimit || new BN(0),
+      shardID: this.shardID || 0,
       to: this.to || '0x',
       value: this.value || new BN(0),
       data: this.data || '0x',
@@ -183,6 +202,7 @@ class Transaction {
     this.nonce = params ? params.nonce : 0;
     this.gasPrice = params ? params.gasPrice : new BN(0);
     this.gasLimit = params ? params.gasLimit : new BN(0);
+    this.shardID = params ? params.shardID : 0;
     this.to = params ? params.to : '0x';
     this.value = params ? params.value : new BN(0);
     this.data = params ? params.data : '0x';
@@ -292,7 +312,7 @@ class Transaction {
       } else {
         this.txStatus = TxStatus.PENDING;
         const currentBlock = await this.getBlockNumber();
-        this.blockNumbers.push(currentBlock);
+        this.blockNumbers.push('0x' + currentBlock.toString('hex'));
         this.confirmationCheck += 1;
         return false;
       }
@@ -315,17 +335,9 @@ class Transaction {
         try {
           const newBlock = await this.getBlockNumber();
           // TODO: this is super ugly, must be a better way doing this
-          const nextBlock =
-            '0x' +
-            new BN(checkBlock.substring(2), 'hex')
-              .add(new BN(attempt === 0 ? attempt : 1))
-              .toString('hex');
+          const nextBlock = checkBlock.add(new BN(attempt === 0 ? attempt : 1));
 
-          if (
-            new BN(newBlock.substring(2), 'hex').gte(
-              new BN(nextBlock.substring(2), 'hex'),
-            )
-          ) {
+          if (newBlock.gte(nextBlock)) {
             checkBlock = newBlock;
             if (await this.trackTx(txHash)) {
               this.emitConfirm(this.txStatus);
@@ -416,13 +428,13 @@ class Transaction {
     this.emitter.emit(TransactionEvents.confirmation, data);
   }
 
-  async getBlockNumber() {
+  async getBlockNumber(): Promise<BN> {
     try {
       const currentBlock = await this.messenger.send(RPCMethod.BlockNumber, []);
       if (currentBlock.isError()) {
         throw currentBlock.message;
       }
-      return currentBlock.result;
+      return new BN(currentBlock.result.replace('0x', ''), 'hex');
     } catch (error) {
       throw error;
     }
