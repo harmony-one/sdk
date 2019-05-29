@@ -48,7 +48,7 @@ describe('test sign tranction', () => {
       const unsigned = transaction.getRLPUnsigned();
       expect(unsigned[0]).toEqual(vector.unsignedTransaction);
       const signed = RLPSign(transaction, vector.privateKey);
-      expect(signed[0]).toEqual(vector.signedTransaction);
+      expect(signed[1]).toEqual(vector.signedTransaction);
     }
   });
 

@@ -142,7 +142,7 @@ export class ContractMethod {
     try {
       const signed = await this.wallet.signTransaction(
         this.transaction,
-        undefined,
+        this.wallet.signer,
         undefined,
         true,
         'rlp',

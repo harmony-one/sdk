@@ -30,11 +30,7 @@ export class TransactionFactory {
   }
 
   recover(txHash: string): Transaction {
-    const newTxn = new Transaction(
-      undefined,
-      this.messenger,
-      TxStatus.INTIALIZED,
-    );
+    const newTxn = new Transaction({}, this.messenger, TxStatus.INTIALIZED);
     newTxn.recover(txHash);
     return newTxn;
   }

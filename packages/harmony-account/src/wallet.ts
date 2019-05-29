@@ -219,8 +219,9 @@ class Wallet {
 
   async signTransaction(
     transaction: Transaction,
-    account?: Account,
-    password?: string,
+    account: Account | undefined = this.signer,
+    // tslint:disable-next-line: no-unnecessary-initializer
+    password: string | undefined = undefined,
     updateNonce: boolean = true,
     encodeMode: string = 'rlp',
     blockNumber: string = 'latest',
