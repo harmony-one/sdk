@@ -24,7 +24,7 @@ export const transactionFields = [
   { name: 'nonce', length: 32, fix: false },
   { name: 'gasPrice', length: 32, fix: false, transform: 'hex' },
   { name: 'gasLimit', length: 32, fix: false, transform: 'hex' },
-  { name: 'shardID', length: 32, fix: false },
+  { name: 'shardID', length: 16, fix: false },
   { name: 'to', length: 20, fix: true },
   { name: 'value', length: 32, fix: false, transform: 'hex' },
   { name: 'data', fix: false },
