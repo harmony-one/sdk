@@ -1,4 +1,4 @@
-import { bip39, hdkey, EncryptOptions } from '@harmony-js/crypto';
+import { bip39, hdkey, EncryptOptions, getAddress } from '@harmony-js/crypto';
 import { Messenger } from '@harmony-js/network';
 import { isPrivateKey, isAddress } from '@harmony-js/utils';
 import { Account } from './account';
@@ -79,6 +79,33 @@ class Wallet {
           this.setSigner(newAcc.address);
         }
         return newAcc;
+      } else {
+        throw new Error('add account failed');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * @function addByKeyStore
+   * @memberof Wallet
+   * @description add an account using privateKey
+   * @param  {string} keyStore - keystore jsonString to add
+   * @param  {string} password - password to decrypt the file
+   * @return {Account} return added Account
+   */
+  async addByKeyStore(keyStore: string, password: string): Promise<Account> {
+    try {
+      const newAcc = new Account(undefined);
+      const result = await newAcc.fromFile(keyStore, password);
+      result.setMessenger(this.messenger);
+      if (result.address) {
+        this.accountMap.set(result.address, result);
+        if (!this.defaultSigner) {
+          this.setSigner(result.address);
+        }
+        return result;
       } else {
         throw new Error('add account failed');
       }
@@ -190,7 +217,7 @@ class Wallet {
    * @return {Account} Account instance which lives in Wallet
    */
   getAccount(address: string): Account | undefined {
-    return this.accountMap.get(address);
+    return this.accountMap.get(getAddress(address).basicHex);
   }
 
   /**
@@ -200,7 +227,7 @@ class Wallet {
    * @param  {string} address: - address hex
    */
   removeAccount(address: string): void {
-    this.accountMap.delete(address);
+    this.accountMap.delete(getAddress(address).basicHex);
     if (this.defaultSigner === address) {
       this.defaultSigner = undefined;
     }

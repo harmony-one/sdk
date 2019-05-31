@@ -4,7 +4,7 @@ import * as errors from './errors';
 
 import { keccak256 } from './keccak256';
 import { randomBytes } from './random';
-import { isPrivateKey, strip0x } from '@harmony-js/utils';
+import { isPrivateKey, strip0x, isAddress } from '@harmony-js/utils';
 import { encode } from './rlp';
 
 const secp256k1 = elliptic.ec('secp256k1');
@@ -179,3 +179,18 @@ export function recoverAddress(
     recoverPublicKey(bytes.arrayify(digest) || new Uint8Array(), signature),
   );
 }
+
+/**
+ * isValidChecksumAddress
+ *
+ * takes hex-encoded string and returns boolean if address is checksumed
+ *
+ * @param {string} address
+ * @returns {boolean}
+ */
+export const isValidChecksumAddress = (address: string): boolean => {
+  return (
+    isAddress(address.replace('0x', '')) &&
+    toChecksumAddress(address) === address
+  );
+};

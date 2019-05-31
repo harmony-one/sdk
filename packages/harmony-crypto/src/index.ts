@@ -12,5 +12,6 @@ export * from './errors';
 
 // export types
 export * from './types';
+export * from './address';
 
 export { hdkey, bip39, BN };
