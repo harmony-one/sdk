@@ -287,6 +287,23 @@ class Blockchain extends HarmonyCore {
       return result;
     }
   }
+
+  createObservedTransaction(transaction: Transaction) {
+    try {
+      let signed = transaction;
+      signed.sendTransaction().then((response) => {
+        const [txReturned, TranID] = response;
+        signed = txReturned;
+        signed.confirm(TranID).then(() => {
+          signed.emitter.resolve(signed);
+        });
+      });
+      return signed.emitter;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   @assertObject({
     to: ['isAddress', AssertType.optional],
     data: ['isHex', AssertType.optional],

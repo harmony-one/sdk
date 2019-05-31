@@ -1,2 +1,2 @@
-export type ShardId = string | number;
-export type Shards = Map<ShardId, string>;
+export type ShardID = string | number;
+export type Shards = Map<ShardID, string>;
