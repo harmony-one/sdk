@@ -265,24 +265,24 @@ describe('test Blockchain', () => {
     });
     expect(res2.result).toEqual('0xd3c21bcecceda1000000');
   });
-  // it('test get transaction receipt', async () => {
-  //   const bc = new Blockchain(messenger);
-  //   const mockRpcResponse = {
-  //     jsonrpc: '2.0',
-  //     id: 1,
-  //     result: '0xd3c21bcecceda1000000',
-  //   };
-  //   // set mocks to test methods
-  //   runMocks(mockRpcResponse, 2);
+  it('test get transaction receipt', async () => {
+    const bc = new Blockchain(messenger);
+    const mockRpcResponse = {
+      jsonrpc: '2.0',
+      id: 1,
+      result: '0xd3c21bcecceda1000000',
+    };
+    // set mocks to test methods
+    runMocks(mockRpcResponse, 2);
 
-  //   const res1 = await bc.getBalance({
-  //     address: '0x15a128e599b74842bccba860311efa92991bffb5',
-  //     blockNumber: '0x1',
-  //   });
-  //   expect(res1).toEqual('0xd3c21bcecceda1000000');
-  //   const res2 = await bc.getBalance({
-  //     address: '0x15a128e599b74842bccba860311efa92991bffb5',
-  //   });
-  //   expect(res2).toEqual('0xd3c21bcecceda1000000');
-  // });
+    const res1 = await bc.getBalance({
+      address: '0x15a128e599b74842bccba860311efa92991bffb5',
+      blockNumber: '0x1',
+    });
+    expect(res1.result).toEqual('0xd3c21bcecceda1000000');
+    const res2 = await bc.getBalance({
+      address: '0x15a128e599b74842bccba860311efa92991bffb5',
+    });
+    expect(res2.result).toEqual('0xd3c21bcecceda1000000');
+  });
 });
