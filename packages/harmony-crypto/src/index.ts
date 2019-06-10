@@ -9,7 +9,6 @@ export * from './bytes';
 export * from './rlp';
 export * from './keccak256';
 export * from './errors';
-export * from './base58';
 export * from './bech32';
 
 // export types

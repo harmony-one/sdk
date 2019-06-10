@@ -30,16 +30,15 @@ export class Harmony extends utils.HarmonyCore {
   utils: any;
   private provider: HttpProvider | WSProvider;
   constructor(
-    url: string,
+    url: string = defaultUrl,
     {
-      chainUrl = defaultUrl,
       chainType = utils.ChainType.Harmony,
       chainId = utils.ChainID.Default,
-    }: { chainUrl: string; chainType: utils.ChainType; chainId: utils.ChainID },
+    }: { chainType: utils.ChainType; chainId: utils.ChainID },
   ) {
     super(chainType, chainId);
 
-    const providerUrl = url || chainUrl;
+    const providerUrl = url;
 
     this.provider = utils.isHttp(providerUrl)
       ? new HttpProvider(providerUrl)
