@@ -7,6 +7,8 @@ import { ContractFactory, Contract } from '@harmony-js/contract';
 import { Wallet, Account } from '@harmony-js/account';
 import { Blockchain } from './blockchain';
 
+const defaultUrl = 'http://localhost:9500';
+
 export class Harmony extends utils.HarmonyCore {
   Modules = {
     HttpProvider,
@@ -29,16 +31,21 @@ export class Harmony extends utils.HarmonyCore {
   private provider: HttpProvider | WSProvider;
   constructor(
     url: string,
-    chainType: utils.ChainType = utils.ChainType.Harmony,
-    chainId: utils.ChainID = utils.ChainID.Default,
+    {
+      chainUrl = defaultUrl,
+      chainType = utils.ChainType.Harmony,
+      chainId = utils.ChainID.Default,
+    }: { chainUrl: string; chainType: utils.ChainType; chainId: utils.ChainID },
   ) {
     super(chainType, chainId);
 
-    this.provider = utils.isHttp(url)
-      ? new HttpProvider(url)
-      : utils.isWs(url)
-      ? new WSProvider(url)
-      : new HttpProvider('http://localhost:9128');
+    const providerUrl = url || chainUrl;
+
+    this.provider = utils.isHttp(providerUrl)
+      ? new HttpProvider(providerUrl)
+      : utils.isWs(providerUrl)
+      ? new WSProvider(providerUrl)
+      : new HttpProvider(defaultUrl);
     this.messenger = new Messenger(this.provider, this.chainType, this.chainId);
     this.blockchain = new Blockchain(this.messenger);
     this.transactions = new TransactionFactory(this.messenger);

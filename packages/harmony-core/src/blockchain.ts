@@ -16,6 +16,8 @@ import {
   DefaultBlockParams,
 } from '@harmony-js/utils';
 
+import { getAddress } from '@harmony-js/crypto';
+
 import { Transaction } from '@harmony-js/transaction';
 
 class Blockchain extends HarmonyCore {
@@ -40,7 +42,7 @@ class Blockchain extends HarmonyCore {
    *
    */
   @assertObject({
-    address: ['isAddress', AssertType.required],
+    address: ['isValidAddress', AssertType.required],
     blockNumber: ['isBlockNumber', AssertType.optional],
   })
   async getBalance({
@@ -52,7 +54,7 @@ class Blockchain extends HarmonyCore {
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetBalance,
-      [address, blockNumber],
+      [getAddress(address).checksum, blockNumber],
       this.chainPrefix,
     );
     return this.getRpcResult(result);
@@ -201,7 +203,7 @@ class Blockchain extends HarmonyCore {
    *
    */
   @assertObject({
-    address: ['isAddress', AssertType.required],
+    address: ['isValidAddress', AssertType.required],
     blockNumber: ['isBlockNumber', AssertType.optional],
   })
   async getCode({
@@ -213,7 +215,7 @@ class Blockchain extends HarmonyCore {
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetCode,
-      [address, blockNumber],
+      [getAddress(address).checksum, blockNumber],
       this.chainPrefix,
     );
     return this.getRpcResult(result);
@@ -226,7 +228,7 @@ class Blockchain extends HarmonyCore {
   }
 
   @assertObject({
-    address: ['isAddress', AssertType.required],
+    address: ['isValidAddress', AssertType.required],
     position: ['isHex', AssertType.required],
     blockNumber: ['isBlockNumber', AssertType.optional],
   })
@@ -241,14 +243,14 @@ class Blockchain extends HarmonyCore {
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetStorageAt,
-      [address, position, blockNumber],
+      [getAddress(address).checksum, position, blockNumber],
       this.chainPrefix,
     );
     return this.getRpcResult(result);
   }
 
   @assertObject({
-    address: ['isAddress', AssertType.required],
+    address: ['isValidAddress', AssertType.required],
     blockNumber: ['isBlockNumber', AssertType.optional],
   })
   async getTransactionCount({
@@ -260,7 +262,7 @@ class Blockchain extends HarmonyCore {
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionCount,
-      [address, blockNumber],
+      [getAddress(address).checksum, blockNumber],
       this.chainPrefix,
     );
     return this.getRpcResult(result);
@@ -305,13 +307,13 @@ class Blockchain extends HarmonyCore {
   }
 
   @assertObject({
-    to: ['isAddress', AssertType.optional],
+    to: ['isValidAddress', AssertType.optional],
     data: ['isHex', AssertType.optional],
   })
   async estimateGas({ to, data }: { to: string; data: string }) {
     const result = await this.messenger.send(
       RPCMethod.EstimateGas,
-      [{ to, data }],
+      [{ to: getAddress(to).checksum, data }],
       this.chainPrefix,
     );
     return this.getRpcResult(result);

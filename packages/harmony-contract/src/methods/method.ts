@@ -6,6 +6,7 @@ import {
 } from '@harmony-js/transaction';
 import { RPCMethod, getResultForData, Emitter } from '@harmony-js/network';
 import { hexToNumber, hexToBN } from '@harmony-js/utils';
+import { getAddress } from '@harmony-js/crypto';
 import { AbiItemModel } from '../models/types';
 import { Contract } from '../contract';
 import { methodEncoder } from '../utils/encoder';
@@ -196,7 +197,7 @@ export class ContractMethod {
       }
       const txObject = {
         ...this.params[0],
-        to: this.contract.address,
+        to: getAddress(this.contract.address).checksum,
         data: this.encodeABI(),
       };
 

@@ -2,12 +2,13 @@ import {
   generatePrivateKey,
   getAddressFromPrivateKey,
   getPubkeyFromPrivateKey,
-  toChecksumAddress,
+  // toChecksumAddress,
   encrypt,
   decrypt,
   EncryptOptions,
   Keystore,
   Signature,
+  getAddress,
 } from '@harmony-js/crypto';
 
 import { isPrivateKey, add0xToString, hexToNumber } from '@harmony-js/utils';
@@ -49,7 +50,13 @@ class Account {
    * @return {string} get the checksumAddress
    */
   get checksumAddress(): string {
-    return this.address ? toChecksumAddress(this.address) : '';
+    return this.address ? getAddress(this.address).checksum : '';
+  }
+  get bech32Address(): string {
+    return this.address ? getAddress(this.address).bech32 : '';
+  }
+  get bech32TestNetAddress(): string {
+    return this.address ? getAddress(this.address).bech32TestNet : '';
   }
 
   /**

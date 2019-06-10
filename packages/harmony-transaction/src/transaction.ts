@@ -6,6 +6,8 @@ import {
   stripZeros,
   Signature,
   splitSignature,
+  getAddress,
+  HarmonyAddress,
 } from '@harmony-js/crypto';
 import { add0xToString, numberToHex, ChainType } from '@harmony-js/utils';
 import {
@@ -67,7 +69,9 @@ class Transaction {
     this.gasPrice = params ? params.gasPrice : new BN(0);
     this.gasLimit = params ? params.gasLimit : new BN(0);
     this.shardID = params ? params.shardID : 0;
-    this.to = params ? params.to : '0x';
+
+    // this.to= params ? params.to:'0x';
+    this.to = params ? this.normalizeAddress(params.to) : '0x';
     this.value = params ? params.value : new BN(0);
     this.data = params ? params.data : '0x';
     // chainid should change with different network settings
@@ -187,7 +191,8 @@ class Transaction {
       gasPrice: this.gasPrice || new BN(0),
       gasLimit: this.gasLimit || new BN(0),
       shardID: this.shardID || 0,
-      to: this.to || '0x',
+      // to: this.to || '0x',
+      to: this.normalizeAddress(this.to) || '0x',
       value: this.value || new BN(0),
       data: this.data || '0x',
       chainId: this.chainId || 0,
@@ -203,7 +208,8 @@ class Transaction {
     this.gasPrice = params ? params.gasPrice : new BN(0);
     this.gasLimit = params ? params.gasLimit : new BN(0);
     this.shardID = params ? params.shardID : 0;
-    this.to = params ? params.to : '0x';
+    // this.to = params ? params.to : '0x';
+    this.to = params ? this.normalizeAddress(params.to) : '0x';
     this.value = params ? params.value : new BN(0);
     this.data = params ? params.data : '0x';
     this.chainId = params ? params.chainId : 0;
@@ -451,6 +457,18 @@ class Transaction {
       return block.result;
     } catch (error) {
       throw error;
+    }
+  }
+
+  normalizeAddress(address: string) {
+    if (
+      HarmonyAddress.isValidChecksum(address) ||
+      HarmonyAddress.isValidBech32(address) ||
+      HarmonyAddress.isValidBech32TestNet(address)
+    ) {
+      return getAddress(address).checksum;
+    } else {
+      throw new Error(`Address format is not supported`);
     }
   }
 }

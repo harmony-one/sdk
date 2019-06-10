@@ -159,3 +159,29 @@ export const isBlockNumber = (obj: any): boolean => {
   return isHex(obj) || blockParams.some((val) => val === obj);
 };
 isBlockNumber.validator = 'isBlockNumber';
+
+export const isBech32Address = (raw: string): boolean => {
+  return !!raw.match(/^hmy1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{38}/);
+};
+isBech32Address.validator = 'isBech32Address';
+
+export const isBech32TestNetAddress = (raw: string): boolean => {
+  return !!raw.match(/^thmy1[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{38}/);
+};
+isBech32TestNetAddress.validator = 'isBech32TestNetAddress';
+
+export const isValidAddress = (address: string): boolean => {
+  if (!isString(address)) {
+    throw new Error(`${address} is not string`);
+  }
+  if (
+    isAddress(address) ||
+    isBech32Address(address) ||
+    isBech32TestNetAddress(address)
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+isValidAddress.validator = 'isValidAddress';
