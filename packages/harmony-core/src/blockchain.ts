@@ -60,6 +60,14 @@ class Blockchain extends HarmonyCore {
     return this.getRpcResult(result);
   }
 
+  async getBlockNumber() {
+    const result = await this.messenger.send(
+      RPCMethod.BlockNumber,
+      [],
+      this.chainPrefix,
+    );
+    return this.getRpcResult(result);
+  }
   /**
    *
    */
