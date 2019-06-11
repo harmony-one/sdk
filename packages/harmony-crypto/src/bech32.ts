@@ -121,9 +121,9 @@ export const bech32Decode = (bechString: string) => {
   return { hrp, data: Buffer.from(data.slice(0, data.length - 6)) };
 };
 
-// HRP is the human-readable part of zilliqa bech32 addresses
-export const HRP = 'hmy';
-export const tHRP = 'thmy';
+// HRP is the human-readable part of Harmony bech32 addresses
+export const HRP = 'one';
+export const tHRP = 'tone';
 
 /**
  * convertBits
@@ -178,14 +178,14 @@ export const convertBits = (
 /**
  * toBech32Address
  *
- * bech32Encodes a canonical 20-byte Ethereum-style address as a bech32 zilliqa
+ * bech32Encodes a canonical 20-byte Ethereum-style address as a bech32 Harmony
  * address.
  *
- * The expected format is zil1<address><checksum> where address and checksum
+ * The expected format is one1<address><checksum> where address and checksum
  * are the result of bech32 encoding a Buffer containing the address bytes.
  *
  * @param {string} 20 byte canonical address
- * @returns {string} 38 char bech32 bech32Encoded zilliqa address
+ * @returns {string} 38 char bech32 bech32Encoded Harmony address
  */
 export const toBech32 = (address: string, useHRP: string = HRP): string => {
   if (!isAddress(address)) {
@@ -208,7 +208,7 @@ export const toBech32 = (address: string, useHRP: string = HRP): string => {
 /**
  * fromBech32Address
  *
- * @param {string} address - a valid Zilliqa bech32 address
+ * @param {string} address - a valid Harmony bech32 address
  * @returns {string} a canonical 20-byte Ethereum-style address
  */
 export const fromBech32 = (address: string, useHRP: string = HRP): string => {
