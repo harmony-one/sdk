@@ -11,7 +11,7 @@ export * from './providers/emitter';
 export * from './messenger/messenger';
 export * from './messenger/responseMiddleware';
 // rpc builder and blockchain method
-export * from './rpcMethod/rpcBuilder';
+export * from './rpcMethod/rpcbuilder';
 export * from './rpcMethod/net';
 export * from './rpcMethod/rpc';
 // trackers
