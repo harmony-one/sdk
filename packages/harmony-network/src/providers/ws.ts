@@ -7,7 +7,7 @@ import {
   // EmittType,
 } from './baseSocket';
 import { isWs, isObject, isArray } from '@harmony-js/utils';
-import { JsonRpc } from '../rpcMethod/rpcbuilder';
+import { JsonRpc } from '../rpcMethod/rpcBuilder';
 import { composeMiddleware } from '../rpcMethod/net';
 import { RPCRequestPayload } from '../types';
 
