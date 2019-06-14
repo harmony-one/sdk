@@ -1,8 +1,8 @@
 import { bip39, hdkey, EncryptOptions, getAddress } from '@harmony-js/crypto';
 import { Messenger } from '@harmony-js/network';
 import { isPrivateKey, isAddress } from '@harmony-js/utils';
-import { Account } from './account';
 import { Transaction } from '@harmony-js/transaction';
+import { Account } from './account';
 import { defaultMessenger } from './utils';
 
 class Wallet {

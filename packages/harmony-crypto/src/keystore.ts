@@ -5,13 +5,7 @@ import uuid from 'uuid';
 import { isPrivateKey } from '@harmony-js/utils';
 import { randomBytes } from './random';
 import { getAddressFromPrivateKey } from './keyTool';
-import {
-  concat,
-  //   arrayify,
-  //   hexDataLength,
-  //   hexToByteArray,
-  hexToIntArray,
-} from './bytes';
+import { concat, hexToIntArray } from './bytes';
 import { keccak256 } from './keccak256';
 import {
   KDF,

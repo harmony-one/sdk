@@ -19,7 +19,7 @@ import {
   checkNew,
   bytesPadRight,
 } from '@harmony-js/crypto';
-import { hexToBN } from '@harmony-js/utils';
+import { hexToBN, defineReadOnly } from '@harmony-js/utils';
 
 const NegativeOne: BN = new BN(-1);
 const One: BN = new BN(1);
@@ -1128,14 +1128,6 @@ function splitNesting(value: string): any[] {
   }
 
   return result;
-}
-
-export function defineReadOnly(object: any, name: string, value: any): void {
-  Object.defineProperty(object, name, {
-    enumerable: true,
-    value,
-    writable: false,
-  });
 }
 
 // @TODO: Is there a way to return "class"?
