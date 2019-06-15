@@ -1,6 +1,6 @@
 {
   "name": "@harmony-js/utils",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "description": "utils for harmony",
   "main": "dist/index.js",
   "node": "dist/index.js",
