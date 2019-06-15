@@ -1,4 +1,4 @@
-import { getContractAddress } from '@harmony-js/crypto';
+import { getContractAddress, getAddress } from '@harmony-js/crypto';
 import { Messenger } from '@harmony-js/network';
 import { Transaction } from './transaction';
 import { TxParams, TxStatus } from './types';
@@ -6,7 +6,8 @@ import { TxParams, TxStatus } from './types';
 export class TransactionFactory {
   static getContractAddress(tx: Transaction) {
     const { from, nonce } = tx.txParams;
-    return getContractAddress(from, Number.parseInt(`${nonce}`, 10));
+    return getAddress(getContractAddress(from, Number.parseInt(`${nonce}`, 10)))
+      .checksum;
   }
 
   messenger: Messenger;

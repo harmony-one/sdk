@@ -197,7 +197,10 @@ export class ContractMethod {
       }
       const txObject = {
         ...this.params[0],
-        to: getAddress(this.contract.address).checksum,
+        to:
+          this.contract.address === '0x'
+            ? '0x'
+            : getAddress(this.contract.address).checksum,
         data: this.encodeABI(),
       };
 
