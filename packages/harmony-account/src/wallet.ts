@@ -1,4 +1,10 @@
-import { bip39, hdkey, EncryptOptions, getAddress } from '@harmony-js/crypto';
+import {
+  bip39,
+  hdkey,
+  EncryptOptions,
+  getAddress,
+  generatePrivateKey,
+} from '@harmony-js/crypto';
 import { Messenger } from '@harmony-js/network';
 import { isPrivateKey, isAddress } from '@harmony-js/utils';
 import { Transaction } from '@harmony-js/transaction';
@@ -123,8 +129,8 @@ class Wallet {
     password?: string,
     options?: EncryptOptions,
   ): Promise<Account> {
-    const words = this.generateMnemonic();
-    const acc = this.addByMnemonic(words);
+    const prv = generatePrivateKey();
+    const acc = this.addByPrivateKey(prv);
     if (acc.address && password) {
       const encrypted = await this.encryptAccount(
         acc.address,
