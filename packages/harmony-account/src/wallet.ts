@@ -12,6 +12,11 @@ import { Account } from './account';
 import { defaultMessenger } from './utils';
 
 class Wallet {
+  // static method generate Mnemonic
+  static generateMnemonic(): string {
+    return bip39.generateMnemonic();
+  }
+
   messenger: Messenger;
   protected defaultSigner?: string;
   /**
@@ -46,9 +51,7 @@ class Wallet {
    * @memberof Wallet
    * @return {string} Mnemonics
    */
-  generateMnemonic(): string {
-    return bip39.generateMnemonic();
-  }
+
   /**
    * @function addByMnemonic
    * @memberof Wallet
@@ -144,6 +147,7 @@ class Wallet {
       throw new Error('create acount failed');
     }
   }
+
   /**
    * @function encryptAccount
    * @memberof Wallet
