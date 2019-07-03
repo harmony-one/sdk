@@ -1,4 +1,10 @@
-import { bip39, hdkey } from '@harmony-js/crypto';
+import {
+  bip39,
+  hdkey,
+  encryptPhrase,
+  decryptPhrase,
+  EncryptOptions,
+} from '@harmony-js/crypto';
 import { HDPath } from '@harmony-js/utils';
 
 export class HDNode extends hdkey {
@@ -39,6 +45,34 @@ export class HDNode extends hdkey {
     const master = HDNode.fromMasterSeed(Buffer.from(entropy, 'hex'));
     return master.derive(`${this.path}${index}`);
   }
+
+  async lock(password: string, options: EncryptOptions) {
+    if (this.mnemonic && HDNode.isValidMnemonic(this.mnemonic)) {
+      try {
+        this.mnemonic = await encryptPhrase(this.mnemonic, password, options);
+      } catch (error) {
+        throw error;
+      }
+    } else {
+      throw new Error('mnemonic is not valid');
+    }
+  }
+
+  async unlock(password: string) {
+    if (this.mnemonic) {
+      try {
+        this.mnemonic = await decryptPhrase(
+          JSON.parse(this.mnemonic),
+          password,
+        );
+      } catch (error) {
+        throw error;
+      }
+    } else {
+      throw new Error('mnemonic is not valid');
+    }
+  }
+
   get _privateKey() {
     return this.childKey ? this.childKey.privateKey.toString('hex') : '';
   }

@@ -23,7 +23,7 @@ export interface EncryptOptions {
 }
 
 export interface Keystore {
-  address: string;
+  address?: string;
   Crypto: {
     cipher: string;
     cipherparams: {

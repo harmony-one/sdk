@@ -163,3 +163,65 @@ export const decrypt = async (
     '0x' + Buffer.from(cipher.decrypt(ciphertext)).toString('hex');
   return decrypted;
 };
+
+export const encryptPhrase = async (
+  phrase: string,
+  password: string,
+  options?: EncryptOptions,
+): Promise<string> => {
+  if (!password) {
+    throw new Error('password is not found');
+  }
+  const salt = randomBytes(32);
+  const iv = Buffer.from(randomBytes(16), 'hex');
+  const kdf =
+    options !== undefined ? (options.kdf ? options.kdf : 'scrypt') : 'scrypt';
+  const level =
+    options !== undefined ? (options.level ? options.level : 8192) : 8192;
+
+  const uuidRandom = options !== undefined ? options.uuid : undefined;
+
+  const n = kdf === 'pbkdf2' ? 262144 : level;
+  const kdfparams = {
+    salt,
+    n,
+    r: 8,
+    p: 1,
+    dklen: 32,
+  };
+  const derivedKey = await getDerivedKey(Buffer.from(password), kdf, kdfparams);
+  const cipher = new aes.ModeOfOperation.ctr(
+    derivedKey.slice(0, 16),
+    new aes.Counter(iv),
+  );
+
+  if (!cipher) {
+    throw new Error('Unsupported cipher');
+  }
+
+  const ciphertext = Buffer.from(cipher.encrypt(Buffer.from(phrase)));
+
+  const mac = keccak256(concat([derivedKey.slice(16, 32), ciphertext]));
+  return JSON.stringify({
+    version: 3,
+    id: uuid.v4({ random: uuidRandom || hexToIntArray(randomBytes(16)) }),
+    Crypto: {
+      ciphertext: ciphertext.toString('hex'),
+      cipherparams: {
+        iv: iv.toString('hex'),
+      },
+      cipher: DEFAULT_ALGORITHM,
+      kdf,
+      kdfparams,
+      mac: mac.replace('0x', ''),
+    },
+  });
+};
+
+export const decryptPhrase = async (
+  keystore: Keystore,
+  password: string,
+): Promise<string> => {
+  const result = await decrypt(keystore, password);
+  return Buffer.from(result.replace('0x', ''), 'hex').toString();
+};
