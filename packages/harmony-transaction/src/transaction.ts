@@ -463,8 +463,7 @@ class Transaction {
   normalizeAddress(address: string) {
     if (address === '0x') {
       return '0x';
-    }
-    if (
+    } else if (
       HarmonyAddress.isValidChecksum(address) ||
       HarmonyAddress.isValidBech32(address) ||
       HarmonyAddress.isValidBech32TestNet(address)
