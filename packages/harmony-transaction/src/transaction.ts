@@ -466,7 +466,7 @@ class Transaction {
       HarmonyAddress.isValidBech32(address) ||
       HarmonyAddress.isValidBech32TestNet(address)
     ) {
-      return getAddress(address).checksum;
+      return address === '0x' ? '0x' : getAddress(address).checksum;
     } else {
       throw new Error(`Address format is not supported`);
     }
