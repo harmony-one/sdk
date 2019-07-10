@@ -43,7 +43,9 @@ export class ContractMethod {
         return { ...tx, ...params };
       });
 
-      this.signTransaction().then((signed) => {
+      const updateNonce: boolean = params.nonce ? false : true;
+
+      this.signTransaction(updateNonce).then((signed) => {
         this.sendTransaction(signed).then((sent) => {
           const [txn, id] = sent;
           this.transaction = txn;
@@ -139,13 +141,13 @@ export class ContractMethod {
     );
   }
 
-  protected async signTransaction() {
+  protected async signTransaction(updateNonce: boolean) {
     try {
       const signed = await this.wallet.signTransaction(
         this.transaction,
         this.wallet.signer,
         undefined,
-        true,
+        updateNonce,
         'rlp',
         'pending',
       );
