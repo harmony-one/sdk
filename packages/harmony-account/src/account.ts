@@ -152,7 +152,7 @@ class Account {
 
   async signTransaction(
     transaction: Transaction,
-    updateNonce: boolean = false,
+    updateNonce: boolean = true,
     encodeMode: string = 'rlp',
     blockNumber: string = 'latest',
   ): Promise<Transaction> {
