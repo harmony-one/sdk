@@ -43,7 +43,7 @@ class Transaction {
   private nonce: number | string;
   private to: string;
   private shardID: number | string;
-  private toShardID: number | string;
+  // private toShardID: number | string;
   private gasLimit: BN;
   private gasPrice: BN;
   private data: string;
@@ -70,9 +70,8 @@ class Transaction {
     this.gasPrice = params ? params.gasPrice : new BN(0);
     this.gasLimit = params ? params.gasLimit : new BN(0);
     this.shardID = params ? params.shardID : 0;
-    this.toShardID = params ? params.toShardID : 0;
+    // this.toShardID = params ? params.toShardID : 0;
 
-    // this.to= params ? params.to:'0x';
     this.to = params ? this.normalizeAddress(params.to) : '0x';
     this.value = params ? params.value : new BN(0);
     this.data = params ? params.data : '0x';
@@ -175,7 +174,7 @@ class Transaction {
       from: this.txParams.from || '0x',
       to: this.txParams.to || '0x',
       shardID: this.txParams.shardID ? numberToHex(this.shardID) : '0x',
-      toShardID: this.txParams.toShardID ? numberToHex(this.toShardID) : '0x',
+      // toShardID: this.txParams.toShardID ? numberToHex(this.toShardID) : '0x',
       gas: this.txParams.gasLimit ? numberToHex(this.txParams.gasLimit) : '0x',
       gasPrice: this.txParams.gasPrice
         ? numberToHex(this.txParams.gasPrice)
@@ -194,7 +193,7 @@ class Transaction {
       gasPrice: this.gasPrice || new BN(0),
       gasLimit: this.gasLimit || new BN(0),
       shardID: this.shardID || 0,
-      toShardID: this.toShardID || 0,
+      // toShardID: this.toShardID || 0,
       to: this.normalizeAddress(this.to) || '0x',
       value: this.value || new BN(0),
       data: this.data || '0x',
@@ -211,8 +210,7 @@ class Transaction {
     this.gasPrice = params ? params.gasPrice : new BN(0);
     this.gasLimit = params ? params.gasLimit : new BN(0);
     this.shardID = params ? params.shardID : 0;
-    this.toShardID = params ? params.toShardID : 0;
-    // this.to = params ? params.to : '0x';
+    // this.toShardID = params ? params.toShardID : 0;
     this.to = params ? this.normalizeAddress(params.to) : '0x';
     this.value = params ? params.value : new BN(0);
     this.data = params ? params.data : '0x';
@@ -314,9 +312,14 @@ class Transaction {
 
       if (this.receipt) {
         if (this.receipt.status && this.receipt.status === '0x1') {
+          this.receipt.byzantium = true;
           this.txStatus = TxStatus.CONFIRMED;
         } else if (this.receipt.status && this.receipt.status === '0x0') {
+          this.receipt.byzantium = true;
           this.txStatus = TxStatus.REJECTED;
+        } else if (this.receipt.status === undefined && this.receipt.root) {
+          this.receipt.byzantium = false;
+          this.txStatus = TxStatus.CONFIRMED;
         }
         return true;
       } else {

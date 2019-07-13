@@ -7,7 +7,7 @@ export interface TxParams {
   gasLimit: BN;
   gasPrice: BN;
   shardID: number | string;
-  toShardID: number | string;
+  // toShardID: number | string;
   data: string;
   value: BN;
   chainId: number;
@@ -36,10 +36,12 @@ export interface TransasctionReceipt {
   cumulativeGasUsed: string; // 13244
   contractAddress?: string | null; // or null, if none was created
   logs: any[];
-  status: string;
   logsBloom: string; // 256 byte bloom filter
   v: string;
   r: string;
   s: string;
   responseType?: string;
+  byzantium?: boolean;
+  status?: string; // post Byzantium will return `0x0` or `0x1`
+  root?: string; // pre Byzantium will return `root`
 }
