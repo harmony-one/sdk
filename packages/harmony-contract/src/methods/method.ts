@@ -1,9 +1,5 @@
 import { Wallet } from '@harmony-js/account';
-import {
-  TransactionFactory,
-  Transaction,
-  // TxStatus,
-} from '@harmony-js/transaction';
+import { TransactionFactory, Transaction } from '@harmony-js/transaction';
 import { RPCMethod, getResultForData, Emitter } from '@harmony-js/network';
 import { hexToNumber, hexToBN } from '@harmony-js/utils';
 import { getAddress } from '@harmony-js/crypto';
@@ -76,21 +72,23 @@ export class ContractMethod {
       } else {
         gasLimit = hexToBN(await this.estimateGas());
       }
-
+      let from: string;
+      if (this.wallet.signer) {
+        from =
+          options && options.from ? options.from : this.wallet.signer.address;
+      }
       this.transaction = this.transaction.map((tx: any) => {
         return {
           ...tx,
           ...options,
-          from: options
-            ? options.from
-            : this.wallet.signer
-            ? this.wallet.signer.address
-            : tx.from,
+          from: from || tx.from,
           gasPrice: options ? options.gasPrice : tx.gasPrice,
           gasLimit: gasLimit || tx.gasLimit,
           nonce: Number.parseInt(hexToNumber(nonce), 10),
         };
       });
+
+      console.log(this.transaction.txPayload);
 
       const result = await this.wallet.messenger.send(RPCMethod.Call, [
         this.transaction.txPayload,
