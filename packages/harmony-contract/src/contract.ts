@@ -100,4 +100,7 @@ export class Contract {
   runEventFactory(): Contract {
     return new EventFactory(this).addEventsToContract();
   }
+  connect(wallet: Wallet): void {
+    this.wallet = wallet;
+  }
 }

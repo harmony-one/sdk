@@ -149,7 +149,7 @@ export class ContractMethod {
         undefined,
         updateNonce,
         'rlp',
-        'pending',
+        'latest', // 'pending',
       );
       this.contract.address = TransactionFactory.getContractAddress(signed);
       this.contract.setStatus(ContractStatus.SIGNED);
