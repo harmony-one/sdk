@@ -43,7 +43,7 @@ export class ContractMethod {
         return { ...tx, ...params };
       });
 
-      const updateNonce: boolean = params.nonce ? false : true;
+      const updateNonce: boolean = params.nonce !== undefined ? false : true;
 
       this.signTransaction(updateNonce).then((signed) => {
         this.sendTransaction(signed).then((sent) => {
