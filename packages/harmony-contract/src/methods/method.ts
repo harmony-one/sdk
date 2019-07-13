@@ -1,5 +1,9 @@
 import { Wallet } from '@harmony-js/account';
-import { TransactionFactory, Transaction } from '@harmony-js/transaction';
+import {
+  TransactionFactory,
+  Transaction,
+  TxStatus,
+} from '@harmony-js/transaction';
 import { RPCMethod, getResultForData, Emitter } from '@harmony-js/network';
 import { hexToNumber, hexToBN } from '@harmony-js/utils';
 import { getAddress } from '@harmony-js/crypto';
@@ -167,7 +171,7 @@ export class ContractMethod {
     try {
       const result = await this.transaction.confirm(id);
 
-      if (result.receipt && result.receipt.status === '0x1') {
+      if (result.receipt && result.txStatus === TxStatus.CONFIRMED) {
         if (this.methodKey === 'contractConstructor') {
           this.contract.setStatus(ContractStatus.DEPLOYED);
         } else {
