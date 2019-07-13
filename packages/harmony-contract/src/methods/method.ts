@@ -88,8 +88,6 @@ export class ContractMethod {
         };
       });
 
-      console.log(this.transaction.txPayload);
-
       const result = await this.wallet.messenger.send(RPCMethod.Call, [
         this.transaction.txPayload,
         blockNumber,
