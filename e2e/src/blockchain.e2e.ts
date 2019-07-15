@@ -44,6 +44,7 @@ describe('e2e test blockchain', () => {
     expect(checkBlockData(res3.result)).toEqual(true);
     expect(typeof res3.result.timestamp).toEqual('number');
   });
+
   it('should test hmy_getBlockByHash', async () => {
     const latestBlock = await bc.getBlockByNumber({ blockNumber: 'latest' });
     const res = await bc.getBlockByHash({ blockHash: latestBlock.result.hash });

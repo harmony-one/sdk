@@ -57,4 +57,16 @@ yarn add tslib
 * [harmony-sdk-examples](https://github.com/FireStack-Lab/harmony-sdk-examples)
 
 
+# E2E tests
+
+**Contantly updating now, please get back later**
+
+1. edit `.env` file if you have custom setting
+2. run harmony node locally(this fork currently : https://github.com/mikedoan/harmony/tree/enable_tx)
+3. wait for 1-2 mins, and run this:
+
+```bash
+yarn test:e2e
+```
+
 
