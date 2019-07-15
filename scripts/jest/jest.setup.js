@@ -1,3 +1,5 @@
-global.fetch = require('jest-fetch-mock')
+global.fetch = require('jest-fetch-mock');
 
-window.fetch = global.fetch
+window.fetch = global.fetch;
+
+require('dotenv').config('../../.env');

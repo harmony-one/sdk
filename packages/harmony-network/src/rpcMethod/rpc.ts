@@ -21,6 +21,7 @@ export const enum RPCMethod {
   Syncing = 'hmy_syncing',
   // 10. net_peerCount
   PeerCount = 'net_peerCount',
+
   // 11. hmy_getBalance
   GetBalance = 'hmy_getBalance',
   // 12. hmy_getStorageAt
@@ -59,6 +60,10 @@ export const enum RPCMethod {
   BlockNumber = 'hmy_blockNumber',
   // 29. hmy_unsubscribe
   UnSubscribe = 'hmy_unsubscribe',
+  // 30. net_version
+  NetVersion = 'net_version',
+  // 31. hmy_protocolVersion
+  ProtocalVersion = 'hmy_protocolVersion',
 }
 
 export const enum RPCErrorCode {

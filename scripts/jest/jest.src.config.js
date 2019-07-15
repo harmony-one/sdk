@@ -42,7 +42,7 @@ const config = {
     },
   },
   rootDir: process.cwd(),
-  roots: ['<rootDir>/packages', '<rootDir>/scripts'],
+  roots: ['<rootDir>/packages', '<rootDir>/scripts', '<rootDir>/e2e'],
   collectCoverageFrom: [
     // 'packages/!(harmony-core)/src/**/*.ts',
     'packages/harmony-core/src/**/*.ts',

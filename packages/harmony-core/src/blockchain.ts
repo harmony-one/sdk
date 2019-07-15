@@ -234,6 +234,20 @@ class Blockchain extends HarmonyCore {
 
     return this.getRpcResult(result);
   }
+  async net_version() {
+    const result = await this.messenger.send(RPCMethod.NetVersion, [], 'net');
+
+    return this.getRpcResult(result);
+  }
+
+  async getProtocalVersion() {
+    const result = await this.messenger.send(
+      RPCMethod.ProtocalVersion,
+      [],
+      this.chainPrefix,
+    );
+    return this.getRpcResult(result);
+  }
 
   @assertObject({
     address: ['isValidAddress', AssertType.required],
