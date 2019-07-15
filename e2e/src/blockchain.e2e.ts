@@ -35,7 +35,7 @@ describe('e2e test blockchain', () => {
     expect(res.responseType).toEqual('raw');
     expect(harmony.utils.isHex(size)).toEqual(true);
     expect(checkBlockData(res.result)).toEqual(true);
-    const res2 = await bc.getBlockByNumber({ blockNumber: '0x1' });
+    const res2 = await bc.getBlockByNumber({ blockNumber: res.result.number });
     expect(res2.responseType).toEqual('raw');
     expect(harmony.utils.isHex(res2.result.size)).toEqual(true);
     expect(checkBlockData(res2.result)).toEqual(true);

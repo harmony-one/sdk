@@ -1,166 +1,51 @@
 import { harmony } from './harmony';
-import txnJsons from '../fixtures/transactions.json';
+// tslint:disable-next-line: no-implicit-dependencies
+import { Transaction, TxStatus } from '@harmony-js/transaction';
 
-const messenger = harmony.messenger;
+import demoAccounts from '../fixtures/testAccount.json';
 
-interface TransactionInfo {
-  blockHash: string;
-  index: string;
-  blockNumber: string;
-}
+const receiver = demoAccounts.Accounts[3];
+jest.useRealTimers();
 
-describe('e2e test transactions', () => {
-  const txnHashesFixtures: any = [];
-  const transactionInfoList: any = [];
-  // net_*
-  it('should test hmy_sendRawTransaction from fixtures', async () => {
-    const { transactions } = txnJsons;
+describe('test Transaction using SDK', () => {
+  let signed: Transaction;
+  let sent: Transaction;
+  let txId: string;
+  it('should test signTransaction', async () => {
+    const txnObject = {
+      to: harmony.crypto.getAddress(receiver.Address).bech32,
+      value: new harmony.utils.Unit('100').asGwei().toWei(),
+      gasLimit: new harmony.utils.Unit('210000').asWei().toWei(),
+      gasPrice: new harmony.utils.Unit('100').asGwei().toWei(),
+    };
 
-    for (const txn of transactions) {
-      const sent = await messenger.send(
-        'hmy_sendRawTransaction',
-        txn.rawTransaction,
-      );
-      expect(harmony.utils.isHash(sent.result)).toEqual(true);
-      txnHashesFixtures.push(sent.result);
-    }
+    const txn = harmony.transactions.newTx(txnObject);
+    signed = await harmony.wallet.signTransaction(txn);
+    expect(signed.isSigned()).toEqual(true);
   });
-  it('should test hmy_getTransactionByHash', async () => {
-    for (const txnHash of txnHashesFixtures) {
-      const txnDetail = await harmony.blockchain.getTransactionByHash({
-        txnHash,
-      });
-      expect(checkTransactionDetail(txnDetail.result)).toEqual(true);
-      expect(txnDetail.result.hash).toEqual(txnHash);
-
-      const transactionInfo = {
-        blockHash: txnDetail.result.blockHash,
-        blockNumber: txnDetail.result.blockNumber,
-        index: txnDetail.result.transactionIndex,
-      };
-      transactionInfoList.push(transactionInfo);
-    }
+  it('should send transaction', async () => {
+    const [sentTxn, id] = await signed.sendTransaction();
+    expect(sentTxn.isPending()).toEqual(true);
+    expect(harmony.utils.isHash(id)).toEqual(true);
+    txId = id;
+    sent = sentTxn;
   });
-  it('should test hmy_getTransactionByBlockHashAndIndex', async () => {
-    for (const some of transactionInfoList) {
-      const transactionInfo: TransactionInfo = some;
-      const txnDetail: any = await harmony.blockchain.getTransactionByBlockHashAndIndex(
-        {
-          blockHash: transactionInfo.blockHash,
-          index: transactionInfo.index,
-        },
-      );
-      expect(checkTransactionDetail(txnDetail.result)).toEqual(true);
-      expect(txnDetail.result.blockHash).toEqual(transactionInfo.blockHash);
-      expect(txnDetail.result.transactionIndex).toEqual(transactionInfo.index);
-    }
-  });
-  it('should test hmy_getTransactionByBlockNumberAndIndex', async () => {
-    for (const some of transactionInfoList) {
-      const transactionInfo: TransactionInfo = some;
-      const txnDetail: any = await harmony.blockchain.getTransactionByBlockNumberAndIndex(
-        {
-          blockNumber: transactionInfo.blockNumber,
-          index: transactionInfo.index,
-        },
-      );
-      expect(checkTransactionDetail(txnDetail.result)).toEqual(true);
-      expect(txnDetail.result.blockNumber).toEqual(transactionInfo.blockNumber);
-      expect(txnDetail.result.transactionIndex).toEqual(transactionInfo.index);
-    }
-  });
-  it('should test hmy_getTransactionCountByHash', async () => {
-    for (const some of transactionInfoList) {
-      const transactionInfo: TransactionInfo = some;
-      const txnCount: any = await harmony.blockchain.getBlockTransactionCountByHash(
-        {
-          blockHash: transactionInfo.blockHash,
-        },
-      );
-      expect(harmony.utils.isHex(txnCount.result)).toEqual(true);
-    }
-  });
-  it('should test hmy_getTransactionCountByNumber', async () => {
-    for (const some of transactionInfoList) {
-      const transactionInfo: TransactionInfo = some;
-      const txnCount: any = await harmony.blockchain.getBlockTransactionCountByNumber(
-        {
-          blockNumber: transactionInfo.blockNumber,
-        },
-      );
-      expect(harmony.utils.isHex(txnCount.result)).toEqual(true);
-    }
-  });
-  it('should test hmy_getTransactionReceipt', async () => {
-    const { transactions } = txnJsons;
-    // tslint:disable-next-line: prefer-for-of
-    for (let i = 0; i < txnHashesFixtures.length; i += 1) {
-      const txnHash = txnHashesFixtures[i];
-      const receipt: any = await harmony.blockchain.getTransactionReceipt({
-        txnHash,
-      });
-      expect(checkTransactionReceipt(receipt.result)).toEqual(true);
-      expect(harmony.crypto.getAddress(receipt.result.from).checksum).toEqual(
-        transactions[i].senderAddress,
-      );
-      expect(harmony.crypto.getAddress(receipt.result.to).checksum).toEqual(
-        transactions[i].receiverAddress,
-      );
-      expect(receipt.result.blockHash).toEqual(
-        transactionInfoList[i].blockHash,
-      );
-      expect(receipt.result.blockNumber).toEqual(
-        transactionInfoList[i].blockNumber,
-      );
-      expect(receipt.result.transactionIndex).toEqual(
-        transactionInfoList[i].index,
-      );
-    }
-  });
-  it('should test hmy_getTransactionCount', async () => {
-    const { transactions } = txnJsons;
-
-    for (let i = 0; i < transactionInfoList; i += 1) {
-      const transactionInfo: TransactionInfo = transactionInfoList[i];
-      const nonce: any = await harmony.blockchain.getTransactionCount({
-        address: transactions[i].senderAddressBech32,
-        blockNumber: transactionInfo.blockNumber,
-      });
-      expect(nonce.result).toEqual(transactions[i].nonce);
+  it('should confirm a transaction', async () => {
+    const toConfirm = await sent.confirm(txId, 20, 1000);
+    expect(toConfirm.receipt !== undefined).toEqual(true);
+    expect(checkTransactionReceipt(toConfirm.receipt)).toEqual(true);
+    if (toConfirm.isConfirmed()) {
+      expect(toConfirm.txStatus).toEqual(TxStatus.CONFIRMED);
+    } else if (toConfirm.isRejected()) {
+      expect(toConfirm.txStatus).toEqual(TxStatus.REJECTED);
     }
   });
 });
-
-function checkTransactionDetail(data: any) {
-  return harmony.utils.validateArgs(
-    data,
-    {
-      blockHash: [harmony.utils.isHash],
-      blockNumber: [harmony.utils.isHex],
-      from: [harmony.utils.isAddress],
-      gas: [harmony.utils.isHex],
-      gasPrice: [harmony.utils.isHex],
-      hash: [harmony.utils.isHash],
-      // tslint:disable-next-line: no-shadowed-variable
-      input: [(data: any) => data === '0x' || harmony.utils.isHex(data)],
-      nonce: [harmony.utils.isHex],
-      // tslint:disable-next-line: no-shadowed-variable
-      to: [(data: any) => data === '0x' || harmony.utils.isAddress(data)],
-      transactionIndex: [harmony.utils.isHex],
-      value: [harmony.utils.isHex],
-      v: [harmony.utils.isHex],
-      r: [harmony.utils.isHex],
-      s: [harmony.utils.isHex],
-    },
-    {},
-  );
-}
 
 function checkTransactionReceipt(data: any) {
   return harmony.utils.validateArgs(
     data,
     {
-      blockHash: [harmony.utils.isHash],
       blockNumber: [harmony.utils.isHex],
       contractAddress: [
         // tslint:disable-next-line: no-shadowed-variable
@@ -178,6 +63,6 @@ function checkTransactionReceipt(data: any) {
       transactionHash: [harmony.utils.isHash],
       transactionIndex: [harmony.utils.isHex],
     },
-    {},
+    { blockHash: [harmony.utils.isHash] },
   );
 }
