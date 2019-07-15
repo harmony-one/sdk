@@ -66,7 +66,7 @@ yarn add tslib
 3. wait for 1-2 mins, and run this:
 
 ```bash
-yarn test:e2e
+yarn build:ts && yarn test:e2e
 ```
 
 

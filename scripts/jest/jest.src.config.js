@@ -57,6 +57,10 @@ const config = {
   testEnvironment: process.env.NODE_ENV === 'development' ? 'node' : 'jsdom',
   collectCoverage: true,
   automock: false,
+  watchPlugins: [
+    'jest-watch-typeahead/filename',
+    'jest-watch-typeahead/testname',
+  ],
 };
 
 module.exports = config;
