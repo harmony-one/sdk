@@ -1,6 +1,8 @@
 import { harmony } from './harmony';
 // tslint:disable-next-line: no-implicit-dependencies
 import { Transaction, TxStatus } from '@harmony-js/transaction';
+// tslint:disable-next-line: no-implicit-dependencies
+import { isHash } from '@harmony-js/utils';
 
 import demoAccounts from '../fixtures/testAccount.json';
 
@@ -39,6 +41,37 @@ describe('test Transaction using SDK', () => {
     } else if (toConfirm.isRejected()) {
       expect(toConfirm.txStatus).toEqual(TxStatus.REJECTED);
     }
+  });
+  it('should test transaction observed events', async () => {
+    const txnObject = {
+      to: harmony.crypto.getAddress(receiver.Address).bech32,
+      value: new harmony.utils.Unit('100').asGwei().toWei(),
+      gasLimit: new harmony.utils.Unit('210000').asWei().toWei(),
+      gasPrice: new harmony.utils.Unit('100').asGwei().toWei(),
+    };
+
+    const txn = harmony.transactions.newTx(txnObject);
+    txn
+      .observed()
+      .on('transactionHash', (transactionHash) => {
+        expect(isHash(transactionHash)).toEqual(true);
+      })
+      .on('receipt', (receipt) => {
+        expect(checkTransactionReceipt(receipt)).toEqual(true);
+      })
+      .on('confirmation', (confirmation) => {
+        expect(
+          confirmation === TxStatus.REJECTED ||
+            confirmation === TxStatus.CONFIRMED,
+        ).toBe(true);
+      })
+      .on('error', (error) => {
+        expect(error).toBeTruthy();
+      });
+    const txnSigned = await harmony.wallet.signTransaction(txn);
+    const [txnSent, id] = await txnSigned.sendTransaction();
+    expect(txnSent.txStatus).toEqual(TxStatus.PENDING);
+    await txnSigned.confirm(id);
   });
 });
 

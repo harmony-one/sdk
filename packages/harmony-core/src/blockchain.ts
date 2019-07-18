@@ -322,7 +322,7 @@ class Blockchain extends HarmonyCore {
           signed.emitter.resolve(signed);
         });
       });
-      return signed.emitter;
+      return signed.observed();
     } catch (err) {
       throw err;
     }
