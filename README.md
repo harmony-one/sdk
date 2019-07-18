@@ -24,6 +24,19 @@ yarn add tslib
 
 ```
 
+# Start hacking
+
+1. install `lerna` and `typescript` globally
+```bash
+yarn global add lerna && yarn global add typescript
+```
+2. bootstrap repostory
+```bash
+yarn bootstrap
+
+```
+
+
 # Packages
 
 1. [@harmony-js/core](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-core)
@@ -35,22 +48,23 @@ yarn add tslib
 7. [@harmony-js/contract](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-contract)
 
 
-# Manually Build
-1. make sure you have latest `node.js` and `yarn` installed
+# Manually Build/bundle
 
-2. git clone
-   
-   ```bash
-   git clone git@github.com:FireStack-Lab/Harmony-sdk-core.git
-   cd Harmony-sdk-core
-   ```
+There are two ways building
 
-3. cleanup and build
-   
-   ```bash
-   yarn global add lerna && yarn install && lerna bootstrap && lerna link && yarn dist
-   ```
+1. building the `es5` version bundled javascript for each sub-packages, which can be run in Browser directly.
 
+    ```bash
+    yarn dist
+    ```
+    All files are exported in `/dist` folder
+
+2. build `umd` and `esm` version javascript for each sub-packages, which can be accessed by `import` or `require`
+
+    ```bash 
+    yarn bundle
+    ```
+    All files are exported in `packages/dist` folder, use `**.esm.js` or `**.umd.js` format
 
 # Examples
 

@@ -15,6 +15,7 @@ export const enum ChainID {
   EtcMainnet = 61,
   EtcTestnet = 62,
   Geth = 1337,
+  Ganache = 0,
 }
 
 export abstract class HarmonyCore {

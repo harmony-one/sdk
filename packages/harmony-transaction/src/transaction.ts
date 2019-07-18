@@ -264,6 +264,20 @@ class Transaction {
     return this.getTxStatus() === TxStatus.CONFIRMED;
   }
 
+  observed() {
+    try {
+      if (this.emitter.resolve) {
+        this.emitter.resolve(this);
+      }
+    } catch (error) {
+      if (this.emitter.reject) {
+        this.emitter.reject(error);
+      }
+      throw error;
+    }
+    return this.emitter;
+  }
+
   async sendTransaction(): Promise<[Transaction, string]> {
     // TODO: we use eth RPC setting for now, incase we have other params, we should add here
     if (this.txnHash === 'tx' || this.txnHash === undefined) {
