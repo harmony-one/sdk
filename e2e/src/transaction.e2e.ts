@@ -23,6 +23,7 @@ describe('test Transaction using SDK', () => {
 
     const txn = harmony.transactions.newTx(txnObject);
     signed = await harmony.wallet.signTransaction(txn);
+
     expect(signed.isSigned()).toEqual(true);
   });
   it('should send transaction', async () => {
@@ -79,6 +80,7 @@ function checkTransactionReceipt(data: any) {
   return harmony.utils.validateArgs(
     data,
     {
+      blockHash: [harmony.utils.isHash],
       blockNumber: [harmony.utils.isHex],
       contractAddress: [
         // tslint:disable-next-line: no-shadowed-variable
@@ -96,6 +98,6 @@ function checkTransactionReceipt(data: any) {
       transactionHash: [harmony.utils.isHash],
       transactionIndex: [harmony.utils.isHex],
     },
-    { blockHash: [harmony.utils.isHash] },
+    {},
   );
 }

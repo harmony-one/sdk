@@ -7,7 +7,7 @@ export interface TxParams {
   gasLimit: BN;
   gasPrice: BN;
   shardID: number | string;
-  // toShardID: number | string;
+  toShardID: number | string;
   data: string;
   value: BN;
   chainId: number;

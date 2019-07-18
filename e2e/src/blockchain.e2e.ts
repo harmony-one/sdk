@@ -42,7 +42,6 @@ describe('e2e test blockchain', () => {
     const res3 = await bc.getBlockByNumber({ returnObject: true });
     expect(res3.responseType).toEqual('raw');
     expect(checkBlockData(res3.result)).toEqual(true);
-    expect(typeof res3.result.timestamp).toEqual('number');
   });
 
   it('should test hmy_getBlockByHash', async () => {
@@ -80,7 +79,7 @@ function checkBlockData(data: any) {
       receiptsRoot: [harmony.utils.isHash],
       size: [harmony.utils.isHex],
       stateRoot: [harmony.utils.isHash],
-      timestamp: [harmony.utils.isNumber],
+      timestamp: [harmony.utils.isHex],
       transactionsRoot: [harmony.utils.isHash],
       uncles: [harmony.utils.isArray],
     },

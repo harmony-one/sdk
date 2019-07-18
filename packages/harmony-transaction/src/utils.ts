@@ -26,7 +26,7 @@ export const transactionFields = [
   { name: 'gasLimit', length: 32, fix: false, transform: 'hex' },
   { name: 'shardID', length: 16, fix: false },
   // recover it after main repo fix
-  // { name: 'toShardID', length: 16, fix: false },
+  { name: 'toShardID', length: 16, fix: false },
   { name: 'to', length: 20, fix: true },
   { name: 'value', length: 32, fix: false, transform: 'hex' },
   { name: 'data', fix: false },
@@ -63,7 +63,7 @@ export const handleAddress = (value: string): string => {
 
 export const recover = (rawTransaction: string) => {
   const transaction = decode(rawTransaction);
-  if (transaction.length !== 10 && transaction.length !== 7) {
+  if (transaction.length !== 11 && transaction.length !== 8) {
     throw new Error('invalid rawTransaction');
   }
 
@@ -76,10 +76,10 @@ export const recover = (rawTransaction: string) => {
     gasPrice: new BN(strip0x(handleNumber(transaction[1]))),
     gasLimit: new BN(strip0x(handleNumber(transaction[2]))),
     shardID: new BN(strip0x(handleNumber(transaction[3]))).toNumber(),
-    // toShardID: new BN(strip0x(handleNumber(transaction[4]))).toNumber(),
-    to: handleAddress(transaction[4]),
-    value: new BN(strip0x(handleNumber(transaction[5]))),
-    data: transaction[6],
+    toShardID: new BN(strip0x(handleNumber(transaction[4]))).toNumber(),
+    to: handleAddress(transaction[5]),
+    value: new BN(strip0x(handleNumber(transaction[6]))),
+    data: transaction[7],
     chainId: 0,
     signature: {
       r: '',
@@ -90,19 +90,19 @@ export const recover = (rawTransaction: string) => {
   };
 
   // Legacy unsigned transaction
-  if (transaction.length === 7) {
+  if (transaction.length === 8) {
     tx.unsignedTxnHash = rawTransaction;
     return tx;
   }
 
   try {
-    tx.signature.v = new BN(strip0x(handleNumber(transaction[7]))).toNumber();
+    tx.signature.v = new BN(strip0x(handleNumber(transaction[8]))).toNumber();
   } catch (error) {
     throw error;
   }
 
-  tx.signature.r = hexZeroPad(transaction[8], 32);
-  tx.signature.s = hexZeroPad(transaction[9], 32);
+  tx.signature.r = hexZeroPad(transaction[9], 32);
+  tx.signature.s = hexZeroPad(transaction[10], 32);
 
   if (
     new BN(strip0x(handleNumber(tx.signature.r))).isZero() &&
@@ -162,7 +162,7 @@ export const recoverETH = (rawTransaction: string) => {
     gasPrice: new BN(strip0x(handleNumber(transaction[1]))),
     gasLimit: new BN(strip0x(handleNumber(transaction[2]))),
     shardID: 0,
-    // toShardID: 0,
+    toShardID: 0,
     to: handleAddress(transaction[3]),
     value: new BN(strip0x(handleNumber(transaction[4]))),
     data: transaction[5],
