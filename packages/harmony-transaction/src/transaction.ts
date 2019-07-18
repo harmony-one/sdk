@@ -265,16 +265,6 @@ class Transaction {
   }
 
   observed() {
-    try {
-      if (this.emitter.resolve) {
-        this.emitter.resolve(this);
-      }
-    } catch (error) {
-      if (this.emitter.reject) {
-        this.emitter.reject(error);
-      }
-      throw error;
-    }
     return this.emitter;
   }
 

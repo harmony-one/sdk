@@ -314,15 +314,14 @@ class Blockchain extends HarmonyCore {
 
   createObservedTransaction(transaction: Transaction) {
     try {
-      let signed = transaction;
-      signed.sendTransaction().then((response) => {
+      transaction.sendTransaction().then((response) => {
         const [txReturned, TranID] = response;
-        signed = txReturned;
-        signed.confirm(TranID).then(() => {
-          signed.emitter.resolve(signed);
+
+        txReturned.confirm(TranID).then((txConfirmed) => {
+          transaction.emitter.resolve(txConfirmed);
         });
       });
-      return signed.observed();
+      return transaction.emitter;
     } catch (err) {
       throw err;
     }
