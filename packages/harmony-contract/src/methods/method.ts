@@ -62,12 +62,15 @@ export class ContractMethod {
   }
   async call(options: any, blockNumber: any = 'latest') {
     try {
-      const nonce = getResultForData(
-        await this.wallet.messenger.send(RPCMethod.GetTransactionCount, [
-          this.wallet.signer ? this.wallet.signer.address : options.from,
-          blockNumber,
-        ]),
-      );
+      const nonce =
+        this.wallet.signer || options.from
+          ? getResultForData(
+              await this.wallet.messenger.send(RPCMethod.GetTransactionCount, [
+                this.wallet.signer ? this.wallet.signer.address : options.from,
+                blockNumber,
+              ]),
+            )
+          : '0x0';
 
       let gasLimit: any;
       // tslint:disable-next-line: prefer-conditional-expression
@@ -81,6 +84,7 @@ export class ContractMethod {
         from =
           options && options.from ? options.from : this.wallet.signer.address;
       }
+
       this.transaction = this.transaction.map((tx: any) => {
         return {
           ...tx,
@@ -91,9 +95,42 @@ export class ContractMethod {
           nonce: Number.parseInt(hexToNumber(nonce), 10),
         };
       });
+      const keys: string[] = Object.keys(this.transaction.txPayload);
 
+      interface TxPayload {
+        [key: string]: any;
+        from?: string;
+        to?: string;
+        shardID?: string;
+        gas?: string;
+        gasPrice?: string;
+        value?: string;
+        data?: string;
+        nonce?: string;
+      }
+      interface SendPayload {
+        [key: string]: any;
+        from?: string;
+        to?: string;
+        shardID?: string;
+        gas?: string;
+        gasPrice?: string;
+        value?: string;
+        data?: string;
+        nonce?: string;
+      }
+
+      const txPayload: TxPayload = this.transaction.txPayload;
+      const sendPayload: SendPayload = {};
+
+      for (const key of keys) {
+        // tslint:disable-next-line: no-unused-expression
+        if (txPayload[key] !== '0x') {
+          sendPayload[key] = txPayload[key];
+        }
+      }
       const result = await this.wallet.messenger.send(RPCMethod.Call, [
-        this.transaction.txPayload,
+        sendPayload,
         blockNumber,
       ]);
 
@@ -209,6 +246,7 @@ export class ContractMethod {
       const result = new TransactionFactory(this.wallet.messenger).newTx(
         txObject,
       );
+
       return result;
     } else {
       throw new Error('Messenger is not found');
