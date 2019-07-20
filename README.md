@@ -23,8 +23,12 @@ npm install tslib
 yarn add tslib
 
 ```
+# Examples with tutorials
 
-# Start hacking
+* [harmony-sdk-examples](https://github.com/FireStack-Lab/harmony-sdk-examples)
+
+
+# Hacking from source files
 
 1. install `lerna` and `typescript` globally (if you have these, you can skip)
 ```bash
@@ -38,6 +42,11 @@ yarn bootstrap
 ```bash
 yarn watch
 ```
+4. if you are ready to build/test/bundle, please refer to the following section:
+- [Build](#Build)
+- [Bundle](#Bundle)
+- [E2E Tests](#E2E-tests)
+
 
 
 # Packages
@@ -53,7 +62,16 @@ yarn watch
 
 # Manually Build/bundle
 
-There are two ways building
+## Build
+
+```bash
+yarn build
+
+```
+
+## Bundle
+
+There are 2 ways bundling files.
 
 1. building the `es5` version bundled javascript for each sub-packages, which can be run in Browser directly.
 
@@ -69,9 +87,7 @@ There are two ways building
     ```
     All files are exported in `packages/dist` folder, use `**.esm.js` or `**.umd.js` format
 
-# Examples
 
-* [harmony-sdk-examples](https://github.com/FireStack-Lab/harmony-sdk-examples)
 
 
 # E2E tests
@@ -83,7 +99,7 @@ There are two ways building
 3. wait for 1-2 mins, and run this:
 
 ```bash
-yarn build:ts && yarn test:e2e
+yarn build && yarn test:e2e
 ```
 
 
