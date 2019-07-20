@@ -13,7 +13,7 @@
     "bundle": "ts-node -P scripts/tsconfig.json scripts/bundle.ts umd,esm",
     "clean": "lerna clean --yes && lerna run clean && rimraf includes && yarn packages:clean",
     "dist": "yarn packages:bundler && rm -rf dist && cross-env NODE_ENV=production webpack --config webpack.config.js",
-    "packages:clean": "gulp cleanServer",
+    "packages:clean": "gulp cleanServer && gulp cleanUnexpected",
     "packages:bundler": "yarn packages:clean && yarn build:ts && ts-node -P scripts/tsconfig.json scripts/bundle.ts",
     "schema": "ts-node -P scripts/tsconfig.json scripts/typings/schema.ts core",
     "test": "cross-env TEST_ENV=unit jest -c scripts/jest/jest.config.js --rootDir=.",

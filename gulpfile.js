@@ -25,6 +25,13 @@ task('cleanServer', async () => {
   });
 });
 
+task('cleanUnexpected', async () => {
+  await packages.map((p) => {
+    const pathToLib = `packages/${p}/tsconfig.tsbuildinfo`;
+    return del.sync([pathToLib]);
+  });
+});
+
 task('cleanDocs', async () => {
   await packages.map((p) => {
     const pathToLib = `packages/${p}/doc`;
