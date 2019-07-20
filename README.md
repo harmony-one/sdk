@@ -26,14 +26,17 @@ yarn add tslib
 
 # Start hacking
 
-1. install `lerna` and `typescript` globally
+1. install `lerna` and `typescript` globally (if you have these, you can skip)
 ```bash
 yarn global add lerna && yarn global add typescript
 ```
 2. bootstrap repostory
 ```bash
 yarn bootstrap
-
+```
+3. run watcher before editing any source file
+```bash
+yarn watch
 ```
 
 
