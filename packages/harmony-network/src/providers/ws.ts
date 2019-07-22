@@ -45,21 +45,20 @@ class WSProvider extends BaseSocket {
     this.emitter.on('data', handler);
     return this;
   }
-  // onError(event: any) {
-  //   if (event.code === 'ECONNREFUSED') {
-  //     this.reconnect();
-  //     return;
-  //   }
-  //   super.onError(event);
-  // }
-  // onClose(closeEvent: any) {
-  //   if (closeEvent.code !== 1000 || closeEvent.wasClean === false) {
-  //     this.reconnect();
-  //     return;
-  //   }
-
-  //   super.onClose();
-  // }
+  onError(event: any) {
+    if (event.code === 'ECONNREFUSED') {
+      this.reconnect();
+      return;
+    }
+    super.onError(event);
+  }
+  onClose(closeEvent: any) {
+    if (closeEvent.code !== 1000 || closeEvent.wasClean === false) {
+      this.reconnect();
+      return;
+    }
+    super.onClose();
+  }
 
   createWebsocketProvider(url: string, options: any = {}) {
     // tslint:disable-next-line: no-string-literal
@@ -106,20 +105,20 @@ class WSProvider extends BaseSocket {
 
     return new Promise((resolve, reject) => {
       // TODO: test on Error
-      // this.emitter.on(SocketConnection.ERROR, reject);
 
       if (!this.isConnecting()) {
         try {
           this.connection.send(reqMiddleware(JSON.stringify(payload)));
         } catch (error) {
           // TODO !isConnecting then reconnect?
-          // this.removeEventListener(SocketConnection.ERROR);
+          this.removeEventListener(SocketConnection.ERROR);
           throw error;
         }
         this.emitter.on(`${payload.id}`, (data) => {
           resolve(resMiddleware(data));
           this.removeEventListener(`${payload.id}`);
         });
+        this.emitter.on(SocketConnection.ERROR, reject);
       }
       this.emitter.on(SocketConnection.CONNECT, () => {
         this.send(payload)
