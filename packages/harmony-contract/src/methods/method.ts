@@ -63,7 +63,7 @@ export class ContractMethod {
   async call(options: any, blockNumber: any = 'latest') {
     try {
       const nonce =
-        this.wallet.signer || options.from
+        this.wallet.signer || (options !== undefined && options.from)
           ? getResultForData(
               await this.wallet.messenger.send(RPCMethod.GetTransactionCount, [
                 this.wallet.signer ? this.wallet.signer.address : options.from,
@@ -74,7 +74,7 @@ export class ContractMethod {
 
       let gasLimit: any;
       // tslint:disable-next-line: prefer-conditional-expression
-      if (options) {
+      if (options !== undefined) {
         gasLimit = options.gas || options.gasLimit;
       } else {
         gasLimit = hexToBN(await this.estimateGas());
