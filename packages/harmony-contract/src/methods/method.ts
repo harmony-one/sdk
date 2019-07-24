@@ -20,6 +20,7 @@ export class ContractMethod {
   methodKey: string;
   wallet: Wallet;
   abiItem: AbiItemModel;
+  rawResponse: any;
 
   protected transaction: Transaction;
   constructor(
@@ -34,7 +35,7 @@ export class ContractMethod {
     this.params = params;
     this.abiItem = abiItem;
     this.transaction = this.createTransaction();
-
+    this.rawResponse = undefined;
     // this.addEventListeners();
   }
   send(params: any): Emitter {
@@ -83,6 +84,11 @@ export class ContractMethod {
       if (this.wallet.signer) {
         from =
           options && options.from ? options.from : this.wallet.signer.address;
+      } else {
+        from =
+          options && options.from
+            ? options.from
+            : '0x0000000000000000000000000000000000000000';
       }
 
       this.transaction = this.transaction.map((tx: any) => {
@@ -133,7 +139,7 @@ export class ContractMethod {
         sendPayload,
         blockNumber,
       ]);
-
+      this.rawResponse = result;
       if (result.isError()) {
         throw result.message;
       } else if (result.isResult()) {
