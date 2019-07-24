@@ -135,6 +135,7 @@ export class ContractMethod {
           sendPayload[key] = txPayload[key];
         }
       }
+
       const result = await this.wallet.messenger.send(RPCMethod.Call, [
         sendPayload,
         blockNumber,
