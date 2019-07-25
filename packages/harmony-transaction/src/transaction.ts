@@ -49,8 +49,8 @@ class Transaction {
   private data: string;
   private value: BN;
   private chainId: number;
-  private txnHash: string;
-  private unsignedTxnHash: string;
+  private rawTransaction: string;
+  private unsignedRawTransaction: string;
   private signature: Signature;
 
   // constructor
@@ -64,30 +64,36 @@ class Transaction {
     this.emitter = new Emitter();
 
     // intialize transaction
-    this.id = params ? params.id : '0x';
-    this.from = params ? params.from : '0x';
-    this.nonce = params ? params.nonce : 0;
-    this.gasPrice = params ? params.gasPrice : new BN(0);
-    this.gasLimit = params ? params.gasLimit : new BN(0);
-    this.shardID = params ? params.shardID : 0;
-    this.toShardID = params ? params.toShardID : 0;
+    this.id = params && params.id ? params.id : '0x';
+    this.from = params && params.from ? params.from : '0x';
+    this.nonce = params && params.nonce ? params.nonce : 0;
+    this.gasPrice = params && params.gasPrice ? params.gasPrice : new BN(0);
+    this.gasLimit = params && params.gasLimit ? params.gasLimit : new BN(0);
+    this.shardID = params && params.shardID ? params.shardID : 0;
+    this.toShardID = params && params.toShardID ? params.toShardID : 0;
 
-    this.to = params ? this.normalizeAddress(params.to) : '0x';
-    this.value = params ? params.value : new BN(0);
-    this.data = params ? params.data : '0x';
+    this.to = params && params.to ? this.normalizeAddress(params.to) : '0x';
+    this.value = params && params.value ? params.value : new BN(0);
+    this.data = params && params.data ? params.data : '0x';
     // chainid should change with different network settings
-    this.chainId = params ? params.chainId : this.messenger.chainId;
-    this.txnHash = params ? params.txnHash : '0x';
-    this.unsignedTxnHash = params ? params.unsignedTxnHash : '0x';
-    this.signature = params
-      ? params.signature
-      : {
-          r: '',
-          s: '',
-          recoveryParam: 0,
-          v: 0,
-        };
-    this.receipt = params ? params.receipt : undefined;
+    this.chainId =
+      params && params.chainId ? params.chainId : this.messenger.chainId;
+    this.rawTransaction =
+      params && params.rawTransaction ? params.rawTransaction : '0x';
+    this.unsignedRawTransaction =
+      params && params.unsignedRawTransaction
+        ? params.unsignedRawTransaction
+        : '0x';
+    this.signature =
+      params && params.signature
+        ? params.signature
+        : {
+            r: '',
+            s: '',
+            recoveryParam: 0,
+            v: 0,
+          };
+    this.receipt = params && params.receipt ? params.receipt : undefined;
   }
 
   setMessenger(messenger: Messenger) {
@@ -159,12 +165,13 @@ class Transaction {
     return encode(raw);
   }
 
-  recover(txnHash: string): Transaction {
+  recover(rawTransaction: string): Transaction {
     // temp setting to be compatible with eth
     const recovered =
       this.messenger.chainType === ChainType.Harmony
-        ? recover(txnHash)
-        : recoverETH(txnHash);
+        ? recover(rawTransaction)
+        : recoverETH(rawTransaction);
+
     this.setParams(recovered);
     return this;
   }
@@ -198,34 +205,39 @@ class Transaction {
       value: this.value || new BN(0),
       data: this.data || '0x',
       chainId: this.chainId || 0,
-      txnHash: this.txnHash || '0x',
-      unsignedTxnHash: this.unsignedTxnHash || '0x',
+      rawTransaction: this.rawTransaction || '0x',
+      unsignedRawTransaction: this.unsignedRawTransaction || '0x',
       signature: this.signature || '0x',
     };
   }
   setParams(params: TxParams) {
-    this.id = params ? params.id : '0x';
-    this.from = params ? params.from : '0x';
-    this.nonce = params ? params.nonce : 0;
-    this.gasPrice = params ? params.gasPrice : new BN(0);
-    this.gasLimit = params ? params.gasLimit : new BN(0);
-    this.shardID = params ? params.shardID : 0;
-    this.toShardID = params ? params.toShardID : 0;
-    this.to = params ? this.normalizeAddress(params.to) : '0x';
-    this.value = params ? params.value : new BN(0);
-    this.data = params ? params.data : '0x';
-    this.chainId = params ? params.chainId : 0;
-    this.txnHash = params ? params.txnHash : '0x';
-    this.unsignedTxnHash = params ? params.unsignedTxnHash : '0x';
-    this.signature = params
-      ? params.signature
-      : {
-          r: '',
-          s: '',
-          recoveryParam: 0,
-          v: 0,
-        };
-    if (this.txnHash !== '0x') {
+    this.id = params && params.id ? params.id : '0x';
+    this.from = params && params.from ? params.from : '0x';
+    this.nonce = params && params.nonce ? params.nonce : 0;
+    this.gasPrice = params && params.gasPrice ? params.gasPrice : new BN(0);
+    this.gasLimit = params && params.gasLimit ? params.gasLimit : new BN(0);
+    this.shardID = params && params.shardID ? params.shardID : 0;
+    this.toShardID = params && params.toShardID ? params.toShardID : 0;
+    this.to = params && params.to ? this.normalizeAddress(params.to) : '0x';
+    this.value = params && params.value ? params.value : new BN(0);
+    this.data = params && params.data ? params.data : '0x';
+    this.chainId = params && params.chainId ? params.chainId : 0;
+    this.rawTransaction =
+      params && params.rawTransaction ? params.rawTransaction : '0x';
+    this.unsignedRawTransaction =
+      params && params.unsignedRawTransaction
+        ? params.unsignedRawTransaction
+        : '0x';
+    this.signature =
+      params && params.signature
+        ? params.signature
+        : {
+            r: '',
+            s: '',
+            recoveryParam: 0,
+            v: 0,
+          };
+    if (this.rawTransaction !== '0x') {
       this.setTxStatus(TxStatus.SIGNED);
     } else {
       this.setTxStatus(TxStatus.INTIALIZED);
@@ -270,7 +282,7 @@ class Transaction {
 
   async sendTransaction(): Promise<[Transaction, string]> {
     // TODO: we use eth RPC setting for now, incase we have other params, we should add here
-    if (this.txnHash === 'tx' || this.txnHash === undefined) {
+    if (this.rawTransaction === 'tx' || this.rawTransaction === undefined) {
       throw new Error('Transaction not signed');
     }
     if (!this.messenger) {
@@ -278,7 +290,7 @@ class Transaction {
     }
     const res = await this.messenger.send(
       RPCMethod.SendRawTransaction,
-      this.txnHash,
+      this.rawTransaction,
     );
 
     // temporarilly hard coded

@@ -170,12 +170,12 @@ class Account {
       });
     }
     if (encodeMode === 'rlp') {
-      const [signature, txnHash]: [Signature, string] = RLPSign(
+      const [signature, rawTransaction]: [Signature, string] = RLPSign(
         transaction,
         this.privateKey,
       );
       return transaction.map((obj: any) => {
-        return { ...obj, signature, txnHash, from: this.address };
+        return { ...obj, signature, rawTransaction, from: this.address };
       });
     } else {
       // TODO: if we use other encode method, eg. protobuf, we should implement this

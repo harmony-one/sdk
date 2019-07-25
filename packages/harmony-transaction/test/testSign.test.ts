@@ -2,8 +2,8 @@ import { Transaction } from '../src/transaction';
 import { RLPSign } from '../src/utils';
 import { TxStatus } from '../src/types';
 import { HttpProvider, Messenger } from '@harmony-js/network';
-import { isAddress, ChainType, hexToBN } from '@harmony-js/utils';
-import { getAddressFromPrivateKey, BN } from '@harmony-js/crypto';
+import { isAddress, ChainType, hexToBN, ChainID } from '@harmony-js/utils';
+import { getAddressFromPrivateKey, BN, getAddress } from '@harmony-js/crypto';
 
 import txnVectors from './transactions.fixture.json';
 
@@ -30,7 +30,10 @@ describe('test sign tranction', () => {
             vector.gasPrice && vector.gasPrice !== '0x'
               ? hexToBN(vector.gasPrice)
               : new BN(0),
-          to: vector.to || '0x',
+          to:
+            vector.to && vector.to !== '0x'
+              ? getAddress(vector.to).checksum
+              : '0x',
           value:
             vector.value && vector.value !== '0x'
               ? hexToBN(vector.value)
@@ -53,7 +56,11 @@ describe('test sign tranction', () => {
   });
 
   it('should test recover from ETHSignedtransaction', () => {
-    const ethMessenger = new Messenger(provider, ChainType.Ethereum);
+    const ethMessenger = new Messenger(
+      provider,
+      ChainType.Ethereum,
+      ChainID.Default,
+    );
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < txnVectors.length; i += 1) {
       const vector = txnVectors[i];
@@ -65,6 +72,7 @@ describe('test sign tranction', () => {
       );
 
       transaction.recover(vector.signedTransaction);
+
       if (vector.gasLimit && vector.gasLimit !== '0x') {
         expect(transaction.txParams.gasLimit.toString()).toEqual(
           hexToBN(vector.gasLimit).toString(),
@@ -89,9 +97,11 @@ describe('test sign tranction', () => {
         );
       }
       if (vector.to && vector.to !== '0x') {
-        expect(transaction.txParams.to).toEqual(vector.to);
+        expect(transaction.txParams.to).toEqual(getAddress(vector.to).checksum);
       }
-      expect(transaction.txParams.from).toEqual(vector.accountAddress);
+      expect(transaction.txParams.from.toLowerCase()).toEqual(
+        vector.accountAddress.toLowerCase(),
+      );
     }
   });
 });

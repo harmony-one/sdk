@@ -2,8 +2,8 @@ import { harmony } from './harmony';
 // tslint:disable-next-line: no-implicit-dependencies
 import { Transaction, TxStatus } from '@harmony-js/transaction';
 // tslint:disable-next-line: no-implicit-dependencies
-import { isHash } from '@harmony-js/utils';
-
+import { isHash, numberToHex } from '@harmony-js/utils';
+import txnJsons from '../fixtures/transactions.json';
 import demoAccounts from '../fixtures/testAccount.json';
 
 const receiver = demoAccounts.Accounts[3];
@@ -13,6 +13,28 @@ describe('test Transaction using SDK', () => {
   let signed: Transaction;
   let sent: Transaction;
   let txId: string;
+
+  it('should test recover signedTransaction', () => {
+    const txns = txnJsons.transactions;
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < txns.length; i += 1) {
+      const newTxn = harmony.transactions.newTx();
+
+      newTxn.recover(txns[i].rawTransaction);
+      expect(newTxn.txParams.from).toEqual(txns[i].senderAddress);
+      expect(newTxn.txParams.to).toEqual(txns[i].receiverAddress);
+      expect(`0x${newTxn.txParams.gasLimit.toString('hex')}`).toEqual(
+        txns[i].gasLimit,
+      );
+      expect(`0x${newTxn.txParams.gasPrice.toString('hex')}`).toEqual(
+        txns[i].gasPrice,
+      );
+      expect(`0x${newTxn.txParams.value.toString('hex')}`).toEqual(
+        txns[i].value,
+      );
+      expect(`${numberToHex(newTxn.txParams.nonce)}`).toEqual(txns[i].nonce);
+    }
+  });
   it('should test signTransaction', async () => {
     const txnObject = {
       to: harmony.crypto.getAddress(receiver.Address).bech32,

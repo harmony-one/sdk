@@ -18,7 +18,7 @@
     "packages:bundler": "yarn packages:clean && yarn build:ts && ts-node -P scripts/tsconfig.json scripts/bundle.ts",
     "schema": "ts-node -P scripts/tsconfig.json scripts/typings/schema.ts core",
     "test": "cross-env TEST_ENV=unit jest -c scripts/jest/jest.config.js --rootDir=.",
-    "test:src": "cross-env NODE_ENV=test jest --config ./scripts/jest/jest.src.config.js --silent --runInBand --no-cache",
+    "test:src": "cross-env NODE_ENV=test jest --config ./scripts/jest/jest.src.config.js --verbose --runInBand --no-cache",
     "test:build": "cross-env TEST_ENV=unit jest -c jest.build.config.js",
     "test:integration": "cross-env TEST_ENV=integration jest -c jest.iconfig.js --runInBand --verbose --collectCoverage=false",
     "test:e2e": "cross-env TEST_ENV=e2e jest -c ./scripts/jest/jest.e2e.config.js --runInBand --verbose --collectCoverage=false",

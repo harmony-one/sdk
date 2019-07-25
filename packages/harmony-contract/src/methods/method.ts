@@ -191,7 +191,6 @@ export class ContractMethod {
     return {
       callResponse: this.callResponse,
       callPayload: this.callPayload,
-      callData: this.callData,
     };
   }
 

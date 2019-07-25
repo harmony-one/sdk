@@ -14,6 +14,7 @@ import {
   hexZeroPad,
   recoverAddress,
   Signature,
+  getAddress,
   sign,
 } from '@harmony-js/crypto';
 import { HttpProvider, Messenger } from '@harmony-js/network';
@@ -70,14 +71,17 @@ export const recover = (rawTransaction: string) => {
   const tx: TxParams = {
     id: '0x',
     from: '0x',
-    txnHash: '0x',
-    unsignedTxnHash: '0x',
+    rawTransaction: '0x',
+    unsignedRawTransaction: '0x',
     nonce: new BN(strip0x(handleNumber(transaction[0]))).toNumber(),
     gasPrice: new BN(strip0x(handleNumber(transaction[1]))),
     gasLimit: new BN(strip0x(handleNumber(transaction[2]))),
     shardID: new BN(strip0x(handleNumber(transaction[3]))).toNumber(),
     toShardID: new BN(strip0x(handleNumber(transaction[4]))).toNumber(),
-    to: handleAddress(transaction[5]),
+    to:
+      handleAddress(transaction[5]) !== '0x'
+        ? getAddress(handleAddress(transaction[5])).checksum
+        : '0x',
     value: new BN(strip0x(handleNumber(transaction[6]))),
     data: transaction[7],
     chainId: 0,
@@ -91,7 +95,7 @@ export const recover = (rawTransaction: string) => {
 
   // Legacy unsigned transaction
   if (transaction.length === 8) {
-    tx.unsignedTxnHash = rawTransaction;
+    tx.unsignedRawTransaction = rawTransaction;
     return tx;
   }
 
@@ -132,16 +136,18 @@ export const recover = (rawTransaction: string) => {
 
     const digest = keccak256(encode(raw));
     try {
-      tx.from = recoverAddress(digest, {
+      const recoveredFrom = recoverAddress(digest, {
         r: hexlify(tx.signature.r),
         s: hexlify(tx.signature.s),
         recoveryParam,
       });
+      tx.from =
+        recoveredFrom === '0x' ? '0x' : getAddress(recoveredFrom).checksum;
     } catch (error) {
       throw error;
     }
 
-    tx.txnHash = keccak256(rawTransaction);
+    tx.rawTransaction = keccak256(rawTransaction);
   }
 
   return tx;
@@ -156,14 +162,17 @@ export const recoverETH = (rawTransaction: string) => {
   const tx: TxParams = {
     id: '0x',
     from: '0x',
-    txnHash: '0x',
-    unsignedTxnHash: '0x',
+    rawTransaction: '0x',
+    unsignedRawTransaction: '0x',
     nonce: new BN(strip0x(handleNumber(transaction[0]))).toNumber(),
     gasPrice: new BN(strip0x(handleNumber(transaction[1]))),
     gasLimit: new BN(strip0x(handleNumber(transaction[2]))),
     shardID: 0,
     toShardID: 0,
-    to: handleAddress(transaction[3]),
+    to:
+      handleAddress(transaction[3]) !== '0x'
+        ? getAddress(handleAddress(transaction[3])).checksum
+        : '0x',
     value: new BN(strip0x(handleNumber(transaction[4]))),
     data: transaction[5],
     chainId: 0,
@@ -177,7 +186,7 @@ export const recoverETH = (rawTransaction: string) => {
 
   // Legacy unsigned transaction
   if (transaction.length === 6) {
-    tx.unsignedTxnHash = rawTransaction;
+    tx.unsignedRawTransaction = rawTransaction;
     return tx;
   }
 
@@ -218,16 +227,18 @@ export const recoverETH = (rawTransaction: string) => {
 
     const digest = keccak256(encode(raw));
     try {
-      tx.from = recoverAddress(digest, {
+      const recoveredFrom = recoverAddress(digest, {
         r: hexlify(tx.signature.r),
         s: hexlify(tx.signature.s),
         recoveryParam,
       });
+      tx.from =
+        recoveredFrom === '0x' ? '0x' : getAddress(recoveredFrom).checksum;
     } catch (error) {
       throw error;
     }
 
-    tx.txnHash = keccak256(rawTransaction);
+    tx.rawTransaction = keccak256(rawTransaction);
   }
 
   return tx;
@@ -254,13 +265,13 @@ export const RLPSign = (
   transaction: Transaction,
   prv: string,
 ): [Signature, string] => {
-  const [unsignedTxnHash, raw] = transaction.getRLPUnsigned();
+  const [unsignedRawTransaction, raw] = transaction.getRLPUnsigned();
   const regroup: TxParams = {
     ...transaction.txParams,
-    unsignedTxnHash,
+    unsignedRawTransaction,
   };
   transaction.setParams(regroup);
-  const signature = sign(keccak256(unsignedTxnHash), prv);
+  const signature = sign(keccak256(unsignedRawTransaction), prv);
   const signed = transaction.getRLPSigned(raw, signature);
   return [signature, signed];
 };

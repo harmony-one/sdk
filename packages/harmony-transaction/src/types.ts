@@ -11,8 +11,8 @@ export interface TxParams {
   data: string;
   value: BN;
   chainId: number;
-  txnHash: string;
-  unsignedTxnHash: string;
+  rawTransaction: string;
+  unsignedRawTransaction: string;
   signature: Signature;
   receipt?: TransasctionReceipt;
 }
