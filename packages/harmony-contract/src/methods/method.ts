@@ -22,7 +22,6 @@ export class ContractMethod {
   abiItem: AbiItemModel;
   callResponse?: any;
   callPayload?: any;
-  callData?: string;
 
   protected transaction: Transaction;
   constructor(
@@ -39,7 +38,6 @@ export class ContractMethod {
     this.transaction = this.createTransaction();
     this.callPayload = undefined;
     this.callResponse = undefined;
-    this.callData = undefined;
   }
   send(params: any): Emitter {
     try {
@@ -182,13 +180,11 @@ export class ContractMethod {
   }
 
   encodeABI() {
-    const encodedABI = methodEncoder(
+    return methodEncoder(
       this.contract.abiCoder,
       this.abiItem,
       this.contract.data,
     );
-    this.callData = encodedABI;
-    return encodedABI;
   }
 
   public debug() {

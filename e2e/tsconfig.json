@@ -5,7 +5,7 @@
     "rootDir": "src",
     "declarationDir": "dist"
   },
-  "include": ["src", "../typings/**/*.d.ts"],
+  "include": ["src", "../typings/**/*.d.ts", "fixtures"],
   "references": [
     { "path": "../packages/harmony-account" },
     { "path": "../packages/harmony-crypto" },
