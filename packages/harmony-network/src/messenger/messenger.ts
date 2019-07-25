@@ -1,4 +1,10 @@
-import { HarmonyCore, ChainType, isString, ChainID } from '@harmony-js/utils';
+import {
+  HarmonyCore,
+  ChainType,
+  isString,
+  ChainID,
+  defaultConfig,
+} from '@harmony-js/utils';
 import { JsonRpc } from '../rpcMethod/rpcbuilder';
 import { ResponseMiddleware } from './responseMiddleware';
 import { HttpProvider } from '../providers/http';
@@ -6,29 +12,6 @@ import { WSProvider } from '../providers/ws';
 // import { getResultForData } from '../util';
 import { RPCMethod } from '../rpcMethod/rpc';
 import { SubscribeReturns } from '../types';
-
-const defaultConfig = {
-  Default: {
-    CHAIN_ID: 0,
-    Network_ID: 'Default',
-    nodeProviderUrl: 'http://localhost:9128',
-  },
-  DevNet: {
-    CHAIN_ID: 333,
-    Network_ID: 'DevNet',
-    nodeProviderUrl: 'https://devnet.harmony.one',
-  },
-  TestNet: {
-    CHAIN_ID: 2,
-    Network_ID: 'TestNet',
-    nodeProviderUrl: 'https://devnet.harmony.one',
-  },
-  MainNet: {
-    CHAIN_ID: 1,
-    Network_ID: 'MainNet',
-    nodeProviderUrl: 'https://mainnet.harmony.one',
-  },
-};
 
 /**
  * @class Messenger
@@ -46,8 +29,8 @@ class Messenger extends HarmonyCore {
 
   constructor(
     provider: HttpProvider | WSProvider,
-    chainType: ChainType = ChainType.Harmony,
-    chainId: ChainID = ChainID.Default,
+    chainType: ChainType = defaultConfig.Default.Chain_Type,
+    chainId: ChainID = defaultConfig.Default.Chain_ID,
     config?: object,
   ) {
     super(chainType, chainId);

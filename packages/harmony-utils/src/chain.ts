@@ -18,10 +18,28 @@ export const enum ChainID {
   Ganache = 0,
 }
 
+export const defaultConfig = {
+  Default: {
+    Chain_ID: ChainID.Default,
+    Chain_Type: ChainType.Harmony,
+    Chain_URL: 'http://localhost:9500',
+    Network_ID: 'Local',
+  },
+  DefaultWS: {
+    Chain_ID: ChainID.Default,
+    Chain_Type: ChainType.Harmony,
+    Chain_URL: 'ws://localhost:9800',
+    Network_ID: 'LocalWS',
+  },
+};
+
 export abstract class HarmonyCore {
   chainType: ChainType;
   chainId: ChainID;
-  constructor(chainType: ChainType, chainId: ChainID = ChainID.Default) {
+  constructor(
+    chainType: ChainType,
+    chainId: ChainID = defaultConfig.Default.Chain_ID,
+  ) {
     this.chainType = chainType;
     this.chainId = chainId;
   }

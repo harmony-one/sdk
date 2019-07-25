@@ -8,8 +8,6 @@ import { Wallet, Account } from '@harmony-js/account';
 import { Blockchain } from './blockchain';
 import { HarmonyConfig } from './util';
 
-const defaultUrl = 'http://localhost:9500';
-
 export class Harmony extends utils.HarmonyCore {
   Modules = {
     HttpProvider,
@@ -31,11 +29,11 @@ export class Harmony extends utils.HarmonyCore {
   utils: any;
   private provider: HttpProvider | WSProvider;
   constructor(
-    url: string = defaultUrl,
+    url: string = utils.defaultConfig.Default.Chain_URL,
     config: HarmonyConfig = {
-      chainUrl: defaultUrl,
-      chainId: utils.ChainID.Default,
-      chainType: utils.ChainType.Harmony,
+      chainUrl: utils.defaultConfig.Default.Chain_URL,
+      chainId: utils.defaultConfig.Default.Chain_ID,
+      chainType: utils.defaultConfig.Default.Chain_Type,
     },
   ) {
     super(config.chainType, config.chainId);
@@ -71,6 +69,6 @@ export class Harmony extends utils.HarmonyCore {
       ? new HttpProvider(providerUrl)
       : utils.isWs(providerUrl)
       ? new WSProvider(providerUrl)
-      : new HttpProvider(defaultUrl);
+      : new HttpProvider(utils.defaultConfig.Default.Chain_URL);
   }
 }
