@@ -20,7 +20,9 @@ export class ContractMethod {
   methodKey: string;
   wallet: Wallet;
   abiItem: AbiItemModel;
-  rawResponse: any;
+  callResponse?: any;
+  callPayload?: any;
+  callData?: string;
 
   protected transaction: Transaction;
   constructor(
@@ -35,8 +37,9 @@ export class ContractMethod {
     this.params = params;
     this.abiItem = abiItem;
     this.transaction = this.createTransaction();
-    this.rawResponse = undefined;
-    // this.addEventListeners();
+    this.callPayload = undefined;
+    this.callResponse = undefined;
+    this.callData = undefined;
   }
   send(params: any): Emitter {
     try {
@@ -140,7 +143,8 @@ export class ContractMethod {
         sendPayload,
         blockNumber,
       ]);
-      this.rawResponse = result;
+      this.callPayload = sendPayload;
+      this.callResponse = result;
       if (result.isError()) {
         throw result.message;
       } else if (result.isResult()) {
@@ -178,11 +182,21 @@ export class ContractMethod {
   }
 
   encodeABI() {
-    return methodEncoder(
+    const encodedABI = methodEncoder(
       this.contract.abiCoder,
       this.abiItem,
       this.contract.data,
     );
+    this.callData = encodedABI;
+    return encodedABI;
+  }
+
+  public debug() {
+    return {
+      callResponse: this.callResponse,
+      callPayload: this.callPayload,
+      callData: this.callData,
+    };
   }
 
   protected async signTransaction(updateNonce: boolean) {
