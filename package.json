@@ -7,7 +7,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap && yarn build:ts",
     "watch":"yarn build:ts -w",
-    "build": "gulp cleanServer && gulp cleanUnexpected && yarn build:ts",
+    "build": "yarn packages:clean && yarn build:ts",
     "build:ts": "tsc -b tsconfig.json",
     "build:test":"tsc -b tsconfig.test.json",
     "build:e2e":"tsc -b tsconfig.e2e.json",
