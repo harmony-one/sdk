@@ -25,7 +25,7 @@
     "release": "yarn bootstrap && yarn bundle && lerna publish --exact",
     "format": "prettier --write '**/*.{ts,tsx,js}' --config .prettierrc",
     "formatSol": "prettier --list-different **/*.sol",
-    "dev:publish": "lerna publish --dist-tag next --exact --no-verify-access --no-verify-registry"
+    "dev:publish": "yarn dist && lerna publish --dist-tag next --exact --no-verify-access --no-verify-registry"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.56",
