@@ -10,6 +10,7 @@ install:
   - yarn bootstrap
 script:
   - yarn dist
+
 cache:
   directories:
     - '$HOME/.yarn-cache'

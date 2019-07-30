@@ -5,11 +5,11 @@ import {
   getAddress,
   generatePrivateKey,
 } from '@harmony-js/crypto';
-import { Messenger } from '@harmony-js/network';
-import { isPrivateKey, isAddress } from '@harmony-js/utils';
-import { Transaction } from '@harmony-js/transaction';
-import { Account } from './account';
-import { defaultMessenger } from './utils';
+import {Messenger} from '@harmony-js/network';
+import {isPrivateKey, isAddress} from '@harmony-js/utils';
+import {Transaction} from '@harmony-js/transaction';
+import {Account} from './account';
+import {defaultMessenger} from './utils';
 
 class Wallet {
   // static method generate Mnemonic
@@ -47,10 +47,13 @@ class Wallet {
     this.messenger = messenger;
   }
   /**
-   * @function generateMnemonic
+   * @function newMnemonic
    * @memberof Wallet
    * @return {string} Mnemonics
    */
+  newMnemonic(): string {
+    return Wallet.generateMnemonic();
+  }
 
   /**
    * @function addByMnemonic
@@ -326,4 +329,4 @@ class Wallet {
   }
 }
 
-export { Wallet };
+export {Wallet};
