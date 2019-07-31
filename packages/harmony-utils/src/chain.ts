@@ -59,6 +59,12 @@ export abstract class HarmonyCore {
   get getChainId(): ChainID {
     return this.chainId;
   }
+  public setChainId(chainId: ChainID) {
+    this.chainId = chainId;
+  }
+  public setChainType(chainType: ChainType) {
+    this.chainType = chainType;
+  }
 }
 
 export const HDPath = `m/44'/60'/0'/0/`;

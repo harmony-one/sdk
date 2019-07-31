@@ -12,7 +12,7 @@ import {
 import {
   assertObject,
   AssertType,
-  HarmonyCore,
+  // HarmonyCore,
   DefaultBlockParams,
 } from '@harmony-js/utils';
 
@@ -20,11 +20,10 @@ import {getAddress} from '@harmony-js/crypto';
 
 import {Transaction} from '@harmony-js/transaction';
 
-class Blockchain extends HarmonyCore {
+class Blockchain {
   messenger: Messenger;
 
   constructor(messenger: Messenger) {
-    super(messenger.chainType);
     this.messenger = messenger;
   }
   setMessenger(messenger: Messenger) {
@@ -55,7 +54,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.GetBalance,
       [getAddress(address).checksum, blockNumber],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -64,7 +63,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.BlockNumber,
       [],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -85,7 +84,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.GetBlockByHash,
       [blockHash, returnObject],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -107,7 +106,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.GetBlockByNumber,
       [blockNumber, returnObject],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -119,7 +118,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.GetBlockTransactionCountByHash,
       [blockHash],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -131,7 +130,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.GetBlockTransactionCountByNumber,
       [blockNumber],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -153,7 +152,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionByBlockHashAndIndex,
       [blockHash, index],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -172,7 +171,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionByBlockNumberAndIndex,
       [blockNumber, index],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -184,7 +183,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionByHash,
       [txnHash],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -199,7 +198,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionReceipt,
       [txnHash],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -220,7 +219,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.GetCode,
       [getAddress(address).checksum, blockNumber],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -240,7 +239,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.ProtocalVersion,
       [],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -262,7 +261,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.GetStorageAt,
       [getAddress(address).checksum, position, blockNumber],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -281,7 +280,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionCount,
       [getAddress(address).checksum, blockNumber],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -293,7 +292,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.SendTransaction,
       [transaction.txPayload],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -331,7 +330,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.EstimateGas,
       [{to: getAddress(to).checksum, data}],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -340,7 +339,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.GasPrice,
       [],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
@@ -355,7 +354,7 @@ class Blockchain extends HarmonyCore {
     const result = await this.messenger.send(
       RPCMethod.Call,
       [payload, blockNumber],
-      this.chainPrefix,
+      this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }

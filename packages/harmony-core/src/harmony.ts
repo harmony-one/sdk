@@ -1,12 +1,12 @@
 import * as crypto from '@harmony-js/crypto';
 import * as utils from '@harmony-js/utils';
 
-import { HttpProvider, Messenger, WSProvider } from '@harmony-js/network';
-import { TransactionFactory, Transaction } from '@harmony-js/transaction';
-import { ContractFactory, Contract } from '@harmony-js/contract';
-import { Wallet, Account } from '@harmony-js/account';
-import { Blockchain } from './blockchain';
-import { HarmonyConfig } from './util';
+import {HttpProvider, Messenger, WSProvider} from '@harmony-js/network';
+import {TransactionFactory, Transaction} from '@harmony-js/transaction';
+import {ContractFactory, Contract} from '@harmony-js/contract';
+import {Wallet, Account} from '@harmony-js/account';
+import {Blockchain} from './blockchain';
+import {HarmonyConfig} from './util';
 
 export class Harmony extends utils.HarmonyCore {
   Modules = {
@@ -49,7 +49,7 @@ export class Harmony extends utils.HarmonyCore {
     this.crypto = crypto;
     this.utils = utils;
   }
-  setProvider(provider: string | HttpProvider | WSProvider): void {
+  public setProvider(provider: string | HttpProvider | WSProvider): void {
     if (utils.isHttp(provider) && typeof provider === 'string') {
       this.provider = new HttpProvider(provider);
     } else if (provider instanceof HttpProvider) {
@@ -60,6 +60,21 @@ export class Harmony extends utils.HarmonyCore {
       this.provider = provider;
     }
     this.messenger.setProvider(this.provider);
+    this.blockchain.setMessenger(this.messenger);
+    this.wallet.setMessenger(this.messenger);
+    this.transactions.setMessenger(this.messenger);
+  }
+
+  public setChainId(chainId: utils.ChainID) {
+    this.chainId = chainId;
+    this.messenger.setChainId(this.chainId);
+    this.blockchain.setMessenger(this.messenger);
+    this.wallet.setMessenger(this.messenger);
+    this.transactions.setMessenger(this.messenger);
+  }
+  public setChainType(chainType: utils.ChainType) {
+    this.chainType = chainType;
+    this.messenger.setChainType(this.chainType);
     this.blockchain.setMessenger(this.messenger);
     this.wallet.setMessenger(this.messenger);
     this.transactions.setMessenger(this.messenger);
