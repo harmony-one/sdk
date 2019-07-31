@@ -1,4 +1,4 @@
-const { task } = require('gulp');
+const {task, src} = require('gulp');
 const del = require('del');
 
 const packages = [
