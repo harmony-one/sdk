@@ -1,9 +1,16 @@
-const path = require('path');
-const UglifyJs = require('uglifyjs-webpack-plugin');
-const packagesSettings = require('./scripts/packagesList');
+import path from 'path';
+// tslint:disable-next-line: no-implicit-dependencies
+import UglifyJs from 'uglifyjs-webpack-plugin';
+// tslint:disable-next-line: no-implicit-dependencies
+import {Configuration} from 'webpack';
 
-function createBatchConfig(list) {
-  return list.map((l) => {
+// // tslint:disable-next-line: no-implicit-dependencies
+// import {createVariants} from 'parallel-webpack';
+
+import {packageList, PackageItem} from './packagesForWP';
+
+function createBatchConfig(list: PackageItem[]) {
+  return list.map((l: PackageItem) => {
     const entryBase = {};
     entryBase[l.name] = [`./packages/${l.dest}/dist/index.js`];
 
@@ -49,8 +56,9 @@ function createBatchConfig(list) {
       output: {
         libraryTarget: 'umd',
         library: `${l.name}`,
-        filename: '[name].browser.js',
-        path: path.join(__dirname, 'dist'),
+        filename: `${l.name}.browser.js`,
+        // filename: '[name].browser.js',
+        path: path.join(__dirname, '../../', 'dist'),
       },
     };
 
@@ -58,10 +66,11 @@ function createBatchConfig(list) {
   });
 }
 
-function reduceDimension(arr) {
+function reduceDimension(arr: any[]) {
   return Array.prototype.concat.apply([], arr);
 }
 
-const batch = reduceDimension(createBatchConfig(packagesSettings));
+const batch: Configuration = reduceDimension(createBatchConfig(packageList));
 
-module.exports = batch;
+// tslint:disable-next-line: no-default-export
+export default batch;
