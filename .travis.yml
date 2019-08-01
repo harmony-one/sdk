@@ -7,10 +7,8 @@ branches:
   except:
     - /^v[0-9]/
 install:
-  - npm i -g lerna
-  - npm i -g yarn
-  - yarn global add ts-node
   - yarn install
+  - yarn global add ts-node
 script:
   - yarn bootstrap
   - yarn build
