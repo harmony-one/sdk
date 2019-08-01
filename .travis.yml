@@ -7,6 +7,9 @@ branches:
   except:
     - /^v[0-9]/
 install:
+  - npm i -g lerna
+  - npm i -g typescript
+  - npm i -g yarn
   - yarn bootstrap
 script:
   - yarn test:src
