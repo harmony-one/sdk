@@ -9,8 +9,8 @@ branches:
 install:
   - yarn install
   - yarn global add ts-node
+  - yarn clean && yarn link
 script:
-  - yarn build
   - yarn test:src
   - yarn dist
 
