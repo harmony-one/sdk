@@ -2,16 +2,15 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src",
-    "declarationDir": "dist"
+    "rootDir": "src"
   },
   "include": ["src", "../../typings/**/*.d.ts", "../harmony-utils/src/core.ts"],
   "references": [
-    { "path": "../harmony-account" },
-    { "path": "../harmony-crypto" },
-    { "path": "../harmony-utils" },
-    { "path": "../harmony-network" },
-    { "path": "../harmony-transaction" },
-    { "path": "../harmony-contract" }
+    {"path": "../harmony-account"},
+    {"path": "../harmony-crypto"},
+    {"path": "../harmony-utils"},
+    {"path": "../harmony-network"},
+    {"path": "../harmony-transaction"},
+    {"path": "../harmony-contract"}
   ]
 }

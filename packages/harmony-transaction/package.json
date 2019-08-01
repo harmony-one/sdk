@@ -18,7 +18,6 @@
   "author": "neeboo@firestack.one",
   "license": "ISC",
   "dependencies": {
-    "@harmony-js/core": "0.0.60",
     "@harmony-js/crypto": "0.0.60",
     "@harmony-js/network": "0.0.60",
     "@harmony-js/utils": "0.0.60"

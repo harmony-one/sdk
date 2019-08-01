@@ -10,7 +10,6 @@ install:
   - yarn install
   - yarn global add ts-node
 script:
-  - yarn bootstrap
   - yarn build
   - yarn test:src
   - yarn dist

@@ -1,6 +1,7 @@
 {
   "description": "Root repository for the harmony-sdk-core",
   "private": true,
+  "license": "MIT",
   "workspaces": [
     "packages/*"
   ],
