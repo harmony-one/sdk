@@ -9,9 +9,10 @@ branches:
 install:
   - npm i -g lerna
   - npm i -g yarn
-  - lerna bootstrap
+  - yarn global add ts-node
+  - yarn install
 script:
-  - yarn clean && lerna link
+  - yarn bootstrap
   - yarn build
   - yarn test:src
   - yarn dist
