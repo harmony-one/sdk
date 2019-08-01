@@ -10,6 +10,8 @@ It's a mono-repo library, not yet published to npm.
 
 # Install from npm/yarn
 
+**Note: we added a @next tag to npm package, please use the following command to install with npm/yarn**
+
 ```bash
 
 # npm
