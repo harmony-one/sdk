@@ -5,7 +5,7 @@
     "packages/*"
   ],
   "scripts": {
-    "bootstrap": "lerna bootstrap && yarn build:ts",
+    "bootstrap": "lerna bootstrap && yarn build",
     "watch": "yarn build:ts -w",
     "build": "yarn packages:clean && yarn build:ts",
     "build:ts": "tsc -b tsconfig.json",
