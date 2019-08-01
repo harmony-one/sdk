@@ -45,7 +45,7 @@ yarn global add lerna && yarn global add typescript
 ```
 2. bootstrap repostory
 ```bash
-yarn bootstrap
+yarn install && yarn bootstrap
 ```
 3. run watcher before editing any source file
 ```bash

@@ -11,6 +11,7 @@ install:
 script:
   - yarn bootstrap
   - yarn test:src
+  - yarn dist
 cache:
   directories:
     - '$HOME/.yarn-cache'
