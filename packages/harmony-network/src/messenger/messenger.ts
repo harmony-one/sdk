@@ -5,13 +5,13 @@ import {
   ChainID,
   defaultConfig,
 } from '@harmony-js/utils';
-import { JsonRpc } from '../rpcMethod/rpcbuilder';
-import { ResponseMiddleware } from './responseMiddleware';
-import { HttpProvider } from '../providers/http';
-import { WSProvider } from '../providers/ws';
+import {JsonRpc} from '../rpcMethod/builder';
+import {ResponseMiddleware} from './responseMiddleware';
+import {HttpProvider} from '../providers/http';
+import {WSProvider} from '../providers/ws';
 // import { getResultForData } from '../util';
-import { RPCMethod } from '../rpcMethod/rpc';
-import { SubscribeReturns } from '../types';
+import {RPCMethod} from '../rpcMethod/rpc';
+import {SubscribeReturns} from '../types';
 
 /**
  * @class Messenger
@@ -233,4 +233,4 @@ class Messenger extends HarmonyCore {
     }
   };
 }
-export { Messenger };
+export {Messenger};

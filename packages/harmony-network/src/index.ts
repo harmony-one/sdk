@@ -1,5 +1,5 @@
 import mitt from 'mitt';
-export { mitt };
+export {mitt};
 // provider related
 export * from './providers/baseProvider';
 export * from './providers/baseSocket';
@@ -11,7 +11,7 @@ export * from './providers/emitter';
 export * from './messenger/messenger';
 export * from './messenger/responseMiddleware';
 // rpc builder and blockchain method
-export * from './rpcMethod/rpcbuilder';
+export * from './rpcMethod/builder';
 export * from './rpcMethod/net';
 export * from './rpcMethod/rpc';
 // trackers

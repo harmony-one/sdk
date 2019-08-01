@@ -1,5 +1,5 @@
-import { RPCRequestPayload } from '../types';
-import { RPCMethod } from './rpc';
+import {RPCRequestPayload} from '../types';
+import {RPCMethod} from './rpc';
 /**
  * @class JsonRpc
  * @description json rpc instance
@@ -50,4 +50,4 @@ class JsonRpc {
   };
 }
 
-export { JsonRpc };
+export {JsonRpc};

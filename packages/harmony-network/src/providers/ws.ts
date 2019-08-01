@@ -1,15 +1,15 @@
 // TODO: implement Websocket Provider
-import { w3cwebsocket as W3CWebsocket } from 'websocket';
+import {w3cwebsocket as W3CWebsocket} from 'websocket';
 import {
   BaseSocket,
   SocketConnection,
   SocketState,
   // EmittType,
 } from './baseSocket';
-import { isWs, isObject, isArray } from '@harmony-js/utils';
-import { JsonRpc } from '../rpcMethod/rpcbuilder';
-import { composeMiddleware } from '../rpcMethod/net';
-import { RPCRequestPayload } from '../types';
+import {isWs, isObject, isArray} from '@harmony-js/utils';
+import {JsonRpc} from '../rpcMethod/builder';
+import {composeMiddleware} from '../rpcMethod/net';
+import {RPCRequestPayload} from '../types';
 
 class WSProvider extends BaseSocket {
   get connected() {
@@ -268,9 +268,7 @@ class WSProvider extends BaseSocket {
 
       if (payload && response.id !== payload.id) {
         return new Error(
-          `Validation error: Invalid JSON-RPC response ID (request: ${
-            payload.id
-          } / response: ${response.id})`,
+          `Validation error: Invalid JSON-RPC response ID (request: ${payload.id} / response: ${response.id})`,
         );
       }
 
@@ -285,4 +283,4 @@ class WSProvider extends BaseSocket {
   }
 }
 
-export { WSProvider };
+export {WSProvider};
