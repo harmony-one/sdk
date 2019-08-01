@@ -7,11 +7,10 @@ branches:
   except:
     - /^v[0-9]/
 install:
-  - yarn global add lerna && yarn global add typescript
-  - lerna bootstrap
-  - lerna link
+  - yarn install
 script:
-  - tsc -b tsconfig.json
+  - yarn bootstrap
+  - yarn test:src
 cache:
   directories:
     - '$HOME/.yarn-cache'
