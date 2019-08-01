@@ -8,9 +8,7 @@ branches:
     - /^v[0-9]/
 install:
   - npm i -g lerna
-  - npm i -g typescript
   - npm i -g yarn
-  - npm i -g gulp
   - lerna bootstrap
 script:
   - yarn clean && lerna link
