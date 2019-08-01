@@ -11,8 +11,9 @@ install:
   - npm i -g typescript
   - npm i -g yarn
   - npm i -g gulp
-  - yarn bootstrap
+  - lerna bootstrap
 script:
+  - yarn build
   - yarn test:src
   - yarn dist
 
