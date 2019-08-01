@@ -11,6 +11,7 @@ install:
   - lerna bootstrap
 script:
   - yarn test:src
+  - ls -a packages/harmony-account/tsconfig.tsbuildinfo
   - yarn dist
 cache:
   directories:

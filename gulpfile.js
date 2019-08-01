@@ -1,5 +1,7 @@
 const {task, src} = require('gulp');
 const del = require('del');
+const fs = require('fs');
+const path = require('path');
 
 const packages = [
   'harmony-core',
