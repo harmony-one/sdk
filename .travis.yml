@@ -8,9 +8,9 @@ branches:
     - /^v[0-9]/
 install:
   - yarn global add lerna && yarn global add typescript
-  - yarn install
+  - lerna bootstrap
 script:
-  - yarn bootstrap
+  - tsc -b tsconfig.json
 cache:
   directories:
     - '$HOME/.yarn-cache'
