@@ -28,8 +28,16 @@ const app = new Application({
 
 const files = [...app.expandInputFiles([pkgSrc])];
 
-// // const project = app.convert();
+const nameArray = pkgPath.split('/');
+const index = nameArray.findIndex(
+  (value) => value.startsWith('harmony') && !value.startsWith('harmony-js'),
+);
+
+const docPath = nameArray[index]; //.replace('harmony-', '');
+
+// const project = app.convert();
 const outputDir = `${pkgPath}/doc/${target}`;
+const outputDirRoot = `docs/${docPath}`;
 // console.log({ttt, files, outputDir});
 // // Rendered docs
-app.generateDocs(files, outputDir);
+app.generateDocs(files, outputDirRoot);
