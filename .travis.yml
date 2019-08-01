@@ -8,10 +8,9 @@ branches:
     - /^v[0-9]/
 install:
   - yarn install
-  - yarn global add ts-node
-  - yarn global add lerna@3.2.1
-  - lerna bootstrap && yarn build:ts
 script:
+  - yarn clean
+  - yarn link
   - yarn test:src
   - yarn dist
 cache:
