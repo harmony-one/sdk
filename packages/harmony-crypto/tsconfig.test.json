@@ -1,0 +1,5 @@
+{
+  "extends": "../../tsconfig.test.json",
+  "include": ["src", "__test__", "../../typings/**/*.d.ts"],
+  "references": []
+}

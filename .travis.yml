@@ -1,0 +1,24 @@
+language: node_js
+sudo: true
+dist: trusty
+node_js:
+  - 10
+branches:
+  except:
+    - /^v[0-9]/
+install:
+  - yarn install
+script:
+  - yarn bootstrap
+  - yarn test:src
+  - yarn dist
+cache:
+  directories:
+    - '$HOME/.yarn-cache'
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN # Set in the settings page of your repository, as a secure variable
+  keep-history: true
+  on:
+    branch: master

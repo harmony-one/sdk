@@ -1,0 +1,34 @@
+{
+  "name": "@harmony-js/crypto",
+  "version": "0.0.60",
+  "description": "crypto libraries for harmony",
+  "main": "dist/index.js",
+  "node": "dist/index.js",
+  "browser": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "jsnext:main": "dist/index.esm.js",
+  "typings": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "neeboo@firestack.one",
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@harmony-js/utils": "0.0.60",
+    "aes-js": "^3.1.2",
+    "bip39": "^2.5.0",
+    "bn.js": "^4.11.8",
+    "elliptic": "^6.4.1",
+    "hdkey": "^1.1.1",
+    "hmac-drbg": "^1.0.1",
+    "js-sha3": "^0.8.0",
+    "pbkdf2": "^3.0.17",
+    "scrypt.js": "^0.3.0",
+    "uuid": "^3.3.2"
+  },
+  "gitHead": "b8f61e01831edb953c97e24bc158764e42274c1c"
+}

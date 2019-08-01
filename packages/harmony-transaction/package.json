@@ -1,0 +1,26 @@
+{
+  "name": "@harmony-js/transaction",
+  "version": "0.0.60",
+  "description": "transaction package for harmony",
+  "main": "dist/index.js",
+  "node": "dist/index.js",
+  "browser": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "jsnext:main": "dist/index.esm.js",
+  "typings": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "neeboo@firestack.one",
+  "license": "ISC",
+  "dependencies": {
+    "@harmony-js/crypto": "0.0.60",
+    "@harmony-js/network": "0.0.60",
+    "@harmony-js/utils": "0.0.60"
+  },
+  "gitHead": "b8f61e01831edb953c97e24bc158764e42274c1c"
+}
