@@ -9,11 +9,11 @@ branches:
 install:
   - yarn install
   - yarn global add ts-node
-  - yarn clean && yarn link
+  - yarn global add lerna@3.2.1
+  - lerna bootstrap && yarn build:ts
 script:
   - yarn test:src
   - yarn dist
-
 cache:
   directories:
     - '$HOME/.yarn-cache'
