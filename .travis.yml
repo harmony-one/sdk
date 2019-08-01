@@ -9,6 +9,7 @@ branches:
 install:
   - yarn global add lerna && yarn global add typescript
   - lerna bootstrap
+  - lerna link
 script:
   - tsc -b tsconfig.json
 cache:
