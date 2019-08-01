@@ -7,10 +7,9 @@ branches:
   except:
     - /^v[0-9]/
 install:
-  - yarn install
+  - yarn global add lerna && yarn global add typescript
+  - lerna bootstrap
 script:
-  - yarn clean
-  - yarn link
   - yarn test:src
   - yarn dist
 cache:
