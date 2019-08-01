@@ -13,7 +13,7 @@ install:
   - npm i -g gulp
   - lerna bootstrap
 script:
-  - lerna clean && lerna link
+  - yarn clean && lerna link
   - yarn build
   - yarn test:src
   - yarn dist
