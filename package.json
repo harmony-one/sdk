@@ -25,6 +25,7 @@
     "test:build": "cross-env TEST_ENV=unit jest -c jest.build.config.js",
     "test:integration": "cross-env TEST_ENV=integration jest -c jest.iconfig.js --runInBand --verbose --collectCoverage=false",
     "test:e2e": "cross-env TEST_ENV=e2e jest -c ./scripts/jest/jest.e2e.config.js --runInBand --verbose --collectCoverage=false",
+    "docs:vue": "ts-node -P scripts/tsconfig.json scripts/docs.ts vuepress",
     "docs:build": "ts-node -P scripts/tsconfig.json scripts/docs.ts docusaurus,vuepress,gitbook,bitbucket,default",
     "docs:bundler": "yarn packages:cleanDocs && yarn docs:build",
     "release": "yarn bootstrap && yarn bundle && lerna publish --exact",
