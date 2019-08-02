@@ -16,7 +16,8 @@
     "bundle:webpack": "rm -rf dist && cross-env NODE_ENV=production ts-node -P scripts/tsconfig.json scripts/webpack.ts",
     "clean": "lerna clean --yes && lerna run clean && rimraf includes && yarn packages:clean",
     "dist": "yarn packages:bundler && yarn bundle:webpack",
-    "packages:clean": "gulp cleanServer && gulp cleanUnexpected",
+    "packages:cleanUnexpected": "gulp cleanUnexpected",
+    "packages:clean": "gulp cleanServer && yarn packages:cleanUnexpected",
     "packages:cleanDocs": "gulp cleanDocs",
     "packages:bundler": "yarn packages:clean && yarn build:ts && ts-node -P scripts/tsconfig.json scripts/bundle.ts",
     "schema": "ts-node -P scripts/tsconfig.json scripts/typings/schema.ts core",
@@ -26,12 +27,13 @@
     "test:integration": "cross-env TEST_ENV=integration jest -c jest.iconfig.js --runInBand --verbose --collectCoverage=false",
     "test:e2e": "cross-env TEST_ENV=e2e jest -c ./scripts/jest/jest.e2e.config.js --runInBand --verbose --collectCoverage=false",
     "docs:vue": "ts-node -P scripts/tsconfig.json scripts/docs.ts vuepress",
+    "docs:gitbook": "ts-node -P scripts/tsconfig.json scripts/docs.ts gitbook",
     "docs:build": "ts-node -P scripts/tsconfig.json scripts/docs.ts docusaurus,vuepress,gitbook,bitbucket,default",
     "docs:bundler": "yarn packages:cleanDocs && yarn docs:build",
     "release": "yarn bootstrap && yarn bundle && lerna publish --exact",
     "format": "prettier --write '**/*.{ts,tsx,js}' --config .prettierrc",
     "formatSol": "prettier --list-different **/*.sol",
-    "dev:publish": "yarn dist && lerna publish --dist-tag next --exact --no-verify-access --no-verify-registry"
+    "dev:publish": "yarn dist && yarn packages:cleanUnexpected && lerna publish --dist-tag next --exact --no-verify-access --no-verify-registry"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.56",

@@ -36,7 +36,7 @@ task('cleanUnexpected', async () => {
 
 task('cleanDocs', async () => {
   await packages.map((p) => {
-    const pathToLib = `packages/${p}/doc`;
+    const pathToLib = `docs/${p}`;
     return del.sync([pathToLib]);
   });
 });
