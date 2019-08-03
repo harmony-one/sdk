@@ -1,19 +1,47 @@
+import {bip39, hdkey, getAddress, BN, Signature} from '@harmony-js/crypto';
 import {
-  bip39,
-  hdkey,
-  encryptPhrase,
-  decryptPhrase,
-  EncryptOptions,
-} from '@harmony-js/crypto';
-import { HDPath } from '@harmony-js/utils';
+  HDPath,
+  // defineReadOnly,
+  isHttp,
+  isWs,
+  ChainID,
+  ChainType,
+  Unit,
+  isHex,
+  numberToHex,
+} from '@harmony-js/utils';
+import {Messenger, HttpProvider, WSProvider} from '@harmony-js/network';
+import {
+  Transaction,
+  TxStatus,
+  RLPSign,
+  TransasctionReceipt,
+} from '@harmony-js/transaction';
+import {Account} from './account';
 
-export class HDNode extends hdkey {
-  static new() {
-    return new HDNode(bip39.generateMnemonic(), 0);
-  }
-  static add(phrase: string, index: number) {
-    return new HDNode(phrase, index);
-  }
+interface WalletsInterfaces {
+  [key: string]: Account;
+}
+
+interface Web3TxPrams {
+  id?: string;
+  from?: string;
+  to?: string;
+  nonce?: number | string;
+  gasLimit?: BN | number | string;
+  gasPrice?: BN | number | string;
+  shardID?: number | string;
+  toShardID?: number | string;
+  data?: string;
+  value?: BN;
+  chainId?: number;
+  rawTransaction?: string;
+  unsignedRawTransaction?: string;
+  signature?: Signature | string;
+  receipt?: TransasctionReceipt;
+}
+
+export class HDNode {
   static isValidMnemonic(phrase: string): boolean {
     if (phrase.trim().split(/\s+/g).length < 12) {
       return false;
@@ -23,60 +51,148 @@ export class HDNode extends hdkey {
   static generateMnemonic(): string {
     return bip39.generateMnemonic();
   }
+  public provider: HttpProvider | WSProvider;
+  private messenger: Messenger;
+  private hdwallet: hdkey | undefined;
   private path: string;
-  private mnemonic?: string;
-  private entropy?: string;
-  private childKey?: hdkey;
+  private index: number;
+  private addressCount: number;
+  private addresses: string[];
+  private wallets: WalletsInterfaces;
 
-  constructor(menmonic?: string, index: number = 0) {
-    super();
+  constructor(
+    provider: string | HttpProvider | WSProvider = 'http://localhost:9500',
+    menmonic?: string,
+    index: number = 0,
+    addressCount: number = 1,
+    chainType: ChainType = ChainType.Harmony,
+    chainId: ChainID = ChainID.Default,
+  ) {
+    this.provider = this.setProvider(provider);
+    this.messenger = new Messenger(this.provider, chainType, chainId);
+    this.hdwallet = undefined;
+    this.addresses = [];
+    this.wallets = {};
     this.path = HDPath;
-    this.mnemonic = menmonic;
-    this.entropy = this.mnemonic ? this.getEntropy(this.mnemonic) : undefined;
-    this.childKey = this.entropy
-      ? this.getChildKey(this.entropy, index)
-      : undefined;
+    this.index = index;
+    this.addressCount = addressCount;
+    this.getHdWallet(menmonic || HDNode.generateMnemonic());
   }
 
-  getEntropy(mnemonic: string) {
-    return bip39.mnemonicToEntropy(mnemonic);
-  }
-  getChildKey(entropy: string, index: number) {
-    const master = HDNode.fromMasterSeed(Buffer.from(entropy, 'hex'));
-    return master.derive(`${this.path}${index}`);
-  }
-
-  async lock(password: string, options: EncryptOptions) {
-    if (this.mnemonic && HDNode.isValidMnemonic(this.mnemonic)) {
-      try {
-        this.mnemonic = await encryptPhrase(this.mnemonic, password, options);
-      } catch (error) {
-        throw error;
-      }
+  normalizePrivateKeys(mnemonic: string | string[]) {
+    if (Array.isArray(mnemonic)) {
+      return mnemonic;
+    } else if (mnemonic && !mnemonic.includes(' ')) {
+      return [mnemonic];
     } else {
-      throw new Error('mnemonic is not valid');
+      return false;
     }
   }
 
-  async unlock(password: string) {
-    if (this.mnemonic) {
-      try {
-        this.mnemonic = await decryptPhrase(
-          JSON.parse(this.mnemonic),
-          password,
-        );
-      } catch (error) {
-        throw error;
-      }
+  setProvider(provider: string | HttpProvider | WSProvider) {
+    if (isHttp(provider) && typeof provider === 'string') {
+      return new HttpProvider(provider);
+    } else if (provider instanceof HttpProvider) {
+      return provider;
+    } else if (isWs(provider) && typeof provider === 'string') {
+      return new WSProvider(provider);
+    } else if (provider instanceof WSProvider) {
+      return provider;
     } else {
-      throw new Error('mnemonic is not valid');
+      throw new Error('provider is not recognized');
     }
   }
 
-  get _privateKey() {
-    return this.childKey ? this.childKey.privateKey.toString('hex') : '';
+  getHdWallet(mnemonic: string) {
+    if (!HDNode.isValidMnemonic(mnemonic)) {
+      throw new Error('Mnemonic invalid or undefined');
+    }
+    this.hdwallet = hdkey.fromMasterSeed(bip39.mnemonicToSeed(mnemonic));
+
+    for (let i = this.index; i < this.index + this.addressCount; i++) {
+      if (!this.hdwallet) {
+        throw new Error('hdwallet is not found');
+      }
+      const childKey = this.hdwallet.derive(`${this.path}${i}`);
+      const prv = childKey.privateKey.toString('hex');
+      const account = new Account(prv);
+      const addr = account.checksumAddress;
+      this.addresses.push(addr);
+      this.wallets[addr] = account;
+    }
   }
-  get _publicKey() {
-    return this.childKey ? this.childKey.publicKey.toString('hex') : '';
+  send(
+    ...args: [string, (string | any[] | undefined)?, (string | undefined)?]
+  ) {
+    this.messenger.send.apply(this.messenger, args);
+  }
+
+  sendAsync(
+    ...args: [string, (string | any[] | undefined)?, (string | undefined)?]
+  ) {
+    this.send(...args);
+  }
+  // tslint:disable-next-line: ban-types
+  getAccounts(cb?: Function) {
+    if (cb) {
+      cb(null, this.addresses);
+    }
+    return this.addresses;
+  }
+  // tslint:disable-next-line: ban-types
+  getPrivateKey(address: string, cb?: Function) {
+    if (!cb) {
+      if (!this.wallets[address]) {
+        throw new Error('Account not found');
+      } else {
+        return this.wallets[address].privateKey;
+      }
+    }
+    if (!this.wallets[address]) {
+      return cb('Account not found');
+    } else {
+      cb(null, this.wallets[address].privateKey);
+    }
+  }
+  signTransaction(txParams: any | Web3TxPrams, cb: Function) {
+    const from: string = getAddress(txParams.from).checksum;
+    const to: string = getAddress(txParams.to).checksum;
+    const gasLimit = isHex(txParams.gasLimit)
+      ? txParams.gasLimit
+      : new Unit(txParams.gasLimit).asWei().toWei();
+    const gasPrice = isHex(txParams.gasPrice)
+      ? txParams.gasPrice
+      : new Unit(txParams.gasPrice).asWei().toWei();
+    const value = isHex(txParams.value)
+      ? txParams.value
+      : numberToHex(txParams.value);
+    const nonce = isHex(txParams.nonce)
+      ? txParams.nonce
+      : numberToHex(txParams.nonce);
+    const prv = this.wallets[from].privateKey;
+
+    const tx = new Transaction(
+      {...txParams, from, to, gasLimit, gasPrice, value, nonce},
+      this.messenger,
+      TxStatus.INTIALIZED,
+    );
+    tx.getRLPUnsigned();
+    if (prv) {
+      const rawTransaction = RLPSign(tx, prv)[1];
+      if (cb) {
+        cb(null, rawTransaction);
+      }
+      return rawTransaction;
+    }
+  }
+  getAddress(idx?: number) {
+    if (!idx) {
+      return this.addresses[0];
+    } else {
+      return this.addresses[idx];
+    }
+  }
+  getAddresses() {
+    return this.addresses;
   }
 }

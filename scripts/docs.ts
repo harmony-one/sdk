@@ -5,6 +5,7 @@ import spawn from 'cross-spawn';
 
 // tslint:disable-next-line: no-var-requires
 const runner = require.resolve('./typedoc/runner');
+const batch = require.resolve('./typedoc/batch');
 const options = {stdio: 'inherit'};
 
 const outputs = process.argv.slice(2)[0].split(',');
@@ -51,7 +52,18 @@ async function docs() {
   }
 }
 
-docs();
+// docs();
+
+async function batchDocs() {
+  await preProcessFunc(preProcessProjects);
+  // const srcArry = [];
+  // for (const pkg of projects) {
+  //   srcArry.push(pkg.src);
+
+  // }
+}
+
+batchDocs();
 
 // async function docs() {
 //   await preProcessFunc(preProcessProjects);

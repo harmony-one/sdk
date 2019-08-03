@@ -63,7 +63,7 @@ export const enum RPCMethod {
   // 30. net_version
   NetVersion = 'net_version',
   // 31. hmy_protocolVersion
-  ProtocalVersion = 'hmy_protocolVersion',
+  ProtocolVersion = 'hmy_protocolVersion',
 }
 
 export const enum RPCErrorCode {

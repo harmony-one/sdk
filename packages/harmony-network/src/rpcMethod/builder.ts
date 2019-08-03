@@ -29,7 +29,9 @@ class JsonRpc {
     params: string | undefined | any[],
   ): RPCRequestPayload<any> => {
     // FIXME: error to be done by shared/errors
-    if (!method) throw new Error('jsonrpc method should be specified!');
+    if (!method) {
+      throw new Error('jsonrpc method should be specified!');
+    }
 
     // advance message ID
     this.messageId += 1;

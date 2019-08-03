@@ -235,9 +235,9 @@ class Blockchain {
     return this.getRpcResult(result);
   }
 
-  async getProtocalVersion() {
+  async getProtocolVersion() {
     const result = await this.messenger.send(
-      RPCMethod.ProtocalVersion,
+      RPCMethod.ProtocolVersion,
       [],
       this.messenger.chainPrefix,
     );
