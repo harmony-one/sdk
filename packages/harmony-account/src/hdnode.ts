@@ -10,7 +10,12 @@ import {
   isHex,
   numberToHex,
 } from '@harmony-js/utils';
-import {Messenger, HttpProvider, WSProvider} from '@harmony-js/network';
+import {
+  Messenger,
+  HttpProvider,
+  WSProvider,
+  RPCRequestPayload,
+} from '@harmony-js/network';
 import {
   Transaction,
   TxStatus,
@@ -121,15 +126,18 @@ export class HDNode {
       this.wallets[addr] = account;
     }
   }
-  send(
-    ...args: [string, (string | any[] | undefined)?, (string | undefined)?]
-  ) {
-    this.messenger.send.apply(this.messenger, args);
+  send(...args: [RPCRequestPayload<any>, any]) {
+    const method = args[0].method;
+    let newMethod: string = method;
+    if (method.startsWith('eth')) {
+      newMethod = method.replace('eth', 'hmy');
+    }
+    args[0].method = newMethod;
+
+    this.provider.send(args[0], args[1]);
   }
 
-  sendAsync(
-    ...args: [string, (string | any[] | undefined)?, (string | undefined)?]
-  ) {
+  sendAsync(...args: [RPCRequestPayload<any>, any]) {
     this.send(...args);
   }
   // tslint:disable-next-line: ban-types
