@@ -134,6 +134,16 @@ export class HDNode {
     }
     args[0].method = newMethod;
 
+    const {id} = args[0];
+
+    if (newMethod === 'hmy_accounts') {
+      args[1](null, {
+        result: this.getAccounts(),
+        id,
+        jsonrpc: '2.0',
+      });
+    }
+
     this.provider.send(args[0], args[1]);
   }
 
@@ -202,5 +212,18 @@ export class HDNode {
   }
   getAddresses() {
     return this.addresses;
+  }
+  addByPrivateKey(privateKey: string) {
+    const account = new Account(privateKey);
+    const addr = account.checksumAddress;
+    this.addresses.push(addr);
+    this.wallets[addr] = account;
+    return addr;
+  }
+
+  setSigner(address: string) {
+    const foundIndex = this.addresses.findIndex((value) => value === address);
+    this.addresses.slice(foundIndex, foundIndex + 1);
+    this.addresses.unshift(address);
   }
 }
