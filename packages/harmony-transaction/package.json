@@ -1,6 +1,6 @@
 {
   "name": "@harmony-js/transaction",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "transaction package for harmony",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -19,7 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@harmony-js/crypto": "0.1.0",
-    "@harmony-js/network": "0.1.0",
+    "@harmony-js/network": "0.1.1",
     "@harmony-js/utils": "0.1.0"
   },
   "gitHead": "b8f61e01831edb953c97e24bc158764e42274c1c"
