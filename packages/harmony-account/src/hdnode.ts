@@ -166,15 +166,15 @@ export class HDNode {
 
     if (txParams.gas !== undefined && isHex(txParams.gas)) {
       gasLimit = new BN(hexToNumber(txParams.gas)).lt(new BN(this.gasLimit))
-        ? new Unit(hexToNumber(txParams.gas)).asWei().toWei()
-        : new Unit(this.gasLimit).asWei().toWei();
+        ? txParams.gas
+        : this.gasLimit;
     }
     if (txParams.gasLimit !== undefined && isHex(txParams.gasLimit)) {
       gasLimit = new BN(hexToNumber(txParams.gasLimit)).lt(
         new BN(this.gasLimit),
       )
-        ? new Unit(hexToNumber(txParams.gasLimit)).asWei().toWei()
-        : new Unit(this.gasLimit).asWei().toWei();
+        ? txParams.gasLimit
+        : this.gasLimit;
     }
 
     let gasPrice = new Unit('0').asWei().toWei();
@@ -182,14 +182,14 @@ export class HDNode {
       gasPrice = new BN(hexToNumber(txParams.gasPrice)).lt(
         new BN(this.gasPrice),
       )
-        ? new Unit(hexToNumber(txParams.gasPrice)).asWei().toWei()
-        : new Unit(this.gasPrice).asWei().toWei();
+        ? txParams.gasPrice
+        : this.gasPrice;
     }
 
     const value =
       txParams.value !== undefined && isHex(txParams.value)
         ? txParams.value
-        : new Unit('0').asWei().toWei();
+        : '0';
     const nonce =
       txParams.nonce !== undefined && isHex(txParams.nonce)
         ? Number.parseInt(hexToNumber(txParams.nonce), 10)

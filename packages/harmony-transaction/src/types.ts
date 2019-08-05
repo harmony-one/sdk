@@ -1,15 +1,15 @@
-import { BN, Signature } from '@harmony-js/crypto';
+import {BN, Signature} from '@harmony-js/crypto';
 export interface TxParams {
   id: string;
   from: string;
   to: string;
   nonce: number | string;
-  gasLimit: BN;
-  gasPrice: BN;
+  gasLimit: number | string | BN;
+  gasPrice: number | string | BN;
   shardID: number | string;
   toShardID: number | string;
   data: string;
-  value: BN;
+  value: number | string | BN;
   chainId: number;
   rawTransaction: string;
   unsignedRawTransaction: string;

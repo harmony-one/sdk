@@ -9,7 +9,7 @@ import {
   getAddress,
   HarmonyAddress,
 } from '@harmony-js/crypto';
-import {add0xToString, numberToHex, ChainType} from '@harmony-js/utils';
+import {add0xToString, numberToHex, ChainType, Unit} from '@harmony-js/utils';
 import {
   Messenger,
   RPCMethod,
@@ -67,13 +67,22 @@ class Transaction {
     this.id = params && params.id ? params.id : '0x';
     this.from = params && params.from ? params.from : '0x';
     this.nonce = params && params.nonce ? params.nonce : 0;
-    this.gasPrice = params && params.gasPrice ? params.gasPrice : new BN(0);
-    this.gasLimit = params && params.gasLimit ? params.gasLimit : new BN(0);
+    this.gasPrice =
+      params && params.gasPrice
+        ? new Unit(params.gasPrice).asWei().toWei()
+        : new Unit(0).asWei().toWei();
+    this.gasLimit =
+      params && params.gasLimit
+        ? new Unit(params.gasLimit).asWei().toWei()
+        : new Unit(0).asWei().toWei();
     this.shardID = params && params.shardID ? params.shardID : 0;
     this.toShardID = params && params.toShardID ? params.toShardID : 0;
 
     this.to = params && params.to ? this.normalizeAddress(params.to) : '0x';
-    this.value = params && params.value ? params.value : new BN(0);
+    this.value =
+      params && params.value
+        ? new Unit(params.value).asWei().toWei()
+        : new Unit(0).asWei().toWei();
     this.data = params && params.data ? params.data : '0x';
     // chainid should change with different network settings
     this.chainId =
@@ -201,12 +210,12 @@ class Transaction {
       id: this.id || '0x',
       from: this.from || '',
       nonce: this.nonce || 0,
-      gasPrice: this.gasPrice || new BN(0),
-      gasLimit: this.gasLimit || new BN(0),
+      gasPrice: this.gasPrice || new Unit(0).asWei().toWei(),
+      gasLimit: this.gasLimit || new Unit(0).asWei().toWei(),
       shardID: this.shardID || 0,
       toShardID: this.toShardID || 0,
       to: this.normalizeAddress(this.to) || '0x',
-      value: this.value || new BN(0),
+      value: this.value || new Unit(0).asWei().toWei(),
       data: this.data || '0x',
       chainId: this.chainId || 0,
       rawTransaction: this.rawTransaction || '0x',
@@ -218,12 +227,21 @@ class Transaction {
     this.id = params && params.id ? params.id : '0x';
     this.from = params && params.from ? params.from : '0x';
     this.nonce = params && params.nonce ? params.nonce : 0;
-    this.gasPrice = params && params.gasPrice ? params.gasPrice : new BN(0);
-    this.gasLimit = params && params.gasLimit ? params.gasLimit : new BN(0);
+    this.gasPrice =
+      params && params.gasPrice
+        ? new Unit(params.gasPrice).asWei().toWei()
+        : new Unit(0).asWei().toWei();
+    this.gasLimit =
+      params && params.gasLimit
+        ? new Unit(params.gasLimit).asWei().toWei()
+        : new Unit(0).asWei().toWei();
     this.shardID = params && params.shardID ? params.shardID : 0;
     this.toShardID = params && params.toShardID ? params.toShardID : 0;
     this.to = params && params.to ? this.normalizeAddress(params.to) : '0x';
-    this.value = params && params.value ? params.value : new BN(0);
+    this.value =
+      params && params.value
+        ? new Unit(params.value).asWei().toWei()
+        : new Unit(0).asWei().toWei();
     this.data = params && params.data ? params.data : '0x';
     this.chainId = params && params.chainId ? params.chainId : 0;
     this.rawTransaction =

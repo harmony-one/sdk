@@ -1,5 +1,5 @@
 import BN from 'bn.js';
-import { isString, isNumber, isHex } from './validators';
+import {isString, isNumber, isHex} from './validators';
 
 export const enum Units {
   wei = 'wei',
@@ -256,8 +256,15 @@ export class Unit {
   wei: BN;
   unit: BN | string;
 
-  constructor(str: BN | string) {
-    this.unit = str;
+  constructor(str: BN | string | number) {
+    if (!BN.isBN(str) && typeof str !== 'number' && isHex(str)) {
+      this.unit = hexToNumber(str);
+    } else if (!BN.isBN(str) && typeof str === 'number') {
+      this.unit = str.toString();
+    } else {
+      this.unit = str;
+    }
+
     this.wei = new BN(this.unit);
   }
 
