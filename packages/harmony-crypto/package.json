@@ -1,6 +1,6 @@
 {
   "name": "@harmony-js/crypto",
-  "version": "0.1.0",
+  "version": "0.1.6",
   "description": "crypto libraries for harmony",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -18,7 +18,7 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@harmony-js/utils": "0.1.0",
+    "@harmony-js/utils": "0.1.6",
     "aes-js": "^3.1.2",
     "bip39": "^2.5.0",
     "bn.js": "^4.11.8",
