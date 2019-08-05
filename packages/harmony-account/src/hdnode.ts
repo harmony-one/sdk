@@ -8,27 +8,21 @@ import {
   ChainType,
   Unit,
   isHex,
-  numberToHex,
+  hexToNumber,
 } from '@harmony-js/utils';
-import {
-  Messenger,
-  HttpProvider,
-  WSProvider,
-  RPCRequestPayload,
-} from '@harmony-js/network';
+import {Messenger, HttpProvider, WSProvider} from '@harmony-js/network';
 import {
   Transaction,
   TxStatus,
-  RLPSign,
   TransasctionReceipt,
 } from '@harmony-js/transaction';
 import {Account} from './account';
 
-interface WalletsInterfaces {
+export interface WalletsInterfaces {
   [key: string]: Account;
 }
 
-interface Web3TxPrams {
+export interface Web3TxPrams {
   id?: string;
   from?: string;
   to?: string;
@@ -126,30 +120,7 @@ export class HDNode {
       this.wallets[addr] = account;
     }
   }
-  send(...args: [RPCRequestPayload<any>, any]) {
-    const method = args[0].method;
-    let newMethod: string = method;
-    if (method.startsWith('eth')) {
-      newMethod = method.replace('eth', 'hmy');
-    }
-    args[0].method = newMethod;
 
-    const {id} = args[0];
-
-    if (newMethod === 'hmy_accounts') {
-      args[1](null, {
-        result: this.getAccounts(),
-        id,
-        jsonrpc: '2.0',
-      });
-    }
-
-    this.provider.send(args[0], args[1]);
-  }
-
-  sendAsync(...args: [RPCRequestPayload<any>, any]) {
-    this.send(...args);
-  }
   // tslint:disable-next-line: ban-types
   getAccounts(cb?: Function) {
     if (cb) {
@@ -172,36 +143,51 @@ export class HDNode {
       cb(null, this.wallets[address].privateKey);
     }
   }
-  signTransaction(txParams: any | Web3TxPrams, cb: Function) {
-    const from: string = getAddress(txParams.from).checksum;
-    const to: string = getAddress(txParams.to).checksum;
-    const gasLimit = isHex(txParams.gasLimit)
-      ? txParams.gasLimit
-      : new Unit(txParams.gasLimit).asWei().toWei();
-    const gasPrice = isHex(txParams.gasPrice)
-      ? txParams.gasPrice
-      : new Unit(txParams.gasPrice).asWei().toWei();
-    const value = isHex(txParams.value)
-      ? txParams.value
-      : numberToHex(txParams.value);
-    const nonce = isHex(txParams.nonce)
-      ? txParams.nonce
-      : numberToHex(txParams.nonce);
+  // tslint:disable-next-line: ban-types
+  async signTransaction(txParams: any | Web3TxPrams) {
+    const from: string = txParams.from
+      ? getAddress(txParams.from).checksum
+      : '0x';
+    const accountNonce = await this.messenger.send(
+      'hmy_getTransactionCount',
+      [from, 'latest'],
+      'hmy',
+    );
+
+    const to: string = txParams.to ? getAddress(txParams.to).checksum : '0x';
+    const gasLimit =
+      txParams.gas !== undefined && isHex(txParams.gas)
+        ? // ? new Unit(hexToNumber(txParams.gas)).asWei().toWei()
+          new Unit('1000000').asWei().toWei()
+        : new Unit('0').asWei().toWei();
+    const gasPrice =
+      txParams.gasPrice !== undefined && isHex(txParams.gasPrice)
+        ? // ? new Unit(txParams.gasPrice).asWei().toWei()
+          new Unit('2').asGwei().toWei()
+        : new Unit('0').asWei().toWei();
+    const value =
+      txParams.value !== undefined && isHex(txParams.value)
+        ? txParams.value
+        : new Unit('0').asWei().toWei();
+    const nonce =
+      txParams.nonce !== undefined && isHex(txParams.nonce)
+        ? Number.parseInt(hexToNumber(txParams.nonce), 10)
+        : Number.parseInt(hexToNumber(accountNonce.result), 10);
+    const data =
+      txParams.data !== undefined && isHex(txParams.data)
+        ? txParams.data
+        : '0x';
     const prv = this.wallets[from].privateKey;
 
+    const signerAccount = new Account(prv, this.messenger);
+
     const tx = new Transaction(
-      {...txParams, from, to, gasLimit, gasPrice, value, nonce},
+      {...txParams, from, to, gasLimit, gasPrice, value, nonce, data},
       this.messenger,
       TxStatus.INTIALIZED,
     );
-    tx.getRLPUnsigned();
-    if (prv) {
-      const rawTransaction = RLPSign(tx, prv)[1];
-      if (cb) {
-        cb(null, rawTransaction);
-      }
-      return rawTransaction;
-    }
+    const signed = await signerAccount.signTransaction(tx);
+    return signed.getRawTransaction();
   }
   getAddress(idx?: number) {
     if (!idx) {

@@ -9,7 +9,7 @@ import {
   getAddress,
   HarmonyAddress,
 } from '@harmony-js/crypto';
-import { add0xToString, numberToHex, ChainType } from '@harmony-js/utils';
+import {add0xToString, numberToHex, ChainType} from '@harmony-js/utils';
 import {
   Messenger,
   RPCMethod,
@@ -19,7 +19,7 @@ import {
   // SubscribeReturns,
   NewHeaders,
 } from '@harmony-js/network';
-import { TxParams, TxStatus, TransasctionReceipt } from './types';
+import {TxParams, TxStatus, TransasctionReceipt} from './types';
 import {
   recover,
   transactionFields,
@@ -163,6 +163,10 @@ class Transaction {
     raw.push(stripZeros(arrayify(sig.s) || []));
 
     return encode(raw);
+  }
+
+  getRawTransaction(): string {
+    return this.rawTransaction;
   }
 
   recover(rawTransaction: string): Transaction {
@@ -497,4 +501,4 @@ class Transaction {
     }
   }
 }
-export { Transaction };
+export {Transaction};
