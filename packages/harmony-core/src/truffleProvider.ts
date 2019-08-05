@@ -20,8 +20,23 @@ export class TruffleProvider extends HDNode {
   constructor(
     provider: string | HttpProvider | WSProvider = 'http://localhost:9500',
     menmonic?: string,
+    index: number = 0,
+    addressCount: number = 1,
+    chainType: ChainType = ChainType.Harmony,
+    chainId: ChainID = ChainID.Default,
+    gasLimit = '1000000',
+    gasPrice = '2000000000',
   ) {
-    super(provider, menmonic, 0, 1, ChainType.Harmony, ChainID.Default);
+    super(
+      provider,
+      menmonic,
+      index,
+      addressCount,
+      chainType,
+      chainId,
+      gasLimit,
+      gasPrice,
+    );
   }
   async send(...args: [RPCRequestPayload<any>, any]) {
     const {newArgs, id, params, newMethod, callback} = this.resolveArgs(

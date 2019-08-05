@@ -58,6 +58,8 @@ export class HDNode {
   private addressCount: number;
   private addresses: string[];
   private wallets: WalletsInterfaces;
+  private gasLimit: string;
+  private gasPrice: string;
 
   constructor(
     provider: string | HttpProvider | WSProvider = 'http://localhost:9500',
@@ -66,6 +68,8 @@ export class HDNode {
     addressCount: number = 1,
     chainType: ChainType = ChainType.Harmony,
     chainId: ChainID = ChainID.Default,
+    gasLimit = '1000000',
+    gasPrice = '2000000000',
   ) {
     this.provider = this.setProvider(provider);
     this.messenger = new Messenger(this.provider, chainType, chainId);
@@ -76,6 +80,8 @@ export class HDNode {
     this.index = index;
     this.addressCount = addressCount;
     this.getHdWallet(menmonic || HDNode.generateMnemonic());
+    this.gasLimit = gasLimit;
+    this.gasPrice = gasPrice;
   }
 
   normalizePrivateKeys(mnemonic: string | string[]) {
@@ -155,16 +161,31 @@ export class HDNode {
     );
 
     const to: string = txParams.to ? getAddress(txParams.to).checksum : '0x';
-    const gasLimit =
-      txParams.gas !== undefined && isHex(txParams.gas)
-        ? // ? new Unit(hexToNumber(txParams.gas)).asWei().toWei()
-          new Unit('1000000').asWei().toWei()
-        : new Unit('0').asWei().toWei();
-    const gasPrice =
-      txParams.gasPrice !== undefined && isHex(txParams.gasPrice)
-        ? // ? new Unit(txParams.gasPrice).asWei().toWei()
-          new Unit('2').asGwei().toWei()
-        : new Unit('0').asWei().toWei();
+
+    let gasLimit = new Unit('0').asWei().toWei();
+
+    if (txParams.gas !== undefined && isHex(txParams.gas)) {
+      gasLimit = new BN(hexToNumber(txParams.gas)).lt(new BN(this.gasLimit))
+        ? new Unit(hexToNumber(txParams.gas)).asWei().toWei()
+        : new Unit(this.gasLimit).asWei().toWei();
+    }
+    if (txParams.gasLimit !== undefined && isHex(txParams.gasLimit)) {
+      gasLimit = new BN(hexToNumber(txParams.gasLimit)).lt(
+        new BN(this.gasLimit),
+      )
+        ? new Unit(hexToNumber(txParams.gasLimit)).asWei().toWei()
+        : new Unit(this.gasLimit).asWei().toWei();
+    }
+
+    let gasPrice = new Unit('0').asWei().toWei();
+    if (txParams.gasPrice !== undefined && isHex(txParams.gasPrice)) {
+      gasPrice = new BN(hexToNumber(txParams.gasPrice)).lt(
+        new BN(this.gasPrice),
+      )
+        ? new Unit(hexToNumber(txParams.gasPrice)).asWei().toWei()
+        : new Unit(this.gasPrice).asWei().toWei();
+    }
+
     const value =
       txParams.value !== undefined && isHex(txParams.value)
         ? txParams.value
