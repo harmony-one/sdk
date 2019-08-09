@@ -52,48 +52,4 @@ async function docs() {
   }
 }
 
-// docs();
-
-async function batchDocs() {
-  await preProcessFunc(preProcessProjects);
-  // const srcArry = [];
-  // for (const pkg of projects) {
-  //   srcArry.push(pkg.src);
-
-  // }
-}
-
-batchDocs();
-
-// async function docs() {
-//   await preProcessFunc(preProcessProjects);
-
-//   for (const pkg of projects) {
-//     const app = new Application({
-//       mode: 'file',
-//       tsconfig: `${pkg.path}/tsconfig.json`,
-//       theme: 'markdown',
-//       plugin: path.resolve('node_modules/typedoc-plugin-markdown'),
-//       platform: 'gitbook',
-//     });
-
-//     const files = [...app.expandInputFiles([pkg.src])];
-//     app.options.setValue('platform', 'gitbook');
-//     // const project = app.convert();
-//     const outputDir = `${pkg.path}/doc`;
-
-//     // Rendered docs
-//     app.generateDocs(files, outputDir);
-//     // if (project) {
-//     //   // Project may not have converted correctly
-//     //   const outputDir = `${pkg.path}/doc`;
-
-//     //   // Rendered docs
-//     //   app.generateDocs(project, outputDir);
-//     //   // Alternatively generate JSON output
-//     //   // app.generateJson(project, outputDir + '/documentation.json');
-//     // }
-//   }
-// }
-
-// docs();
+docs();
