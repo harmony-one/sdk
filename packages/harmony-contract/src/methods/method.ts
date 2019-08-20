@@ -1,9 +1,5 @@
 import { Wallet } from '@harmony-js/account';
-import {
-  TransactionFactory,
-  Transaction,
-  TxStatus,
-} from '@harmony-js/transaction';
+import { TransactionFactory, Transaction, TxStatus } from '@harmony-js/transaction';
 import { RPCMethod, getResultForData, Emitter } from '@harmony-js/network';
 import { hexToNumber, hexToBN } from '@harmony-js/utils';
 import { getAddress } from '@harmony-js/crypto';
@@ -18,18 +14,13 @@ export class ContractMethod {
   contract: Contract;
   params: any;
   methodKey: string;
-  wallet: Wallet;
+  wallet: Wallet | any;
   abiItem: AbiItemModel;
   callResponse?: any;
   callPayload?: any;
 
   protected transaction: Transaction;
-  constructor(
-    methodKey: string,
-    params: any,
-    abiItem: AbiItemModel,
-    contract: Contract,
-  ) {
+  constructor(methodKey: string, params: any, abiItem: AbiItemModel, contract: Contract) {
     this.methodKey = methodKey;
     this.contract = contract;
     this.wallet = contract.wallet;
@@ -82,14 +73,12 @@ export class ContractMethod {
         gasLimit = hexToBN(await this.estimateGas());
       }
       let from: string;
+      // tslint:disable-next-line: prefer-conditional-expression
       if (this.wallet.signer) {
-        from =
-          options && options.from ? options.from : this.wallet.signer.address;
+        from = options && options.from ? options.from : this.wallet.signer.address;
       } else {
         from =
-          options && options.from
-            ? options.from
-            : '0x0000000000000000000000000000000000000000';
+          options && options.from ? options.from : '0x0000000000000000000000000000000000000000';
       }
 
       this.transaction = this.transaction.map((tx: any) => {
@@ -137,10 +126,7 @@ export class ContractMethod {
         }
       }
 
-      const result = await this.wallet.messenger.send(RPCMethod.Call, [
-        sendPayload,
-        blockNumber,
-      ]);
+      const result = await this.wallet.messenger.send(RPCMethod.Call, [sendPayload, blockNumber]);
       this.callPayload = sendPayload;
       this.callResponse = result;
       if (result.isError()) {
@@ -180,11 +166,7 @@ export class ContractMethod {
   }
 
   encodeABI() {
-    return methodEncoder(
-      this.contract.abiCoder,
-      this.abiItem,
-      this.contract.data,
-    );
+    return methodEncoder(this.contract.abiCoder, this.abiItem, this.contract.data);
   }
 
   public debug() {
@@ -196,14 +178,23 @@ export class ContractMethod {
 
   protected async signTransaction(updateNonce: boolean) {
     try {
-      const signed = await this.wallet.signTransaction(
-        this.transaction,
-        this.wallet.signer,
-        undefined,
-        updateNonce,
-        'rlp',
-        'latest', // 'pending',
-      );
+      let signed;
+      signed =
+        this.wallet instanceof Wallet
+          ? await this.wallet.signTransaction(
+              this.transaction,
+              this.wallet.signer,
+              undefined,
+              updateNonce,
+              'rlp',
+              'latest', // 'pending',
+            )
+          : await this.wallet.signTransaction(
+              this.transaction,
+              updateNonce,
+              'rlp',
+              'latest', // 'pending',
+            );
       this.contract.address = TransactionFactory.getContractAddress(signed);
       this.contract.setStatus(ContractStatus.SIGNED);
       return signed;
@@ -252,16 +243,11 @@ export class ContractMethod {
       }
       const txObject = {
         ...this.params[0],
-        to:
-          this.contract.address === '0x'
-            ? '0x'
-            : getAddress(this.contract.address).checksum,
+        to: this.contract.address === '0x' ? '0x' : getAddress(this.contract.address).checksum,
         data: this.encodeABI(),
       };
 
-      const result = new TransactionFactory(this.wallet.messenger).newTx(
-        txObject,
-      );
+      const result = new TransactionFactory(this.wallet.messenger).newTx(txObject);
 
       return result;
     } else {

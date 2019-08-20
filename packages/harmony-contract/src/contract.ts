@@ -1,5 +1,5 @@
 import { Wallet } from '@harmony-js/account';
-// import { Emitter } from '@harmony-js/network';
+import { Messenger } from '@harmony-js/network';
 import { Transaction } from '@harmony-js/transaction';
 import { AbiCoder } from './abi/index';
 import { abiMapper } from './utils/mapper';
@@ -17,7 +17,7 @@ export class Contract {
   abiModel: any | AbiModel;
   abiCoder: AbiCoderClass;
   options: ContractOptions | any;
-  wallet: Wallet;
+  wallet: Wallet | any;
   transaction?: Transaction;
   status: ContractStatus;
 
@@ -102,5 +102,12 @@ export class Contract {
   }
   connect(wallet: Wallet): void {
     this.wallet = wallet;
+  }
+  setMessegner(messenger: Messenger) {
+    if (this.wallet instanceof Wallet) {
+      this.wallet.setMessenger(messenger);
+    } else {
+      this.wallet.messenger = messenger;
+    }
   }
 }
