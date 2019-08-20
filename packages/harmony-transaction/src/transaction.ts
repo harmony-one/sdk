@@ -9,7 +9,7 @@ import {
   getAddress,
   HarmonyAddress,
 } from '@harmony-js/crypto';
-import {add0xToString, numberToHex, ChainType, Unit} from '@harmony-js/utils';
+import { add0xToString, numberToHex, ChainType, Unit } from '@harmony-js/utils';
 import {
   Messenger,
   RPCMethod,
@@ -19,7 +19,7 @@ import {
   // SubscribeReturns,
   NewHeaders,
 } from '@harmony-js/network';
-import {TxParams, TxStatus, TransasctionReceipt} from './types';
+import { TxParams, TxStatus, TransasctionReceipt } from './types';
 import {
   recover,
   transactionFields,
@@ -80,19 +80,13 @@ class Transaction {
 
     this.to = params && params.to ? this.normalizeAddress(params.to) : '0x';
     this.value =
-      params && params.value
-        ? new Unit(params.value).asWei().toWei()
-        : new Unit(0).asWei().toWei();
+      params && params.value ? new Unit(params.value).asWei().toWei() : new Unit(0).asWei().toWei();
     this.data = params && params.data ? params.data : '0x';
     // chainid should change with different network settings
-    this.chainId =
-      params && params.chainId ? params.chainId : this.messenger.chainId;
-    this.rawTransaction =
-      params && params.rawTransaction ? params.rawTransaction : '0x';
+    this.chainId = params && params.chainId ? params.chainId : this.messenger.chainId;
+    this.rawTransaction = params && params.rawTransaction ? params.rawTransaction : '0x';
     this.unsignedRawTransaction =
-      params && params.unsignedRawTransaction
-        ? params.unsignedRawTransaction
-        : '0x';
+      params && params.unsignedRawTransaction ? params.unsignedRawTransaction : '0x';
     this.signature =
       params && params.signature
         ? params.signature
@@ -114,24 +108,15 @@ class Transaction {
 
     // temp setting to be compatible with eth
     const fields =
-      this.messenger.chainType === ChainType.Harmony
-        ? transactionFields
-        : transactionFieldsETH;
+      this.messenger.chainType === ChainType.Harmony ? transactionFields : transactionFieldsETH;
 
     fields.forEach((field: any) => {
       let value = (<any>this.txParams)[field.name] || [];
       value = arrayify(
-        hexlify(
-          field.transform === 'hex' ? add0xToString(value.toString(16)) : value,
-        ),
+        hexlify(field.transform === 'hex' ? add0xToString(value.toString(16)) : value),
       );
       // Fixed-width field
-      if (
-        field.fix === true &&
-        field.length &&
-        value.length !== field.length &&
-        value.length > 0
-      ) {
+      if (field.fix === true && field.length && value.length !== field.length && value.length > 0) {
         throw new Error(`invalid length for ${field.name}`);
       }
 
@@ -196,9 +181,7 @@ class Transaction {
       shardID: this.txParams.shardID ? numberToHex(this.shardID) : '0x',
       toShardID: this.txParams.toShardID ? numberToHex(this.toShardID) : '0x',
       gas: this.txParams.gasLimit ? numberToHex(this.txParams.gasLimit) : '0x',
-      gasPrice: this.txParams.gasPrice
-        ? numberToHex(this.txParams.gasPrice)
-        : '0x',
+      gasPrice: this.txParams.gasPrice ? numberToHex(this.txParams.gasPrice) : '0x',
       value: this.txParams.value ? numberToHex(this.txParams.value) : '0x',
       data: this.txParams.data || '0x',
       nonce: this.txParams.nonce ? numberToHex(this.nonce) : '0x',
@@ -239,17 +222,12 @@ class Transaction {
     this.toShardID = params && params.toShardID ? params.toShardID : 0;
     this.to = params && params.to ? this.normalizeAddress(params.to) : '0x';
     this.value =
-      params && params.value
-        ? new Unit(params.value).asWei().toWei()
-        : new Unit(0).asWei().toWei();
+      params && params.value ? new Unit(params.value).asWei().toWei() : new Unit(0).asWei().toWei();
     this.data = params && params.data ? params.data : '0x';
     this.chainId = params && params.chainId ? params.chainId : 0;
-    this.rawTransaction =
-      params && params.rawTransaction ? params.rawTransaction : '0x';
+    this.rawTransaction = params && params.rawTransaction ? params.rawTransaction : '0x';
     this.unsignedRawTransaction =
-      params && params.unsignedRawTransaction
-        ? params.unsignedRawTransaction
-        : '0x';
+      params && params.unsignedRawTransaction ? params.unsignedRawTransaction : '0x';
     this.signature =
       params && params.signature
         ? params.signature
@@ -310,10 +288,7 @@ class Transaction {
     if (!this.messenger) {
       throw new Error('Messenger not found');
     }
-    const res = await this.messenger.send(
-      RPCMethod.SendRawTransaction,
-      this.rawTransaction,
-    );
+    const res = await this.messenger.send(RPCMethod.SendRawTransaction, this.rawTransaction);
 
     // temporarilly hard coded
     if (res.isResult()) {
@@ -337,10 +312,7 @@ class Transaction {
       throw new Error('Messenger not found');
     }
     // TODO: regex validation for txHash so we don't get garbage
-    const res = await this.messenger.send(
-      RPCMethod.GetTransactionReceipt,
-      txHash,
-    );
+    const res = await this.messenger.send(RPCMethod.GetTransactionReceipt, txHash);
 
     if (res.isResult() && res.result !== null) {
       this.receipt = res.result;
@@ -363,20 +335,22 @@ class Transaction {
       } else {
         this.txStatus = TxStatus.PENDING;
         const currentBlock = await this.getBlockNumber();
+
         this.blockNumbers.push('0x' + currentBlock.toString('hex'));
+
         this.confirmationCheck += 1;
         return false;
       }
     } else {
+      this.txStatus = TxStatus.PENDING;
+      const currentBlock = await this.getBlockNumber();
+      this.blockNumbers.push('0x' + currentBlock.toString('hex'));
+      this.confirmationCheck += 1;
       return false;
     }
   }
 
-  async confirm(
-    txHash: string,
-    maxAttempts: number = 20,
-    interval: number = 1000,
-  ) {
+  async confirm(txHash: string, maxAttempts: number = 20, interval: number = 1000) {
     if (this.messenger.provider instanceof HttpProvider) {
       this.txStatus = TxStatus.PENDING;
       const oldBlock = await this.getBlockNumber();
@@ -390,6 +364,7 @@ class Transaction {
 
           if (newBlock.gte(nextBlock)) {
             checkBlock = newBlock;
+
             if (await this.trackTx(txHash)) {
               this.emitConfirm(this.txStatus);
               return this;
@@ -410,9 +385,7 @@ class Transaction {
       }
       this.txStatus = TxStatus.REJECTED;
       this.emitConfirm(this.txStatus);
-      throw new Error(
-        `The transaction is still not confirmed after ${maxAttempts} attempts.`,
-      );
+      throw new Error(`The transaction is still not confirmed after ${maxAttempts} attempts.`);
     } else {
       try {
         if (await this.trackTx(txHash)) {
@@ -426,22 +399,18 @@ class Transaction {
         this.txStatus = TxStatus.REJECTED;
         this.emitConfirm(this.txStatus);
         throw new Error(
-          `The transaction is still not confirmed after ${maxAttempts *
-            interval} mil seconds.`,
+          `The transaction is still not confirmed after ${maxAttempts * interval} mil seconds.`,
         );
       }
     }
   }
 
-  socketConfirm(
-    txHash: string,
-    maxAttempts: number = 20,
-  ): Promise<Transaction> {
+  socketConfirm(txHash: string, maxAttempts: number = 20): Promise<Transaction> {
     return new Promise((resolve, reject) => {
       const newHeads = Promise.resolve(new NewHeaders(this.messenger));
       newHeads.then((p) => {
         p.onData(async (data: any) => {
-          if (!this.blockNumbers.includes(data.number)) {
+          if (!this.blockNumbers.includes(data.params.result.number)) {
             if (await this.trackTx(txHash)) {
               this.emitConfirm(this.txStatus);
               await p.unsubscribe();
@@ -492,10 +461,7 @@ class Transaction {
   }
   async getBlockByNumber(blockNumber: string) {
     try {
-      const block = await this.messenger.send(RPCMethod.GetBlockByNumber, [
-        blockNumber,
-        true,
-      ]);
+      const block = await this.messenger.send(RPCMethod.GetBlockByNumber, [blockNumber, true]);
       if (block.isError()) {
         throw block.message;
       }
@@ -519,4 +485,4 @@ class Transaction {
     }
   }
 }
-export {Transaction};
+export { Transaction };

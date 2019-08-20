@@ -1,12 +1,19 @@
 {
   "parser": "typescript",
-  "printWidth": 80,
+  "printWidth": 100,
   "singleQuote": true,
+  "bracketSpacing": true,
   "trailingComma": "all",
   "arrowParens": "always",
   "overrides": [
     {
       "files": "*.json",
+      "options": {
+        "parser": "json"
+      }
+    },
+    {
+      "files": ".prettierrc",
       "options": {
         "parser": "json"
       }
