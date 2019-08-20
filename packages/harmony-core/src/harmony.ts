@@ -1,12 +1,12 @@
 import * as crypto from '@harmony-js/crypto';
 import * as utils from '@harmony-js/utils';
 
-import {HttpProvider, Messenger, WSProvider} from '@harmony-js/network';
-import {TransactionFactory, Transaction} from '@harmony-js/transaction';
-import {ContractFactory, Contract} from '@harmony-js/contract';
-import {Wallet, Account} from '@harmony-js/account';
-import {Blockchain} from './blockchain';
-import {HarmonyConfig} from './util';
+import { Provider, HttpProvider, Messenger, WSProvider } from '@harmony-js/network';
+import { TransactionFactory, Transaction } from '@harmony-js/transaction';
+import { ContractFactory, Contract } from '@harmony-js/contract';
+import { Wallet, Account } from '@harmony-js/account';
+import { Blockchain } from './blockchain';
+import { HarmonyConfig } from './util';
 
 export class Harmony extends utils.HarmonyCore {
   Modules = {
@@ -40,7 +40,7 @@ export class Harmony extends utils.HarmonyCore {
 
     const providerUrl = config.chainUrl || url;
 
-    this.provider = this.onInitSetProvider(providerUrl);
+    this.provider = new Provider(providerUrl).provider;
     this.messenger = new Messenger(this.provider, this.chainType, this.chainId);
     this.blockchain = new Blockchain(this.messenger);
     this.transactions = new TransactionFactory(this.messenger);
@@ -50,15 +50,7 @@ export class Harmony extends utils.HarmonyCore {
     this.utils = utils;
   }
   public setProvider(provider: string | HttpProvider | WSProvider): void {
-    if (utils.isHttp(provider) && typeof provider === 'string') {
-      this.provider = new HttpProvider(provider);
-    } else if (provider instanceof HttpProvider) {
-      this.provider = provider;
-    } else if (utils.isWs(provider) && typeof provider === 'string') {
-      this.provider = new WSProvider(provider);
-    } else if (provider instanceof WSProvider) {
-      this.provider = provider;
-    }
+    this.provider = new Provider(provider).provider;
     this.messenger.setProvider(this.provider);
     this.blockchain.setMessenger(this.messenger);
     this.wallet.setMessenger(this.messenger);
@@ -78,12 +70,5 @@ export class Harmony extends utils.HarmonyCore {
     this.blockchain.setMessenger(this.messenger);
     this.wallet.setMessenger(this.messenger);
     this.transactions.setMessenger(this.messenger);
-  }
-  private onInitSetProvider(providerUrl: string): HttpProvider | WSProvider {
-    return utils.isHttp(providerUrl)
-      ? new HttpProvider(providerUrl)
-      : utils.isWs(providerUrl)
-      ? new WSProvider(providerUrl)
-      : new HttpProvider(utils.defaultConfig.Default.Chain_URL);
   }
 }

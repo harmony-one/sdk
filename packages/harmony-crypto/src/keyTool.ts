@@ -50,10 +50,11 @@ export const getAddressFromPrivateKey = (privateKey: string): string => {
 };
 
 export const getPublic = (privateKey: string, compress?: boolean): string => {
-  if (!isPrivateKey(privateKey)) {
+  if (!isPrivateKey(privateKey) || !validatePrivateKey(privateKey)) {
     throw new Error(`${privateKey} is not PrivateKey`);
   }
   const ecKey = secp256k1.keyFromPrivate(strip0x(privateKey), 'hex');
+
   return ecKey.getPublic(compress || false, 'hex');
 };
 
@@ -104,10 +105,7 @@ export const toChecksumAddress = (address: string): string => {
   return '0x' + chars.join('');
 };
 
-export const sign = (
-  digest: bytes.Arrayish | string,
-  privateKey: string,
-): bytes.Signature => {
+export const sign = (digest: bytes.Arrayish | string, privateKey: string): bytes.Signature => {
   if (!isPrivateKey(privateKey)) {
     throw new Error(`${privateKey} is not PrivateKey`);
   }
@@ -134,9 +132,7 @@ export function getContractAddress(from: string, nonce: number): string {
     throw new Error('missing from address');
   }
 
-  const addr = keccak256(
-    encode([from, bytes.stripZeros(bytes.hexlify(nonce))]),
-  );
+  const addr = keccak256(encode([from, bytes.stripZeros(bytes.hexlify(nonce))]));
   return '0x' + addr.substring(26);
 }
 
@@ -156,11 +152,7 @@ export function recoverPublicKey(
   const rs = { r: bytes.arrayify(sig.r), s: bytes.arrayify(sig.s) };
 
   ////
-  const recovered = secp256k1.recoverPubKey(
-    bytes.arrayify(digest),
-    rs,
-    sig.recoveryParam,
-  );
+  const recovered = secp256k1.recoverPubKey(bytes.arrayify(digest), rs, sig.recoveryParam);
 
   const key = recovered.encode('hex', false);
   const ecKey = secp256k1.keyFromPublic(key, 'hex');
@@ -189,8 +181,11 @@ export function recoverAddress(
  * @returns {boolean}
  */
 export const isValidChecksumAddress = (address: string): boolean => {
-  return (
-    isAddress(address.replace('0x', '')) &&
-    toChecksumAddress(address) === address
-  );
+  return isAddress(address.replace('0x', '')) && toChecksumAddress(address) === address;
+};
+
+export const validatePrivateKey = (privateKey: string): boolean => {
+  const ecKey = secp256k1.keyFromPrivate(strip0x(privateKey), 'hex');
+  const { result } = ecKey.validate();
+  return result;
 };
