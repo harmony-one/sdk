@@ -3,9 +3,9 @@ import { Contract } from './contract';
 import { ContractOptions } from './utils/options';
 
 export class ContractFactory {
-  wallet: Wallet;
+  wallet: Wallet | any;
 
-  constructor(wallet: Wallet) {
+  constructor(wallet: Wallet | any) {
     this.wallet = wallet;
   }
   createContract(abi: any[], address?: string, options?: ContractOptions) {
