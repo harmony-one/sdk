@@ -1,4 +1,4 @@
-import { HttpProvider, WSProvider, Messenger, Provider } from '@harmony-js/network';
+import { HttpProvider, WSProvider, Messenger, Provider, RPCMethod } from '@harmony-js/network';
 
 import * as crypto from '@harmony-js/crypto';
 import * as utils from '@harmony-js/utils';
@@ -73,6 +73,36 @@ export class HarmonyExtension {
     if (wallet.isMathWallet) {
       isExtension = true;
       this.extensionType = ExtensionType.MathWallet;
+
+      // remake signTransaction of MathWallet
+      const { signTransaction } = this.wallet;
+      this.wallet.signTransaction = async (
+        transaction: Transaction,
+        updateNonce: boolean = true,
+        encodeMode: string = 'rlp',
+        blockNumber: string = 'latest',
+      ) => {
+        const extensionAccount = await this.wallet.getAccount();
+
+        if (updateNonce) {
+          const nonce = await this.messenger.send(RPCMethod.GetTransactionCount, [
+            crypto.getAddress(extensionAccount.address).checksum,
+            blockNumber,
+          ]);
+          transaction.setParams({
+            ...transaction.txParams,
+            from: crypto.getAddress(extensionAccount.address).bech32,
+            nonce: Number.parseInt(utils.hexToNumber(nonce.result), 10),
+          });
+        } else {
+          transaction.setParams({
+            ...transaction.txParams,
+            from: crypto.getAddress(extensionAccount.address).bech32,
+          });
+        }
+
+        return signTransaction(transaction, updateNonce, encodeMode, blockNumber);
+      };
     }
     if (!isExtension) {
       throw new Error('Extension is not found');
