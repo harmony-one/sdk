@@ -35,8 +35,6 @@ export interface ExtensionInterface {
   network: ExtensionNetwork;
 }
 
-const Extendsion: ExtensionInterface = (<any>window).harmony;
-
 export class HarmonyExtension {
   extensionType: ExtensionType | null;
   wallet: ExtensionInterface;
@@ -48,7 +46,7 @@ export class HarmonyExtension {
   crypto: any;
   utils: any;
 
-  constructor(wallet: ExtensionInterface = Extendsion) {
+  constructor(wallet: ExtensionInterface) {
     this.extensionType = null;
     this.wallet = wallet;
     // check if it is mathwallet
