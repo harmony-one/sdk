@@ -1,10 +1,4 @@
-import {
-  hexToNumber,
-  isHex,
-  isAddress,
-  strip0x,
-  ChainType,
-} from '@harmony-js/utils';
+import { hexToNumber, isHex, isAddress, strip0x, ChainType } from '@harmony-js/utils';
 import {
   decode,
   encode,
@@ -141,8 +135,7 @@ export const recover = (rawTransaction: string) => {
         s: hexlify(tx.signature.s),
         recoveryParam,
       });
-      tx.from =
-        recoveredFrom === '0x' ? '0x' : getAddress(recoveredFrom).checksum;
+      tx.from = recoveredFrom === '0x' ? '0x' : getAddress(recoveredFrom).checksum;
     } catch (error) {
       throw error;
     }
@@ -232,8 +225,7 @@ export const recoverETH = (rawTransaction: string) => {
         s: hexlify(tx.signature.s),
         recoveryParam,
       });
-      tx.from =
-        recoveredFrom === '0x' ? '0x' : getAddress(recoveredFrom).checksum;
+      tx.from = recoveredFrom === '0x' ? '0x' : getAddress(recoveredFrom).checksum;
     } catch (error) {
       throw error;
     }
@@ -257,14 +249,11 @@ export enum TransactionEvents {
 }
 
 export const defaultMessenger = new Messenger(
-  new HttpProvider('http://localhost:8545'),
+  new HttpProvider('http://localhost:9500'),
   ChainType.Harmony,
 );
 
-export const RLPSign = (
-  transaction: Transaction,
-  prv: string,
-): [Signature, string] => {
+export const RLPSign = (transaction: Transaction, prv: string): [Signature, string] => {
   const [unsignedRawTransaction, raw] = transaction.getRLPUnsigned();
   const regroup: TxParams = {
     ...transaction.txParams,

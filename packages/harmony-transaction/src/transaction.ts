@@ -281,14 +281,22 @@ class Transaction {
   }
 
   async sendTransaction(): Promise<[Transaction, string]> {
-    // TODO: we use eth RPC setting for now, incase we have other params, we should add here
     if (this.rawTransaction === 'tx' || this.rawTransaction === undefined) {
       throw new Error('Transaction not signed');
     }
     if (!this.messenger) {
       throw new Error('Messenger not found');
     }
-    const res = await this.messenger.send(RPCMethod.SendRawTransaction, this.rawTransaction);
+
+    // const fromShard = this.shardID;
+    // const toShard = this.toShardID;
+    await this.messenger.setShardingProviders();
+    const res = await this.messenger.send(
+      RPCMethod.SendRawTransaction,
+      this.rawTransaction,
+      this.messenger.chainType,
+      typeof this.shardID === 'string' ? Number.parseInt(this.shardID, 10) : this.shardID,
+    );
 
     // temporarilly hard coded
     if (res.isResult()) {

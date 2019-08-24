@@ -1,17 +1,17 @@
-import {
-  HarmonyCore,
-  ChainType,
-  isString,
-  ChainID,
-  defaultConfig,
-} from '@harmony-js/utils';
-import {JsonRpc} from '../rpcMethod/builder';
-import {ResponseMiddleware} from './responseMiddleware';
-import {HttpProvider} from '../providers/http';
-import {WSProvider} from '../providers/ws';
+import { HarmonyCore, ChainType, isString, ChainID, defaultConfig } from '@harmony-js/utils';
+import { JsonRpc } from '../rpcMethod/builder';
+import { ResponseMiddleware } from './responseMiddleware';
+import { HttpProvider } from '../providers/http';
+import { WSProvider } from '../providers/ws';
 // import { getResultForData } from '../util';
-import {RPCMethod} from '../rpcMethod/rpc';
-import {SubscribeReturns} from '../types';
+import { RPCMethod } from '../rpcMethod/rpc';
+import { SubscribeReturns, ShardingItem } from '../types';
+
+export interface ShardingProvider {
+  shardID: number;
+  http: HttpProvider;
+  ws: WSProvider;
+}
 
 /**
  * @class Messenger
@@ -25,15 +25,18 @@ class Messenger extends HarmonyCore {
   config?: object;
   // tslint:disable-next-line: variable-name
   Network_ID: string = 'Default';
+  shardProviders: Map<number, ShardingProvider>;
+
   JsonRpc: JsonRpc;
 
   constructor(
     provider: HttpProvider | WSProvider,
     chainType: ChainType = defaultConfig.Default.Chain_Type,
     chainId: ChainID = defaultConfig.Default.Chain_ID,
-    config?: object,
+    config: object = defaultConfig,
   ) {
     super(chainType, chainId);
+
     /**
      * @var {Provider} provider
      * @memberof Messenger.prototype
@@ -46,7 +49,7 @@ class Messenger extends HarmonyCore {
      * @memberof Messenger.prototype
      * @description Messenger config
      */
-    this.config = config || defaultConfig;
+    this.config = config;
     /**
      * @var {Number} Network_ID
      * @memberof Messenger.prototype
@@ -62,6 +65,11 @@ class Messenger extends HarmonyCore {
 
     // set Network ID
     this.setNetworkID(defaultConfig.Default.Network_ID);
+
+    // set shardingProviders
+
+    this.shardProviders = new Map();
+    this.setShardingProviders();
   }
 
   /**
@@ -75,6 +83,7 @@ class Messenger extends HarmonyCore {
     method: RPCMethod | string,
     params?: string | any[] | undefined,
     rpcPrefix?: string,
+    shardID: number = 0,
   ) => {
     this.providerCheck();
     let rpcMethod = method;
@@ -92,7 +101,9 @@ class Messenger extends HarmonyCore {
           return data;
         }
       });
-      const result = await this.provider.send(payload);
+      const provider = this.getShardProvider(shardID);
+
+      const result = await provider.send(payload);
       return result;
       // return getResultForData(result); // getResultForData(result)
     } catch (e) {
@@ -168,6 +179,7 @@ class Messenger extends HarmonyCore {
     params?: string | any[] | undefined,
     returnType: SubscribeReturns = SubscribeReturns.all,
     rpcPrefix: string = this.chainPrefix,
+    shardID: number = 0,
   ) => {
     let rpcMethod = method;
     if (rpcPrefix && isString(rpcPrefix) && rpcPrefix !== this.chainPrefix) {
@@ -176,28 +188,29 @@ class Messenger extends HarmonyCore {
       rpcMethod = this.setRPCPrefix(method, this.chainPrefix);
     }
     let id: any = null;
-    if (this.provider instanceof WSProvider) {
-      const provider = this.provider;
+    const provider = this.getShardProvider(shardID);
+    if (provider instanceof WSProvider) {
+      const reProvider = provider;
 
       try {
         const payload = this.JsonRpc.toPayload(rpcMethod, params);
-        id = await provider.subscribe(payload);
-        provider.on(id, (result: any) => {
-          provider.emitter.emit('data', result);
+        id = await reProvider.subscribe(payload);
+        reProvider.on(id, (result: any) => {
+          reProvider.emitter.emit('data', result);
         });
-        provider.once('error', (error) => {
-          provider.removeEventListener(id);
-          provider.emitter.emit('error', error);
-          provider.removeEventListener('*');
+        reProvider.once('error', (error) => {
+          reProvider.removeEventListener(id);
+          reProvider.emitter.emit('error', error);
+          reProvider.removeEventListener('*');
         });
       } catch (error) {
-        provider.emitter.emit('error', error);
-        provider.removeEventListener('*');
+        reProvider.emitter.emit('error', error);
+        reProvider.removeEventListener('*');
       }
       if (returnType === SubscribeReturns.all) {
-        return [provider, id];
+        return [reProvider, id];
       } else if (returnType === SubscribeReturns.method) {
-        return provider;
+        return reProvider;
       } else if (returnType === SubscribeReturns.id) {
         return id;
       } else {
@@ -212,6 +225,7 @@ class Messenger extends HarmonyCore {
     method: RPCMethod | string,
     params?: string | any[] | undefined,
     rpcPrefix?: string,
+    shardID: number = 0,
   ) => {
     let rpcMethod = method;
     if (rpcPrefix && isString(rpcPrefix) && rpcPrefix !== this.chainPrefix) {
@@ -219,11 +233,12 @@ class Messenger extends HarmonyCore {
     } else if (!rpcPrefix || rpcPrefix === this.chainPrefix) {
       rpcMethod = this.setRPCPrefix(method, this.chainPrefix);
     }
-    if (this.provider instanceof WSProvider) {
-      const provider = this.provider;
+    const provider = this.getShardProvider(shardID);
+    if (provider instanceof WSProvider) {
+      const reProvider = this.provider;
       try {
         const payload = this.JsonRpc.toPayload(rpcMethod, params);
-        const response = await provider.unsubscribe(payload);
+        const response = await reProvider.unsubscribe(payload);
         return response;
       } catch (error) {
         throw error;
@@ -232,5 +247,33 @@ class Messenger extends HarmonyCore {
       throw new Error('HttpProvider does not support this');
     }
   };
+
+  async setShardingProviders() {
+    if (this.chainPrefix !== ChainType.Harmony) {
+      return;
+    }
+    try {
+      const response = await this.send(RPCMethod.GetShardingStructure, [], this.chainPrefix);
+      if (response.result) {
+        const shardingStructures: ShardingItem[] = response.result;
+        for (const shard of shardingStructures) {
+          this.shardProviders.set(shard.shardID, {
+            shardID: shard.shardID,
+            http: new HttpProvider(shard.http),
+            ws: new WSProvider(shard.ws),
+          });
+        }
+      }
+    } catch (error) {
+      return;
+    }
+  }
+  getShardProvider(shardID: number): HttpProvider | WSProvider {
+    const provider = this.shardProviders.get(shardID);
+    if (provider) {
+      return this.provider instanceof HttpProvider ? provider.http : provider.ws;
+    }
+    return this.provider;
+  }
 }
-export {Messenger};
+export { Messenger };

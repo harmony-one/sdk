@@ -59,3 +59,9 @@ export interface RPCResult {
   resultList: any[];
   raw: any;
 }
+
+export interface ShardingItem {
+  shardID: number;
+  http: string;
+  ws: string;
+}

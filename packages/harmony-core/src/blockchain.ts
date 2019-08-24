@@ -16,9 +16,9 @@ import {
   DefaultBlockParams,
 } from '@harmony-js/utils';
 
-import {getAddress} from '@harmony-js/crypto';
+import { getAddress } from '@harmony-js/crypto';
 
-import {Transaction} from '@harmony-js/transaction';
+import { Transaction } from '@harmony-js/transaction';
 
 class Blockchain {
   messenger: Messenger;
@@ -60,11 +60,7 @@ class Blockchain {
   }
 
   async getBlockNumber() {
-    const result = await this.messenger.send(
-      RPCMethod.BlockNumber,
-      [],
-      this.messenger.chainPrefix,
-    );
+    const result = await this.messenger.send(RPCMethod.BlockNumber, [], this.messenger.chainPrefix);
     return this.getRpcResult(result);
   }
   /**
@@ -114,7 +110,7 @@ class Blockchain {
   @assertObject({
     blockHash: ['isHash', AssertType.required],
   })
-  async getBlockTransactionCountByHash({blockHash}: {blockHash: string}) {
+  async getBlockTransactionCountByHash({ blockHash }: { blockHash: string }) {
     const result = await this.messenger.send(
       RPCMethod.GetBlockTransactionCountByHash,
       [blockHash],
@@ -126,7 +122,7 @@ class Blockchain {
   @assertObject({
     blockNumber: ['isBlockNumber', AssertType.required],
   })
-  async getBlockTransactionCountByNumber({blockNumber}: {blockNumber: string}) {
+  async getBlockTransactionCountByNumber({ blockNumber }: { blockNumber: string }) {
     const result = await this.messenger.send(
       RPCMethod.GetBlockTransactionCountByNumber,
       [blockNumber],
@@ -179,7 +175,7 @@ class Blockchain {
   @assertObject({
     txnHash: ['isHash', AssertType.required],
   })
-  async getTransactionByHash({txnHash}: {txnHash: string}) {
+  async getTransactionByHash({ txnHash }: { txnHash: string }) {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionByHash,
       [txnHash],
@@ -194,7 +190,7 @@ class Blockchain {
   @assertObject({
     txnHash: ['isString', AssertType.required],
   })
-  async getTransactionReceipt({txnHash}: {txnHash: string}) {
+  async getTransactionReceipt({ txnHash }: { txnHash: string }) {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionReceipt,
       [txnHash],
@@ -293,6 +289,9 @@ class Blockchain {
       RPCMethod.SendTransaction,
       [transaction.txPayload],
       this.messenger.chainPrefix,
+      typeof transaction.txParams.shardID === 'string'
+        ? Number.parseInt(transaction.txParams.shardID, 10)
+        : transaction.txParams.shardID,
     );
     return this.getRpcResult(result);
   }
@@ -326,21 +325,17 @@ class Blockchain {
     to: ['isValidAddress', AssertType.optional],
     data: ['isHex', AssertType.optional],
   })
-  async estimateGas({to, data}: {to: string; data: string}) {
+  async estimateGas({ to, data }: { to: string; data: string }) {
     const result = await this.messenger.send(
       RPCMethod.EstimateGas,
-      [{to: getAddress(to).checksum, data}],
+      [{ to: getAddress(to).checksum, data }],
       this.messenger.chainPrefix,
     );
     return this.getRpcResult(result);
   }
 
   async gasPrice() {
-    const result = await this.messenger.send(
-      RPCMethod.GasPrice,
-      [],
-      this.messenger.chainPrefix,
-    );
+    const result = await this.messenger.send(RPCMethod.GasPrice, [], this.messenger.chainPrefix);
     return this.getRpcResult(result);
   }
 
@@ -392,4 +387,4 @@ class Blockchain {
   }
 }
 
-export {Blockchain};
+export { Blockchain };
