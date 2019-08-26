@@ -79,6 +79,7 @@ export const recover = (rawTransaction: string) => {
     value: new BN(strip0x(handleNumber(transaction[6]))),
     data: transaction[7],
     chainId: 0,
+    crossShard: false,
     signature: {
       r: '',
       s: '',
@@ -162,6 +163,7 @@ export const recoverETH = (rawTransaction: string) => {
     gasLimit: new BN(strip0x(handleNumber(transaction[2]))),
     shardID: 0,
     toShardID: 0,
+
     to:
       handleAddress(transaction[3]) !== '0x'
         ? getAddress(handleAddress(transaction[3])).checksum
@@ -169,6 +171,7 @@ export const recoverETH = (rawTransaction: string) => {
     value: new BN(strip0x(handleNumber(transaction[4]))),
     data: transaction[5],
     chainId: 0,
+    crossShard: false,
     signature: {
       r: '',
       s: '',

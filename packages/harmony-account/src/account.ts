@@ -41,7 +41,7 @@ class Account {
   address?: string;
   balance?: string = '0';
   nonce?: number = 0;
-  shards: Shards = new Map().set('default', '');
+  shards: Shards = new Map().set('default', { balance: this.balance, nonce: this.nonce });
   messenger: Messenger;
   encrypted: boolean = false;
 
@@ -146,8 +146,57 @@ class Account {
    * @function updateShards
    * @return {Promise<string>} {description}
    */
-  async updateShards(): Promise<string> {
-    return '';
+  async updateShards(): Promise<void> {
+    this.messenger.setShardingProviders();
+    const shardProviders = this.messenger.shardProviders;
+    if (shardProviders.size > 1) {
+      shardProviders.forEach(async (val) => {
+        const balance = await this.messenger.send(
+          RPCMethod.GetBalance,
+          [this.address, 'latest'],
+          this.messenger.chainPrefix,
+          val.shardID,
+        );
+        const nonce = await this.messenger.send(
+          RPCMethod.GetTransactionCount,
+          [this.address, 'latest'],
+          this.messenger.chainPrefix,
+          val.shardID,
+        );
+        if (balance.isError()) {
+          throw balance.error.message;
+        }
+        if (nonce.isError()) {
+          throw nonce.error.message;
+        }
+
+        this.shards.set(val.shardID, {
+          balance: hexToNumber(balance.result),
+          nonce: Number.parseInt(hexToNumber(nonce.result), 10),
+        });
+      });
+    } else {
+      const balanceDefault = await this.messenger.send(
+        RPCMethod.GetBalance,
+        [this.address, 'latest'],
+        this.messenger.chainPrefix,
+      );
+      const nonceDefault = await this.messenger.send(
+        RPCMethod.GetTransactionCount,
+        [this.address, 'latest'],
+        this.messenger.chainPrefix,
+      );
+      if (balanceDefault.isError()) {
+        throw balanceDefault.error.message;
+      }
+      if (nonceDefault.isError()) {
+        throw nonceDefault.error.message;
+      }
+      this.shards.set('default', {
+        balance: hexToNumber(balanceDefault.result),
+        nonce: Number.parseInt(hexToNumber(nonceDefault.result), 10),
+      });
+    }
   }
 
   async signTransaction(
@@ -160,7 +209,7 @@ class Account {
       throw new Error(`${this.privateKey} is not found or not correct`);
     }
     // let signed = '';
-    if (updateNonce) {
+    if (updateNonce && transaction.txParams.crossShard === false) {
       const balanceObject: any = await this.getBalance(blockNumber);
       transaction.setParams({
         ...transaction.txParams,
@@ -169,6 +218,29 @@ class Account {
         nonce: balanceObject.nonce,
       });
     }
+
+    if (updateNonce && transaction.txParams.crossShard === true) {
+      await this.updateShards();
+      const txShardID = transaction.txParams.shardID;
+      const shardBalanceObject = this.shards.get(txShardID);
+      if (shardBalanceObject !== undefined) {
+        const shardNonce = shardBalanceObject.nonce;
+        transaction.setParams({
+          ...transaction.txParams,
+          from: this.address || '0x',
+          // nonce is different from Zilliqa's setting, would be current nonce, not nonce + 1
+          nonce: shardNonce,
+        });
+      } else {
+        transaction.setParams({
+          ...transaction.txParams,
+          from: this.address || '0x',
+          // nonce is different from Zilliqa's setting, would be current nonce, not nonce + 1
+          nonce: 0,
+        });
+      }
+    }
+
     if (encodeMode === 'rlp') {
       const [signature, rawTransaction]: [Signature, string] = RLPSign(
         transaction,

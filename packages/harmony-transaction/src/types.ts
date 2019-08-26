@@ -1,4 +1,4 @@
-import {BN, Signature} from '@harmony-js/crypto';
+import { BN, Signature } from '@harmony-js/crypto';
 export interface TxParams {
   id: string;
   from: string;
@@ -15,6 +15,7 @@ export interface TxParams {
   unsignedRawTransaction: string;
   signature: Signature;
   receipt?: TransasctionReceipt;
+  crossShard: boolean;
 }
 
 export const enum TxStatus {

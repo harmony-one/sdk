@@ -2,4 +2,8 @@
  * test type docs
  */
 export type ShardID = string | number;
-export type Shards = Map<ShardID, string>;
+export interface BalanceObject {
+  balance: string;
+  nonce: number;
+}
+export type Shards = Map<ShardID, BalanceObject>;

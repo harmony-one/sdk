@@ -38,6 +38,7 @@ class Transaction {
   confirmations: number = 0;
   confirmationCheck: number = 0;
   receipt?: TransasctionReceipt;
+  crossShard: boolean;
   private id: string;
   private from: string;
   private nonce: number | string;
@@ -96,6 +97,7 @@ class Transaction {
             recoveryParam: 0,
             v: 0,
           };
+    this.crossShard = params && params.crossShard !== undefined ? params.crossShard : false;
     this.receipt = params && params.receipt ? params.receipt : undefined;
   }
 
@@ -204,6 +206,7 @@ class Transaction {
       rawTransaction: this.rawTransaction || '0x',
       unsignedRawTransaction: this.unsignedRawTransaction || '0x',
       signature: this.signature || '0x',
+      crossShard: this.crossShard !== undefined ? this.crossShard : false,
     };
   }
   setParams(params: TxParams) {
@@ -237,6 +240,7 @@ class Transaction {
             recoveryParam: 0,
             v: 0,
           };
+    this.crossShard = params && params.crossShard !== undefined ? params.crossShard : false;
     if (this.rawTransaction !== '0x') {
       this.setTxStatus(TxStatus.SIGNED);
     } else {
