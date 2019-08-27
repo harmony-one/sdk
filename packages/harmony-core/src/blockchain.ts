@@ -43,18 +43,22 @@ class Blockchain {
   @assertObject({
     address: ['isValidAddress', AssertType.required],
     blockNumber: ['isBlockNumber', AssertType.optional],
+    shardID: ['isNumber', AssertType.optional],
   })
   async getBalance({
     address,
     blockNumber = DefaultBlockParams.latest,
+    shardID = 0,
   }: {
     address: string;
     blockNumber?: string;
+    shardID?: number;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetBalance,
       [getAddress(address).checksum, blockNumber],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }
@@ -137,18 +141,22 @@ class Blockchain {
   @assertObject({
     blockHash: ['isHash', AssertType.required],
     index: ['isHex', AssertType.required],
+    shardID: ['isNumber', AssertType.optional],
   })
   async getTransactionByBlockHashAndIndex({
     blockHash,
     index,
+    shardID = 0,
   }: {
     blockHash: string;
     index: string;
+    shardID?: number;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionByBlockHashAndIndex,
       [blockHash, index],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }
@@ -175,11 +183,12 @@ class Blockchain {
   @assertObject({
     txnHash: ['isHash', AssertType.required],
   })
-  async getTransactionByHash({ txnHash }: { txnHash: string }) {
+  async getTransactionByHash({ txnHash, shardID }: { txnHash: string; shardID?: number }) {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionByHash,
       [txnHash],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }
@@ -244,20 +253,24 @@ class Blockchain {
     address: ['isValidAddress', AssertType.required],
     position: ['isHex', AssertType.required],
     blockNumber: ['isBlockNumber', AssertType.optional],
+    shardID: ['isNumber', AssertType.optional],
   })
   async getStorageAt({
     address,
     position,
     blockNumber = DefaultBlockParams.latest,
+    shardID = 0,
   }: {
     address: string;
     position: string;
     blockNumber?: string;
+    shardID?: number;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetStorageAt,
       [getAddress(address).checksum, position, blockNumber],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }
@@ -265,18 +278,22 @@ class Blockchain {
   @assertObject({
     address: ['isValidAddress', AssertType.required],
     blockNumber: ['isBlockNumber', AssertType.optional],
+    shardID: ['isNumber', AssertType.optional],
   })
   async getTransactionCount({
     address,
     blockNumber = DefaultBlockParams.latest,
+    shardID = 0,
   }: {
     address: string;
     blockNumber?: string;
+    shardID?: number;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionCount,
       [getAddress(address).checksum, blockNumber],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }
@@ -286,8 +303,8 @@ class Blockchain {
       throw new Error('transaction is not signed or not exist');
     }
     const result = await this.messenger.send(
-      RPCMethod.SendTransaction,
-      [transaction.txPayload],
+      RPCMethod.SendRawTransaction,
+      [transaction.getRawTransaction()],
       this.messenger.chainPrefix,
       typeof transaction.txParams.shardID === 'string'
         ? Number.parseInt(transaction.txParams.shardID, 10)

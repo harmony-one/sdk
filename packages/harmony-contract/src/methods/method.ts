@@ -213,7 +213,12 @@ export class ContractMethod {
   }
   protected async confirm(id: string) {
     try {
-      const result = await this.transaction.confirm(id);
+      const result = await this.transaction.confirm(
+        id,
+        20,
+        1000,
+        this.transaction.txParams.shardID,
+      );
 
       if (result.receipt && result.txStatus === TxStatus.CONFIRMED) {
         if (this.methodKey === 'contractConstructor') {

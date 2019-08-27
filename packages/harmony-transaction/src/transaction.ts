@@ -294,7 +294,7 @@ class Transaction {
 
     // const fromShard = this.shardID;
     // const toShard = this.toShardID;
-    await this.messenger.setShardingProviders();
+    // await this.messenger.setShardingProviders();
     const res = await this.messenger.send(
       RPCMethod.SendRawTransaction,
       this.rawTransaction,
@@ -319,12 +319,17 @@ class Transaction {
     }
   }
 
-  async trackTx(txHash: string) {
+  async trackTx(txHash: string, shardID: number | string = this.shardID) {
     if (!this.messenger) {
       throw new Error('Messenger not found');
     }
     // TODO: regex validation for txHash so we don't get garbage
-    const res = await this.messenger.send(RPCMethod.GetTransactionReceipt, txHash);
+    const res = await this.messenger.send(
+      RPCMethod.GetTransactionReceipt,
+      txHash,
+      this.messenger.chainType,
+      typeof shardID === 'string' ? Number.parseInt(shardID, 10) : shardID,
+    );
 
     if (res.isResult() && res.result !== null) {
       this.receipt = res.result;
@@ -362,7 +367,12 @@ class Transaction {
     }
   }
 
-  async confirm(txHash: string, maxAttempts: number = 20, interval: number = 1000) {
+  async confirm(
+    txHash: string,
+    maxAttempts: number = 20,
+    interval: number = 1000,
+    shardID: number | string = this.shardID,
+  ) {
     if (this.messenger.provider instanceof HttpProvider) {
       this.txStatus = TxStatus.PENDING;
       const oldBlock = await this.getBlockNumber();
@@ -377,7 +387,7 @@ class Transaction {
           if (newBlock.gte(nextBlock)) {
             checkBlock = newBlock;
 
-            if (await this.trackTx(txHash)) {
+            if (await this.trackTx(txHash, shardID)) {
               this.emitConfirm(this.txStatus);
               return this;
             }
@@ -400,11 +410,11 @@ class Transaction {
       throw new Error(`The transaction is still not confirmed after ${maxAttempts} attempts.`);
     } else {
       try {
-        if (await this.trackTx(txHash)) {
+        if (await this.trackTx(txHash, shardID)) {
           this.emitConfirm(this.txStatus);
           return this;
         } else {
-          const result = await this.socketConfirm(txHash, maxAttempts);
+          const result = await this.socketConfirm(txHash, maxAttempts, shardID);
           return result;
         }
       } catch (error) {
@@ -417,13 +427,17 @@ class Transaction {
     }
   }
 
-  socketConfirm(txHash: string, maxAttempts: number = 20): Promise<Transaction> {
+  socketConfirm(
+    txHash: string,
+    maxAttempts: number = 20,
+    shardID: number | string = this.shardID,
+  ): Promise<Transaction> {
     return new Promise((resolve, reject) => {
       const newHeads = Promise.resolve(new NewHeaders(this.messenger));
       newHeads.then((p) => {
         p.onData(async (data: any) => {
           if (!this.blockNumbers.includes(data.params.result.number)) {
-            if (await this.trackTx(txHash)) {
+            if (await this.trackTx(txHash, shardID)) {
               this.emitConfirm(this.txStatus);
               await p.unsubscribe();
               resolve(this);

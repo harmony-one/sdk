@@ -94,15 +94,19 @@ class Messenger extends HarmonyCore {
     }
     try {
       const payload = this.JsonRpc.toPayload(rpcMethod, params);
-      this.setResMiddleware((data: any) => {
-        if (!(data instanceof ResponseMiddleware)) {
-          return new ResponseMiddleware(data);
-        } else {
-          return data;
-        }
-      });
-      const provider = this.getShardProvider(shardID);
 
+      const provider = this.getShardProvider(shardID);
+      this.setResMiddleware(
+        (data: any) => {
+          if (!(data instanceof ResponseMiddleware)) {
+            return new ResponseMiddleware(data);
+          } else {
+            return data;
+          }
+        },
+        '*',
+        provider,
+      );
       const result = await provider.send(payload);
       return result;
       // return getResultForData(result); // getResultForData(result)
@@ -140,8 +144,8 @@ class Messenger extends HarmonyCore {
    * @param  {any} middleware - middle ware for req
    * @param  {String} method  - method name
    */
-  setReqMiddleware(middleware: any, method = '*') {
-    this.provider.middlewares.request.use(middleware, method);
+  setReqMiddleware(middleware: any, method = '*', provider: HttpProvider | WSProvider) {
+    provider.middlewares.request.use(middleware, method);
   }
 
   /**
@@ -151,8 +155,8 @@ class Messenger extends HarmonyCore {
    * @param  {any} middleware - middle ware for req
    * @param  {String} method  - method name
    */
-  setResMiddleware(middleware: any, method = '*') {
-    this.provider.middlewares.response.use(middleware, method);
+  setResMiddleware(middleware: any, method = '*', provider: HttpProvider | WSProvider) {
+    provider.middlewares.response.use(middleware, method);
   }
 
   /**

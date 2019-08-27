@@ -11,7 +11,7 @@ import {
   getAddress,
 } from '@harmony-js/crypto';
 
-import { isPrivateKey, add0xToString, hexToNumber } from '@harmony-js/utils';
+import { isPrivateKey, add0xToString, hexToNumber, AddressSuffix } from '@harmony-js/utils';
 import { Transaction, RLPSign } from '@harmony-js/transaction';
 import { Messenger, RPCMethod } from '@harmony-js/network';
 import { Shards } from './types';
@@ -41,7 +41,7 @@ class Account {
   address?: string;
   balance?: string = '0';
   nonce?: number = 0;
-  shards: Shards = new Map().set('default', { balance: this.balance, nonce: this.nonce });
+  shards: Shards;
   messenger: Messenger;
   encrypted: boolean = false;
 
@@ -74,6 +74,12 @@ class Account {
     } else {
       this._import(key);
     }
+    this.shards = new Map();
+    this.shards.set(0, {
+      address: `${this.bech32Address}${AddressSuffix}0`,
+      balance: this.balance || '0',
+      nonce: this.nonce || 0,
+    });
   }
 
   async toFile(password: string, options?: EncryptOptions): Promise<string> {
@@ -146,56 +152,18 @@ class Account {
    * @function updateShards
    * @return {Promise<string>} {description}
    */
-  async updateShards(): Promise<void> {
-    this.messenger.setShardingProviders();
+  async updateBalances(): Promise<void> {
+    // this.messenger.setShardingProviders();
     const shardProviders = this.messenger.shardProviders;
-    if (shardProviders.size > 1) {
-      shardProviders.forEach(async (val) => {
-        const balance = await this.messenger.send(
-          RPCMethod.GetBalance,
-          [this.address, 'latest'],
-          this.messenger.chainPrefix,
-          val.shardID,
-        );
-        const nonce = await this.messenger.send(
-          RPCMethod.GetTransactionCount,
-          [this.address, 'latest'],
-          this.messenger.chainPrefix,
-          val.shardID,
-        );
-        if (balance.isError()) {
-          throw balance.error.message;
-        }
-        if (nonce.isError()) {
-          throw nonce.error.message;
-        }
 
-        this.shards.set(val.shardID, {
-          balance: hexToNumber(balance.result),
-          nonce: Number.parseInt(hexToNumber(nonce.result), 10),
-        });
-      });
+    if (shardProviders.size > 1) {
+      for (const [name, val] of shardProviders) {
+        const balanceObject = await this.getShardBalance(val.shardID);
+        await this.shards.set(name === val.shardID ? name : val.shardID, balanceObject);
+      }
     } else {
-      const balanceDefault = await this.messenger.send(
-        RPCMethod.GetBalance,
-        [this.address, 'latest'],
-        this.messenger.chainPrefix,
-      );
-      const nonceDefault = await this.messenger.send(
-        RPCMethod.GetTransactionCount,
-        [this.address, 'latest'],
-        this.messenger.chainPrefix,
-      );
-      if (balanceDefault.isError()) {
-        throw balanceDefault.error.message;
-      }
-      if (nonceDefault.isError()) {
-        throw nonceDefault.error.message;
-      }
-      this.shards.set('default', {
-        balance: hexToNumber(balanceDefault.result),
-        nonce: Number.parseInt(hexToNumber(nonceDefault.result), 10),
-      });
+      const shard0 = await this.getShardBalance(0);
+      this.shards.set(0, shard0);
     }
   }
 
@@ -213,29 +181,26 @@ class Account {
       const balanceObject: any = await this.getBalance(blockNumber);
       transaction.setParams({
         ...transaction.txParams,
-        from: this.address || '0x',
-        // nonce is different from Zilliqa's setting, would be current nonce, not nonce + 1
+        from: this.checksumAddress || '0x',
         nonce: balanceObject.nonce,
       });
     }
 
     if (updateNonce && transaction.txParams.crossShard === true) {
-      await this.updateShards();
+      await this.updateBalances();
       const txShardID = transaction.txParams.shardID;
       const shardBalanceObject = this.shards.get(txShardID);
       if (shardBalanceObject !== undefined) {
         const shardNonce = shardBalanceObject.nonce;
         transaction.setParams({
           ...transaction.txParams,
-          from: this.address || '0x',
-          // nonce is different from Zilliqa's setting, would be current nonce, not nonce + 1
+          from: this.checksumAddress || '0x',
           nonce: shardNonce,
         });
       } else {
         transaction.setParams({
           ...transaction.txParams,
-          from: this.address || '0x',
-          // nonce is different from Zilliqa's setting, would be current nonce, not nonce + 1
+          from: this.checksumAddress || '0x',
           nonce: 0,
         });
       }
@@ -247,7 +212,7 @@ class Account {
         this.privateKey,
       );
       return transaction.map((obj: any) => {
-        return { ...obj, signature, rawTransaction, from: this.address };
+        return { ...obj, signature, rawTransaction, from: this.checksumAddress };
       });
     } else {
       // TODO: if we use other encode method, eg. protobuf, we should implement this
@@ -256,6 +221,32 @@ class Account {
   }
   setMessenger(messenger: Messenger) {
     this.messenger = messenger;
+  }
+
+  async getShardBalance(shardID: number) {
+    const balance = await this.messenger.send(
+      RPCMethod.GetBalance,
+      [this.address, 'latest'],
+      this.messenger.chainPrefix,
+      shardID,
+    );
+    const nonce = await this.messenger.send(
+      RPCMethod.GetTransactionCount,
+      [this.address, 'latest'],
+      this.messenger.chainPrefix,
+      shardID,
+    );
+    if (balance.isError()) {
+      throw balance.error.message;
+    }
+    if (nonce.isError()) {
+      throw nonce.error.message;
+    }
+    return {
+      address: `${this.bech32Address}${AddressSuffix}${shardID}`,
+      balance: hexToNumber(balance.result),
+      nonce: Number.parseInt(hexToNumber(nonce.result), 10),
+    };
   }
   /**
    * @function _new private method create Account
@@ -281,24 +272,15 @@ class Account {
     this.privateKey = add0xToString(key);
     this.publicKey = getPubkeyFromPrivateKey(this.privateKey);
     this.address = getAddressFromPrivateKey(this.privateKey);
-    this.shards = new Map().set('default', '');
+    this.shards = new Map();
+    this.shards.set(0, {
+      address: `${this.bech32Address}${AddressSuffix}0`,
+      balance: this.balance || '0',
+      nonce: this.nonce || 0,
+    });
     this.encrypted = false;
     return this;
   }
-
-  // /**
-  //  * @function addShard add shard to this Account
-  //  * @param  {ShardId} id - ShardId to the Account
-  //  */
-  // private addShard(id: ShardId): void {
-  //   if (this.shards && this.shards.has('default')) {
-  //     this.shards.set(id, '');
-  //   } else {
-  //     throw new Error(
-  //       'This account has no default shard or shard is not exist',
-  //     );
-  //   }
-  // }
 }
 
 export { Account };
