@@ -182,8 +182,9 @@ class Blockchain {
 
   @assertObject({
     txnHash: ['isHash', AssertType.required],
+    shardID: ['isNumber', AssertType.optional],
   })
-  async getTransactionByHash({ txnHash, shardID }: { txnHash: string; shardID?: number }) {
+  async getTransactionByHash({ txnHash, shardID = 0 }: { txnHash: string; shardID?: number }) {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionByHash,
       [txnHash],
@@ -198,12 +199,14 @@ class Blockchain {
    */
   @assertObject({
     txnHash: ['isString', AssertType.required],
+    shardID: ['isNumber', AssertType.optional],
   })
-  async getTransactionReceipt({ txnHash }: { txnHash: string }) {
+  async getTransactionReceipt({ txnHash, shardID = 0 }: { txnHash: string; shardID?: number }) {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionReceipt,
       [txnHash],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }
