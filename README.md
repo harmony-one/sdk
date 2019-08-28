@@ -111,12 +111,12 @@ async function crossShard() {
     {
       shardID: 0,
       http: 'http://localhost:9500',
-      wss: 'ws://localhost:9800',
+      ws: 'ws://localhost:9800',
     },
     {
       shardID: 1,
       http: 'http://localhost:9501',
-      wss: 'ws://localhost:9801',
+      ws: 'ws://localhost:9801',
     },
   ];
 
