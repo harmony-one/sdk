@@ -38,7 +38,7 @@ class Transaction {
   confirmations: number = 0;
   confirmationCheck: number = 0;
   receipt?: TransasctionReceipt;
-  crossShard: boolean;
+
   private id: string;
   private from: string;
   private nonce: number | string;
@@ -97,7 +97,7 @@ class Transaction {
             recoveryParam: 0,
             v: 0,
           };
-    this.crossShard = params && params.crossShard !== undefined ? params.crossShard : false;
+
     this.receipt = params && params.receipt ? params.receipt : undefined;
   }
 
