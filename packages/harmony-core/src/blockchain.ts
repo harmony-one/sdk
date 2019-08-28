@@ -298,6 +298,15 @@ class Blockchain {
     return this.getRpcResult(result);
   }
 
+  async getShardingStructure() {
+    const result = await this.messenger.send(
+      RPCMethod.GetShardingStructure,
+      [],
+      this.messenger.chainPrefix,
+    );
+    return this.getRpcResult(result);
+  }
+
   async sendTransaction(transaction: Transaction) {
     if (!transaction.isSigned() || !transaction) {
       throw new Error('transaction is not signed or not exist');
@@ -371,33 +380,33 @@ class Blockchain {
     return this.getRpcResult(result);
   }
 
-  newPendingTransactions() {
+  newPendingTransactions(shardID: number = 0) {
     if (this.messenger.provider instanceof WSProvider) {
-      return new NewPendingTransactions(this.messenger);
+      return new NewPendingTransactions(this.messenger, shardID);
     } else {
       throw new Error('HttpProvider does not support this feature');
     }
   }
 
-  newBlockHeaders() {
+  newBlockHeaders(shardID: number = 0) {
     if (this.messenger.provider instanceof WSProvider) {
-      return new NewHeaders(this.messenger);
+      return new NewHeaders(this.messenger, shardID);
     } else {
       throw new Error('HttpProvider does not support this feature');
     }
   }
 
-  syncing() {
+  syncing(shardID: number = 0) {
     if (this.messenger.provider instanceof WSProvider) {
-      return new Syncing(this.messenger);
+      return new Syncing(this.messenger, shardID);
     } else {
       throw new Error('HttpProvider does not support this feature');
     }
   }
 
-  logs(options: any) {
+  logs(options: any, shardID: number = 0) {
     if (this.messenger.provider instanceof WSProvider) {
-      return new LogSub(options, this.messenger);
+      return new LogSub(options, this.messenger, shardID);
     } else {
       throw new Error('HttpProvider does not support this feature');
     }

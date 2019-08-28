@@ -3,8 +3,8 @@ import { SubscriptionMethod } from './Subscription';
 
 export class Syncing extends SubscriptionMethod {
   isSyncing: boolean | null;
-  constructor(messenger: Messenger) {
-    super('syncing', undefined, messenger);
+  constructor(messenger: Messenger, shardID: number = 0) {
+    super('syncing', undefined, messenger, shardID);
     this.isSyncing = null;
     this.start();
   }

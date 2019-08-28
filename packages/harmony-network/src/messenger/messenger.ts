@@ -8,6 +8,7 @@ import { RPCMethod } from '../rpcMethod/rpc';
 import { SubscribeReturns, ShardingItem } from '../types';
 
 export interface ShardingProvider {
+  current: boolean;
   shardID: number;
   http: HttpProvider;
   ws: WSProvider;
@@ -71,7 +72,9 @@ class Messenger extends HarmonyCore {
     this.shardProviders = new Map();
     this.setShardingProviders();
   }
-
+  get currentShard(): number | undefined {
+    return this.getCurrentShardID();
+  }
   /**
    * @function send
    * @memberof Messenger.prototype
@@ -107,6 +110,7 @@ class Messenger extends HarmonyCore {
         '*',
         provider,
       );
+
       const result = await provider.send(payload);
       return result;
       // return getResultForData(result); // getResultForData(result)
@@ -261,8 +265,11 @@ class Messenger extends HarmonyCore {
       if (response.result) {
         const shardingStructures: ShardingItem[] = response.result;
         for (const shard of shardingStructures) {
-          this.shardProviders.set(shard.shardID, {
-            shardID: shard.shardID,
+          const shardID =
+            typeof shard.shardID === 'string' ? Number.parseInt(shard.shardID, 10) : shard.shardID;
+          this.shardProviders.set(shardID, {
+            current: shard.current,
+            shardID,
             http: new HttpProvider(shard.http),
             ws: new WSProvider(shard.ws),
           });
@@ -278,6 +285,17 @@ class Messenger extends HarmonyCore {
       return this.provider instanceof HttpProvider ? provider.http : provider.ws;
     }
     return this.provider;
+  }
+  getCurrentShardID() {
+    for (const shard of this.shardProviders) {
+      if (
+        shard[1].current === true ||
+        shard[1].http.url === this.provider.url ||
+        shard[1].ws.url === this.provider.url
+      ) {
+        return shard[1].shardID;
+      }
+    }
   }
 }
 export { Messenger };

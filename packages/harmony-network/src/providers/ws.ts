@@ -1,15 +1,15 @@
 // TODO: implement Websocket Provider
-import {w3cwebsocket as W3CWebsocket} from 'websocket';
+import { w3cwebsocket as W3CWebsocket } from 'websocket';
 import {
   BaseSocket,
   SocketConnection,
   SocketState,
   // EmittType,
 } from './baseSocket';
-import {isWs, isObject, isArray} from '@harmony-js/utils';
-import {JsonRpc} from '../rpcMethod/builder';
-import {composeMiddleware} from '../rpcMethod/net';
-import {RPCRequestPayload} from '../types';
+import { isWs, isObject, isArray } from '@harmony-js/utils';
+import { JsonRpc } from '../rpcMethod/builder';
+import { composeMiddleware } from '../rpcMethod/net';
+import { RPCRequestPayload } from '../types';
 
 class WSProvider extends BaseSocket {
   get connected() {
@@ -70,9 +70,9 @@ class WSProvider extends BaseSocket {
       const urlObject = new URL(url);
 
       if (!headers.authorization && urlObject.username && urlObject.password) {
-        const authToken = Buffer.from(
-          `${urlObject.username}:${urlObject.password}`,
-        ).toString('base64');
+        const authToken = Buffer.from(`${urlObject.username}:${urlObject.password}`).toString(
+          'base64',
+        );
         headers.authorization = `Basic ${authToken}`;
       }
 
@@ -140,6 +140,7 @@ class WSProvider extends BaseSocket {
       parameters: payload.params,
       payload,
     };
+
     return response.result;
   }
 
@@ -157,9 +158,7 @@ class WSProvider extends BaseSocket {
     }
 
     return Promise.reject(
-      new Error(
-        `Provider error: Subscription with ID ${subscriptionId} does not exist.`,
-      ),
+      new Error(`Provider error: Subscription with ID ${subscriptionId} does not exist.`),
     );
   }
 
@@ -169,17 +168,13 @@ class WSProvider extends BaseSocket {
     Object.keys(this.subscriptions).forEach((key) => {
       this.removeEventListener(key);
       unsubscribePromises.push(
-        this.unsubscribe(
-          this.jsonRpc.toPayload(unsubscribeMethod, this.subscriptions[key].id),
-        ),
+        this.unsubscribe(this.jsonRpc.toPayload(unsubscribeMethod, this.subscriptions[key].id)),
       );
     });
 
     const results = await Promise.all(unsubscribePromises);
     if (results.includes(false)) {
-      throw new Error(
-        `Could not unsubscribe all subscriptions: ${JSON.stringify(results)}`,
-      );
+      throw new Error(`Could not unsubscribe all subscriptions: ${JSON.stringify(results)}`);
     }
     return true;
   }
@@ -202,10 +197,10 @@ class WSProvider extends BaseSocket {
         if (isArray(result)) {
           event = result[0].id;
         }
+        // tslint:disable-next-line: prefer-conditional-expression
         if (typeof result.id === 'undefined') {
           event =
-            this.getSubscriptionEvent(result.params.subscription) ||
-            result.params.subscription;
+            this.getSubscriptionEvent(result.params.subscription) || result.params.subscription;
           // result = result.params;
         } else {
           event = result.id;
@@ -213,7 +208,6 @@ class WSProvider extends BaseSocket {
       } catch (error) {
         throw error;
       }
-
       this.emitter.emit(SocketState.SOCKET_MESSAGE, result);
       this.emitter.emit(`${event}`, result);
     } else {
@@ -228,9 +222,7 @@ class WSProvider extends BaseSocket {
 
     if (subscriptionKeys.length > 0) {
       for (const key of subscriptionKeys) {
-        const subscriptionId: any = await this.subscribe(
-          this.subscriptions[key].payload,
-        );
+        const subscriptionId: any = await this.subscribe(this.subscriptions[key].payload);
         delete this.subscriptions[subscriptionId];
         this.subscriptions[key].id = subscriptionId;
       }
@@ -283,4 +275,4 @@ class WSProvider extends BaseSocket {
   }
 }
 
-export {WSProvider};
+export { WSProvider };

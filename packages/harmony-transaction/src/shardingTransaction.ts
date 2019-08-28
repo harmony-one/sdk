@@ -17,9 +17,19 @@ export class ShardingTransaction extends Transaction {
     const toExtraction =
       toAddress !== undefined ? toAddress.split(AddressSuffix) : ['0x', undefined];
     const from = fromExtraction[0];
-    const shardID = Number.parseInt(fromExtraction[1], 10);
+    const shardID =
+      fromExtraction[1] !== undefined
+        ? Number.parseInt(fromExtraction[1], 10)
+        : params.shardID !== undefined
+        ? params.shardID
+        : 0;
     const to = toExtraction[0];
-    const toShardID = Number.parseInt(toExtraction[1], 10);
+    const toShardID =
+      toExtraction[1] !== undefined
+        ? Number.parseInt(toExtraction[1], 10)
+        : params.toShardID !== undefined
+        ? params.toShardID
+        : 0;
 
     const reParams = {
       ...params,
@@ -27,7 +37,6 @@ export class ShardingTransaction extends Transaction {
       to,
       shardID,
       toShardID,
-      crossShard: true,
     };
 
     super(reParams, messenger, txStatus);

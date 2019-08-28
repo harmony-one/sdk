@@ -68,8 +68,11 @@ export class Harmony extends utils.HarmonyCore {
 
   public shardingStructures(shardingStructures: ShardingItem[]) {
     for (const shard of shardingStructures) {
-      this.messenger.shardProviders.set(shard.shardID, {
-        shardID: shard.shardID,
+      const shardID =
+        typeof shard.shardID === 'string' ? Number.parseInt(shard.shardID, 10) : shard.shardID;
+      this.messenger.shardProviders.set(shardID, {
+        current: shard.current !== undefined ? shard.current : false,
+        shardID,
         http: new HttpProvider(shard.http),
         ws: new WSProvider(shard.ws),
       });

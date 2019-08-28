@@ -3,8 +3,8 @@ import { SubscriptionMethod } from './Subscription';
 import { RPCMethod } from '../rpcMethod/rpc';
 
 export class LogSub extends SubscriptionMethod {
-  constructor(options: any, messenger: Messenger) {
-    super('logs', options, messenger);
+  constructor(options: any, messenger: Messenger, shardID: number = 0) {
+    super('logs', options, messenger, shardID);
     this.subscribe();
   }
 
@@ -14,9 +14,12 @@ export class LogSub extends SubscriptionMethod {
       (this.options.fromBlock === 0 || this.options.fromBlock === '0x')
     ) {
       try {
-        const getPastLogs = await this.messenger.send(RPCMethod.GetPastLogs, [
-          ...this.options,
-        ]);
+        const getPastLogs = await this.messenger.send(
+          RPCMethod.GetPastLogs,
+          [...this.options],
+          this.messenger.chainType,
+          this.shardID,
+        );
 
         if (getPastLogs.isError()) {
           this.emitter.emit('error', getPastLogs.error.message);

@@ -120,11 +120,13 @@ class Account {
         const balance = await this.messenger.send(RPCMethod.GetBalance, [
           this.address,
           blockNumber,
+          this.messenger.currentShard,
         ]);
 
         const nonce = await this.messenger.send(RPCMethod.GetTransactionCount, [
           this.address,
           blockNumber,
+          this.messenger.currentShard,
         ]);
         if (balance.isError()) {
           throw balance.error.message;
@@ -141,7 +143,6 @@ class Account {
       return {
         balance: this.balance,
         nonce: this.nonce,
-        shards: this.shards,
       };
     } catch (error) {
       throw error;
@@ -152,17 +153,17 @@ class Account {
    * @function updateShards
    * @return {Promise<string>} {description}
    */
-  async updateBalances(): Promise<void> {
+  async updateBalances(blockNumber: string = 'latest'): Promise<void> {
     // this.messenger.setShardingProviders();
     const shardProviders = this.messenger.shardProviders;
 
     if (shardProviders.size > 1) {
       for (const [name, val] of shardProviders) {
-        const balanceObject = await this.getShardBalance(val.shardID);
+        const balanceObject = await this.getShardBalance(val.shardID, blockNumber);
         await this.shards.set(name === val.shardID ? name : val.shardID, balanceObject);
       }
     } else {
-      const shard0 = await this.getShardBalance(0);
+      const shard0 = await this.getShardBalance(0, blockNumber);
       this.shards.set(0, shard0);
     }
   }
@@ -176,18 +177,9 @@ class Account {
     if (!this.privateKey || !isPrivateKey(this.privateKey)) {
       throw new Error(`${this.privateKey} is not found or not correct`);
     }
-    // let signed = '';
-    if (updateNonce && transaction.txParams.crossShard === false) {
-      const balanceObject: any = await this.getBalance(blockNumber);
-      transaction.setParams({
-        ...transaction.txParams,
-        from: this.checksumAddress || '0x',
-        nonce: balanceObject.nonce,
-      });
-    }
 
-    if (updateNonce && transaction.txParams.crossShard === true) {
-      await this.updateBalances();
+    if (updateNonce) {
+      await this.updateBalances(blockNumber);
       const txShardID = transaction.txParams.shardID;
       const shardBalanceObject = this.shards.get(txShardID);
       if (shardBalanceObject !== undefined) {
@@ -223,16 +215,33 @@ class Account {
     this.messenger = messenger;
   }
 
-  async getShardBalance(shardID: number) {
+  getAddressFromShardID(shardID: number) {
+    const shardObject = this.shards.get(shardID);
+    if (shardObject) {
+      return shardObject.address;
+    } else {
+      return undefined;
+    }
+  }
+  getAddresses(): string[] {
+    const addressArray: string[] = [];
+    for (const [name, val] of this.shards) {
+      const index: number = typeof name === 'string' ? Number.parseInt(name, 10) : name;
+      addressArray[index] = val.address;
+    }
+    return addressArray;
+  }
+
+  async getShardBalance(shardID: number, blockNumber: string = 'latest') {
     const balance = await this.messenger.send(
       RPCMethod.GetBalance,
-      [this.address, 'latest'],
+      [this.address, blockNumber],
       this.messenger.chainPrefix,
       shardID,
     );
     const nonce = await this.messenger.send(
       RPCMethod.GetTransactionCount,
-      [this.address, 'latest'],
+      [this.address, blockNumber],
       this.messenger.chainPrefix,
       shardID,
     );

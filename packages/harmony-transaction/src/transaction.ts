@@ -206,7 +206,6 @@ class Transaction {
       rawTransaction: this.rawTransaction || '0x',
       unsignedRawTransaction: this.unsignedRawTransaction || '0x',
       signature: this.signature || '0x',
-      crossShard: this.crossShard !== undefined ? this.crossShard : false,
     };
   }
   setParams(params: TxParams) {
@@ -240,7 +239,6 @@ class Transaction {
             recoveryParam: 0,
             v: 0,
           };
-    this.crossShard = params && params.crossShard !== undefined ? params.crossShard : false;
     if (this.rawTransaction !== '0x') {
       this.setTxStatus(TxStatus.SIGNED);
     } else {
@@ -433,7 +431,12 @@ class Transaction {
     shardID: number | string = this.shardID,
   ): Promise<Transaction> {
     return new Promise((resolve, reject) => {
-      const newHeads = Promise.resolve(new NewHeaders(this.messenger));
+      const newHeads = Promise.resolve(
+        new NewHeaders(
+          this.messenger,
+          typeof shardID === 'string' ? Number.parseInt(shardID, 10) : shardID,
+        ),
+      );
       newHeads.then((p) => {
         p.onData(async (data: any) => {
           if (!this.blockNumbers.includes(data.params.result.number)) {

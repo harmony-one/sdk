@@ -15,7 +15,6 @@ export interface TxParams {
   unsignedRawTransaction: string;
   signature: Signature;
   receipt?: TransasctionReceipt;
-  crossShard: boolean;
 }
 
 export const enum TxStatus {

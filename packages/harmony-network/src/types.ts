@@ -61,7 +61,8 @@ export interface RPCResult {
 }
 
 export interface ShardingItem {
-  shardID: number;
+  current: boolean;
+  shardID: number | string;
   http: string;
   ws: string;
 }

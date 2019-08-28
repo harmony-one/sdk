@@ -6,21 +6,19 @@ import { RPCRequestPayload } from '../types';
 export class SubscriptionMethod extends WSProvider {
   param: any;
   options: any;
+  shardID: number;
   messenger: Messenger;
 
   subscriptionId: any = null;
-  constructor(param: any, options: any, messenger: Messenger) {
-    super(messenger.provider.url);
+  constructor(param: any, options: any, messenger: Messenger, shardID: number = 0) {
+    super(shardID !== 0 ? messenger.getShardProvider(shardID).url : messenger.provider.url);
+    this.shardID = shardID;
     this.param = param;
     this.options = options;
     this.messenger = messenger;
   }
 
-  constructPayload(
-    method: string,
-    param: any,
-    options?: any,
-  ): RPCRequestPayload<any> {
+  constructPayload(method: string, param: any, options?: any): RPCRequestPayload<any> {
     let rpcMethod = method;
     const payload: any = [];
     payload.push(param);
@@ -32,17 +30,13 @@ export class SubscriptionMethod extends WSProvider {
   }
 
   async start() {
-    const subscribePayload = this.constructPayload(
-      RPCMethod.Subscribe,
-      this.param,
-      this.options,
-    );
+    const subscribePayload = this.constructPayload(RPCMethod.Subscribe, this.param, this.options);
     try {
       const id = await super.subscribe(subscribePayload);
-
       this.subscriptionId = id;
       this.on(id, (result: any) => {
         const output = this.onNewSubscriptionItem(result);
+
         this.emitter.emit('data', output);
       });
       this.once('error', (error) => {
@@ -57,10 +51,7 @@ export class SubscriptionMethod extends WSProvider {
     return this;
   }
   unsubscribe() {
-    const unsubscribePayload = this.constructPayload(
-      RPCMethod.UnSubscribe,
-      this.subscriptionId,
-    );
+    const unsubscribePayload = this.constructPayload(RPCMethod.UnSubscribe, this.subscriptionId);
     return super.unsubscribe(unsubscribePayload);
   }
   onNewSubscriptionItem(subscriptionItem: any) {
