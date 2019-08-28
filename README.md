@@ -191,7 +191,7 @@ async function crossShard() {
   // 同样可以通过blockchain类来获取transaction Receipt
   // 注意你需要指定shardID
 
-  const receipt = harmony.blockchain.getTransactionReceipt({
+  const receipt = await harmony.blockchain.getTransactionReceipt({
     txnHash: id,
     shardID: sent.txParams.shardID,
   });
