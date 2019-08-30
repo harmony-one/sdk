@@ -75,6 +75,10 @@ class Messenger extends HarmonyCore {
   get currentShard(): number | undefined {
     return this.getCurrentShardID();
   }
+
+  get shardCount(): number {
+    return this.shardProviders.size;
+  }
   /**
    * @function send
    * @memberof Messenger.prototype

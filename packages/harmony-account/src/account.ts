@@ -41,6 +41,7 @@ class Account {
   address?: string;
   balance?: string = '0';
   nonce?: number = 0;
+  shardID: number;
   shards: Shards;
   messenger: Messenger;
   encrypted: boolean = false;
@@ -74,8 +75,9 @@ class Account {
     } else {
       this._import(key);
     }
+    this.shardID = this.messenger.currentShard || 0;
     this.shards = new Map();
-    this.shards.set(0, {
+    this.shards.set(this.shardID, {
       address: `${this.bech32Address}${AddressSuffix}0`,
       balance: this.balance || '0',
       nonce: this.nonce || 0,
@@ -117,17 +119,19 @@ class Account {
   async getBalance(blockNumber: string = 'latest'): Promise<object> {
     try {
       if (this.messenger) {
-        const balance = await this.messenger.send(RPCMethod.GetBalance, [
-          this.address,
-          blockNumber,
-          this.messenger.currentShard,
-        ]);
+        const balance = await this.messenger.send(
+          RPCMethod.GetBalance,
+          [this.address, blockNumber],
+          this.messenger.chainPrefix,
+          this.messenger.currentShard || 0,
+        );
 
-        const nonce = await this.messenger.send(RPCMethod.GetTransactionCount, [
-          this.address,
-          blockNumber,
-          this.messenger.currentShard,
-        ]);
+        const nonce = await this.messenger.send(
+          RPCMethod.GetTransactionCount,
+          [this.address, blockNumber],
+          this.messenger.chainPrefix,
+          this.messenger.currentShard || 0,
+        );
         if (balance.isError()) {
           throw balance.error.message;
         }
@@ -137,12 +141,14 @@ class Account {
 
         this.balance = hexToNumber(balance.result);
         this.nonce = Number.parseInt(hexToNumber(nonce.result), 10);
+        this.shardID = this.messenger.currentShard || 0;
       } else {
         throw new Error('No Messenger found');
       }
       return {
         balance: this.balance,
         nonce: this.nonce,
+        shardID: this.shardID,
       };
     } catch (error) {
       throw error;
@@ -163,8 +169,11 @@ class Account {
         await this.shards.set(name === val.shardID ? name : val.shardID, balanceObject);
       }
     } else {
-      const shard0 = await this.getShardBalance(0, blockNumber);
-      this.shards.set(0, shard0);
+      const currentShard = await this.getShardBalance(
+        this.messenger.currentShard || 0,
+        blockNumber,
+      );
+      this.shards.set(this.messenger.currentShard || 0, currentShard);
     }
   }
 
@@ -281,8 +290,9 @@ class Account {
     this.privateKey = add0xToString(key);
     this.publicKey = getPubkeyFromPrivateKey(this.privateKey);
     this.address = getAddressFromPrivateKey(this.privateKey);
+    this.shardID = this.messenger.currentShard || 0;
     this.shards = new Map();
-    this.shards.set(0, {
+    this.shards.set(this.shardID, {
       address: `${this.bech32Address}${AddressSuffix}0`,
       balance: this.balance || '0',
       nonce: this.nonce || 0,

@@ -55,13 +55,18 @@ export class ContractMethod {
   }
   async call(options: any, blockNumber: any = 'latest') {
     try {
+      const shardID =
+        options !== undefined && options.shardID !== undefined
+          ? options.shardID
+          : this.contract.shardID;
       const nonce =
         this.wallet.signer || (options !== undefined && options.from)
           ? getResultForData(
-              await this.wallet.messenger.send(RPCMethod.GetTransactionCount, [
-                this.wallet.signer ? this.wallet.signer.address : options.from,
-                blockNumber,
-              ]),
+              await this.wallet.messenger.send(
+                RPCMethod.GetTransactionCount,
+                [this.wallet.signer ? this.wallet.signer.address : options.from, blockNumber],
+                shardID,
+              ),
             )
           : '0x0';
 
@@ -126,7 +131,12 @@ export class ContractMethod {
         }
       }
 
-      const result = await this.wallet.messenger.send(RPCMethod.Call, [sendPayload, blockNumber]);
+      const result = await (<Wallet>this.wallet).messenger.send(
+        RPCMethod.Call,
+        [sendPayload, blockNumber],
+        (<Wallet>this.wallet).messenger.chainPrefix,
+        shardID,
+      );
       this.callPayload = sendPayload;
       this.callResponse = result;
       if (result.isError()) {
@@ -145,7 +155,7 @@ export class ContractMethod {
   async estimateGas() {
     try {
       const result = getResultForData(
-        await this.wallet.messenger.send(RPCMethod.EstimateGas, [
+        await (<Wallet>this.wallet).messenger.send(RPCMethod.EstimateGas, [
           {
             to: this.transaction.txParams.to,
             data: this.transaction.txParams.data,
@@ -217,7 +227,7 @@ export class ContractMethod {
         id,
         20,
         1000,
-        this.transaction.txParams.shardID,
+        this.transaction ? this.transaction.txParams.shardID : this.contract.shardID,
       );
 
       if (result.receipt && result.txStatus === TxStatus.CONFIRMED) {
@@ -252,7 +262,7 @@ export class ContractMethod {
         data: this.encodeABI(),
       };
 
-      const result = new TransactionFactory(this.wallet.messenger).newTx(txObject);
+      const result = new TransactionFactory((<Wallet>this.wallet).messenger).newTx(txObject);
 
       return result;
     } else {
