@@ -162,7 +162,6 @@ class Account {
   async updateBalances(blockNumber: string = 'latest'): Promise<void> {
     // this.messenger.setShardingProviders();
     const shardProviders = this.messenger.shardProviders;
-
     if (shardProviders.size > 1) {
       for (const [name, val] of shardProviders) {
         const balanceObject = await this.getShardBalance(val.shardID, blockNumber);
@@ -248,12 +247,14 @@ class Account {
       this.messenger.chainPrefix,
       shardID,
     );
+
     const nonce = await this.messenger.send(
       RPCMethod.GetTransactionCount,
       [this.address, blockNumber],
       this.messenger.chainPrefix,
       shardID,
     );
+
     if (balance.isError()) {
       throw balance.error.message;
     }

@@ -70,7 +70,7 @@ class Messenger extends HarmonyCore {
     // set shardingProviders
 
     this.shardProviders = new Map();
-    this.setShardingProviders();
+    // this.setShardingProviders();
   }
   get currentShard(): number | undefined {
     return this.getCurrentShardID();
@@ -266,6 +266,7 @@ class Messenger extends HarmonyCore {
     }
     try {
       const response = await this.send(RPCMethod.GetShardingStructure, [], this.chainPrefix);
+
       if (response.result) {
         const shardingStructures: ShardingItem[] = response.result;
         for (const shard of shardingStructures) {
