@@ -1,5 +1,6 @@
 export interface ContractOptions {
   data?: string;
+  shardID?: number;
   address?: string;
   defaultAccount?: string;
   defaultBlock?: string;

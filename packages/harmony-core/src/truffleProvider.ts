@@ -5,8 +5,8 @@ import {
   ResponseMiddleware,
 } from '@harmony-js/network';
 
-import {ChainID, ChainType} from '@harmony-js/utils';
-import {HDNode} from '@harmony-js/account';
+import { ChainID, ChainType } from '@harmony-js/utils';
+import { HDNode } from '@harmony-js/account';
 
 export interface ArgsResolver {
   newArgs: any;
@@ -24,25 +24,13 @@ export class TruffleProvider extends HDNode {
     addressCount: number = 1,
     chainType: ChainType = ChainType.Harmony,
     chainId: ChainID = ChainID.Default,
-    gasLimit = '1000000',
-    gasPrice = '2000000000',
+    gasLimit = '10000000',
+    gasPrice = '20000000000',
   ) {
-    super(
-      provider,
-      menmonic,
-      index,
-      addressCount,
-      chainType,
-      chainId,
-      gasLimit,
-      gasPrice,
-    );
+    super(provider, menmonic, index, addressCount, chainType, chainId, gasLimit, gasPrice);
   }
   async send(...args: [RPCRequestPayload<any>, any]) {
-    const {newArgs, id, params, newMethod, callback} = this.resolveArgs(
-      ...args,
-    );
-
+    const { newArgs, id, params, newMethod, callback } = this.resolveArgs(...args);
     switch (newMethod) {
       case 'hmy_accounts': {
         const accounts = this.getAccounts();
@@ -68,8 +56,7 @@ export class TruffleProvider extends HDNode {
             params: [rawTxn],
             jsonrpc: '2.0',
           },
-          (err: any, res: ResponseMiddleware | any) =>
-            this.resolveCallback(err, res, callback),
+          (err: any, res: ResponseMiddleware | any) => this.resolveCallback(err, res, callback),
         );
         return this.resolveResult(result);
 
@@ -89,6 +76,7 @@ export class TruffleProvider extends HDNode {
                 callback(err);
               }
               const response = this.resolveResult(res);
+
               if (response.result !== null) {
                 response.result.status = '0x1';
               }
@@ -103,8 +91,7 @@ export class TruffleProvider extends HDNode {
       default: {
         const result = await this.provider.send(
           newArgs,
-          (err: any, res: ResponseMiddleware | any) =>
-            this.resolveCallback(err, res, callback),
+          (err: any, res: ResponseMiddleware | any) => this.resolveCallback(err, res, callback),
         );
         return this.resolveResult(result);
         //  break;
@@ -125,7 +112,7 @@ export class TruffleProvider extends HDNode {
     }
     args[0].method = newMethod;
 
-    const {id} = args[0];
+    const { id } = args[0];
 
     return {
       newArgs: args[0],

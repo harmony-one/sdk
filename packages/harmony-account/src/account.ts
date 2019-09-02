@@ -11,7 +11,7 @@ import {
   getAddress,
 } from '@harmony-js/crypto';
 
-import { isPrivateKey, add0xToString, hexToNumber } from '@harmony-js/utils';
+import { isPrivateKey, add0xToString, hexToNumber, AddressSuffix } from '@harmony-js/utils';
 import { Transaction, RLPSign } from '@harmony-js/transaction';
 import { Messenger, RPCMethod } from '@harmony-js/network';
 import { Shards } from './types';
@@ -41,7 +41,8 @@ class Account {
   address?: string;
   balance?: string = '0';
   nonce?: number = 0;
-  shards: Shards = new Map().set('default', '');
+  shardID: number;
+  shards: Shards;
   messenger: Messenger;
   encrypted: boolean = false;
 
@@ -74,6 +75,13 @@ class Account {
     } else {
       this._import(key);
     }
+    this.shardID = this.messenger.currentShard || 0;
+    this.shards = new Map();
+    this.shards.set(this.shardID, {
+      address: `${this.bech32Address}${AddressSuffix}0`,
+      balance: this.balance || '0',
+      nonce: this.nonce || 0,
+    });
   }
 
   async toFile(password: string, options?: EncryptOptions): Promise<string> {
@@ -111,15 +119,19 @@ class Account {
   async getBalance(blockNumber: string = 'latest'): Promise<object> {
     try {
       if (this.messenger) {
-        const balance = await this.messenger.send(RPCMethod.GetBalance, [
-          this.address,
-          blockNumber,
-        ]);
+        const balance = await this.messenger.send(
+          RPCMethod.GetBalance,
+          [this.address, blockNumber],
+          this.messenger.chainPrefix,
+          this.messenger.currentShard || 0,
+        );
 
-        const nonce = await this.messenger.send(RPCMethod.GetTransactionCount, [
-          this.address,
-          blockNumber,
-        ]);
+        const nonce = await this.messenger.send(
+          RPCMethod.GetTransactionCount,
+          [this.address, blockNumber],
+          this.messenger.chainPrefix,
+          this.messenger.currentShard || 0,
+        );
         if (balance.isError()) {
           throw balance.error.message;
         }
@@ -129,13 +141,14 @@ class Account {
 
         this.balance = hexToNumber(balance.result);
         this.nonce = Number.parseInt(hexToNumber(nonce.result), 10);
+        this.shardID = this.messenger.currentShard || 0;
       } else {
         throw new Error('No Messenger found');
       }
       return {
         balance: this.balance,
         nonce: this.nonce,
-        shards: this.shards,
+        shardID: this.shardID,
       };
     } catch (error) {
       throw error;
@@ -146,8 +159,21 @@ class Account {
    * @function updateShards
    * @return {Promise<string>} {description}
    */
-  async updateShards(): Promise<string> {
-    return '';
+  async updateBalances(blockNumber: string = 'latest'): Promise<void> {
+    // this.messenger.setShardingProviders();
+    const shardProviders = this.messenger.shardProviders;
+    if (shardProviders.size > 1) {
+      for (const [name, val] of shardProviders) {
+        const balanceObject = await this.getShardBalance(val.shardID, blockNumber);
+        await this.shards.set(name === val.shardID ? name : val.shardID, balanceObject);
+      }
+    } else {
+      const currentShard = await this.getShardBalance(
+        this.messenger.currentShard || 0,
+        blockNumber,
+      );
+      this.shards.set(this.messenger.currentShard || 0, currentShard);
+    }
   }
 
   async signTransaction(
@@ -159,23 +185,34 @@ class Account {
     if (!this.privateKey || !isPrivateKey(this.privateKey)) {
       throw new Error(`${this.privateKey} is not found or not correct`);
     }
-    // let signed = '';
+
     if (updateNonce) {
-      const balanceObject: any = await this.getBalance(blockNumber);
-      transaction.setParams({
-        ...transaction.txParams,
-        from: this.address || '0x',
-        // nonce is different from Zilliqa's setting, would be current nonce, not nonce + 1
-        nonce: balanceObject.nonce,
-      });
+      await this.updateBalances(blockNumber);
+      const txShardID = transaction.txParams.shardID;
+      const shardBalanceObject = this.shards.get(txShardID);
+      if (shardBalanceObject !== undefined) {
+        const shardNonce = shardBalanceObject.nonce;
+        transaction.setParams({
+          ...transaction.txParams,
+          from: this.checksumAddress || '0x',
+          nonce: shardNonce,
+        });
+      } else {
+        transaction.setParams({
+          ...transaction.txParams,
+          from: this.checksumAddress || '0x',
+          nonce: 0,
+        });
+      }
     }
+
     if (encodeMode === 'rlp') {
       const [signature, rawTransaction]: [Signature, string] = RLPSign(
         transaction,
         this.privateKey,
       );
       return transaction.map((obj: any) => {
-        return { ...obj, signature, rawTransaction, from: this.address };
+        return { ...obj, signature, rawTransaction, from: this.checksumAddress };
       });
     } else {
       // TODO: if we use other encode method, eg. protobuf, we should implement this
@@ -184,6 +221,51 @@ class Account {
   }
   setMessenger(messenger: Messenger) {
     this.messenger = messenger;
+  }
+
+  getAddressFromShardID(shardID: number) {
+    const shardObject = this.shards.get(shardID);
+    if (shardObject) {
+      return shardObject.address;
+    } else {
+      return undefined;
+    }
+  }
+  getAddresses(): string[] {
+    const addressArray: string[] = [];
+    for (const [name, val] of this.shards) {
+      const index: number = typeof name === 'string' ? Number.parseInt(name, 10) : name;
+      addressArray[index] = val.address;
+    }
+    return addressArray;
+  }
+
+  async getShardBalance(shardID: number, blockNumber: string = 'latest') {
+    const balance = await this.messenger.send(
+      RPCMethod.GetBalance,
+      [this.address, blockNumber],
+      this.messenger.chainPrefix,
+      shardID,
+    );
+
+    const nonce = await this.messenger.send(
+      RPCMethod.GetTransactionCount,
+      [this.address, blockNumber],
+      this.messenger.chainPrefix,
+      shardID,
+    );
+
+    if (balance.isError()) {
+      throw balance.error.message;
+    }
+    if (nonce.isError()) {
+      throw nonce.error.message;
+    }
+    return {
+      address: `${this.bech32Address}${AddressSuffix}${shardID}`,
+      balance: hexToNumber(balance.result),
+      nonce: Number.parseInt(hexToNumber(nonce.result), 10),
+    };
   }
   /**
    * @function _new private method create Account
@@ -209,24 +291,16 @@ class Account {
     this.privateKey = add0xToString(key);
     this.publicKey = getPubkeyFromPrivateKey(this.privateKey);
     this.address = getAddressFromPrivateKey(this.privateKey);
-    this.shards = new Map().set('default', '');
+    this.shardID = this.messenger.currentShard || 0;
+    this.shards = new Map();
+    this.shards.set(this.shardID, {
+      address: `${this.bech32Address}${AddressSuffix}0`,
+      balance: this.balance || '0',
+      nonce: this.nonce || 0,
+    });
     this.encrypted = false;
     return this;
   }
-
-  // /**
-  //  * @function addShard add shard to this Account
-  //  * @param  {ShardId} id - ShardId to the Account
-  //  */
-  // private addShard(id: ShardId): void {
-  //   if (this.shards && this.shards.has('default')) {
-  //     this.shards.set(id, '');
-  //   } else {
-  //     throw new Error(
-  //       'This account has no default shard or shard is not exist',
-  //     );
-  //   }
-  // }
 }
 
 export { Account };

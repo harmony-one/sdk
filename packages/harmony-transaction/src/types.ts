@@ -1,4 +1,4 @@
-import {BN, Signature} from '@harmony-js/crypto';
+import { BN, Signature } from '@harmony-js/crypto';
 export interface TxParams {
   id: string;
   from: string;

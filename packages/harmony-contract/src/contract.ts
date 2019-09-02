@@ -20,6 +20,7 @@ export class Contract {
   wallet: Wallet | any;
   transaction?: Transaction;
   status: ContractStatus;
+  shardID: number;
 
   constructor(
     abi: any = [],
@@ -33,6 +34,7 @@ export class Contract {
     this.abiModel = abiMapper(abi, this.abiCoder);
     this.options = options;
     this.address = this.options.address || address;
+    this.shardID = this.options.shardID || 0;
     this.wallet = wallet;
     this.methods = {};
     this.events = {};

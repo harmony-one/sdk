@@ -36,10 +36,7 @@ export const defaultConfig = {
 export abstract class HarmonyCore {
   chainType: ChainType;
   chainId: ChainID;
-  constructor(
-    chainType: ChainType,
-    chainId: ChainID = defaultConfig.Default.Chain_ID,
-  ) {
+  constructor(chainType: ChainType, chainId: ChainID = defaultConfig.Default.Chain_ID) {
     this.chainType = chainType;
     this.chainId = chainId;
   }
@@ -68,3 +65,5 @@ export abstract class HarmonyCore {
 }
 
 export const HDPath = `m/44'/60'/0'/0/`;
+
+export const AddressSuffix = '-';

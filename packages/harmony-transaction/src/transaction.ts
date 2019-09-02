@@ -38,6 +38,7 @@ class Transaction {
   confirmations: number = 0;
   confirmationCheck: number = 0;
   receipt?: TransasctionReceipt;
+
   private id: string;
   private from: string;
   private nonce: number | string;
@@ -96,6 +97,7 @@ class Transaction {
             recoveryParam: 0,
             v: 0,
           };
+
     this.receipt = params && params.receipt ? params.receipt : undefined;
   }
 
@@ -281,14 +283,22 @@ class Transaction {
   }
 
   async sendTransaction(): Promise<[Transaction, string]> {
-    // TODO: we use eth RPC setting for now, incase we have other params, we should add here
     if (this.rawTransaction === 'tx' || this.rawTransaction === undefined) {
       throw new Error('Transaction not signed');
     }
     if (!this.messenger) {
       throw new Error('Messenger not found');
     }
-    const res = await this.messenger.send(RPCMethod.SendRawTransaction, this.rawTransaction);
+
+    // const fromShard = this.shardID;
+    // const toShard = this.toShardID;
+    // await this.messenger.setShardingProviders();
+    const res = await this.messenger.send(
+      RPCMethod.SendRawTransaction,
+      this.rawTransaction,
+      this.messenger.chainType,
+      typeof this.shardID === 'string' ? Number.parseInt(this.shardID, 10) : this.shardID,
+    );
 
     // temporarilly hard coded
     if (res.isResult()) {
@@ -307,12 +317,17 @@ class Transaction {
     }
   }
 
-  async trackTx(txHash: string) {
+  async trackTx(txHash: string, shardID: number | string = this.shardID) {
     if (!this.messenger) {
       throw new Error('Messenger not found');
     }
     // TODO: regex validation for txHash so we don't get garbage
-    const res = await this.messenger.send(RPCMethod.GetTransactionReceipt, txHash);
+    const res = await this.messenger.send(
+      RPCMethod.GetTransactionReceipt,
+      txHash,
+      this.messenger.chainType,
+      typeof shardID === 'string' ? Number.parseInt(shardID, 10) : shardID,
+    );
 
     if (res.isResult() && res.result !== null) {
       this.receipt = res.result;
@@ -350,7 +365,12 @@ class Transaction {
     }
   }
 
-  async confirm(txHash: string, maxAttempts: number = 20, interval: number = 1000) {
+  async confirm(
+    txHash: string,
+    maxAttempts: number = 20,
+    interval: number = 1000,
+    shardID: number | string = this.shardID,
+  ) {
     if (this.messenger.provider instanceof HttpProvider) {
       this.txStatus = TxStatus.PENDING;
       const oldBlock = await this.getBlockNumber();
@@ -365,7 +385,7 @@ class Transaction {
           if (newBlock.gte(nextBlock)) {
             checkBlock = newBlock;
 
-            if (await this.trackTx(txHash)) {
+            if (await this.trackTx(txHash, shardID)) {
               this.emitConfirm(this.txStatus);
               return this;
             }
@@ -388,11 +408,11 @@ class Transaction {
       throw new Error(`The transaction is still not confirmed after ${maxAttempts} attempts.`);
     } else {
       try {
-        if (await this.trackTx(txHash)) {
+        if (await this.trackTx(txHash, shardID)) {
           this.emitConfirm(this.txStatus);
           return this;
         } else {
-          const result = await this.socketConfirm(txHash, maxAttempts);
+          const result = await this.socketConfirm(txHash, maxAttempts, shardID);
           return result;
         }
       } catch (error) {
@@ -405,13 +425,22 @@ class Transaction {
     }
   }
 
-  socketConfirm(txHash: string, maxAttempts: number = 20): Promise<Transaction> {
+  socketConfirm(
+    txHash: string,
+    maxAttempts: number = 20,
+    shardID: number | string = this.shardID,
+  ): Promise<Transaction> {
     return new Promise((resolve, reject) => {
-      const newHeads = Promise.resolve(new NewHeaders(this.messenger));
+      const newHeads = Promise.resolve(
+        new NewHeaders(
+          this.messenger,
+          typeof shardID === 'string' ? Number.parseInt(shardID, 10) : shardID,
+        ),
+      );
       newHeads.then((p) => {
         p.onData(async (data: any) => {
           if (!this.blockNumbers.includes(data.params.result.number)) {
-            if (await this.trackTx(txHash)) {
+            if (await this.trackTx(txHash, shardID)) {
               this.emitConfirm(this.txStatus);
               await p.unsubscribe();
               resolve(this);

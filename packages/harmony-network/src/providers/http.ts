@@ -1,11 +1,6 @@
 import { BaseProvider } from './baseProvider';
 import { fetchRPC } from './defaultFetcher';
-import {
-  composeMiddleware,
-  performRPC,
-  DEFAULT_TIMEOUT,
-  DEFAULT_HEADERS,
-} from '../rpcMethod/net';
+import { composeMiddleware, performRPC, DEFAULT_TIMEOUT, DEFAULT_HEADERS } from '../rpcMethod/net';
 
 import { RPCRequestPayload } from '../types';
 
@@ -23,7 +18,7 @@ class HttpProvider extends BaseProvider {
   options?: any;
   constructor(url: string, options?: any, fetcher?: any) {
     super(url);
-    this.url = url || 'http://localhost:9128';
+    this.url = url || 'http://localhost:9500';
     this.fetcher = fetcher || fetchRPC;
     if (options) {
       this.options = {
@@ -57,11 +52,7 @@ class HttpProvider extends BaseProvider {
    * @param  {Function} callback - callback function
    * @return {Function} - RPC Response
    */
-  sendServer(
-    endpoint: string,
-    payload: RPCRequestPayload<object>,
-    callback: any,
-  ): Promise<any> {
+  sendServer(endpoint: string, payload: RPCRequestPayload<object>, callback: any): Promise<any> {
     return this.requestFunc({ endpoint, payload, callback });
   }
 
@@ -111,10 +102,7 @@ class HttpProvider extends BaseProvider {
   endpointHandler(obj: object, endpoint?: string): object {
     return {
       ...obj,
-      url:
-        endpoint !== null && endpoint !== undefined
-          ? `${this.url}${endpoint}`
-          : this.url,
+      url: endpoint !== null && endpoint !== undefined ? `${this.url}${endpoint}` : this.url,
     };
   }
 

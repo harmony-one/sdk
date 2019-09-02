@@ -64,6 +64,8 @@ export const enum RPCMethod {
   NetVersion = 'net_version',
   // 31. hmy_protocolVersion
   ProtocolVersion = 'hmy_protocolVersion',
+  // 32. hmy_getShardingStructure
+  GetShardingStructure = 'hmy_getShardingStructure',
 }
 
 export const enum RPCErrorCode {

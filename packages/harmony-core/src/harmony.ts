@@ -1,7 +1,7 @@
 import * as crypto from '@harmony-js/crypto';
 import * as utils from '@harmony-js/utils';
 
-import { Provider, HttpProvider, Messenger, WSProvider } from '@harmony-js/network';
+import { Provider, HttpProvider, Messenger, WSProvider, ShardingItem } from '@harmony-js/network';
 import { TransactionFactory, Transaction } from '@harmony-js/transaction';
 import { ContractFactory, Contract } from '@harmony-js/contract';
 import { Wallet, Account } from '@harmony-js/account';
@@ -52,23 +52,36 @@ export class Harmony extends utils.HarmonyCore {
   public setProvider(provider: string | HttpProvider | WSProvider): void {
     this.provider = new Provider(provider).provider;
     this.messenger.setProvider(this.provider);
-    this.blockchain.setMessenger(this.messenger);
-    this.wallet.setMessenger(this.messenger);
-    this.transactions.setMessenger(this.messenger);
+    this.setMessenger(this.messenger);
   }
 
   public setChainId(chainId: utils.ChainID) {
     this.chainId = chainId;
     this.messenger.setChainId(this.chainId);
-    this.blockchain.setMessenger(this.messenger);
-    this.wallet.setMessenger(this.messenger);
-    this.transactions.setMessenger(this.messenger);
+    this.setMessenger(this.messenger);
   }
   public setChainType(chainType: utils.ChainType) {
     this.chainType = chainType;
     this.messenger.setChainType(this.chainType);
-    this.blockchain.setMessenger(this.messenger);
-    this.wallet.setMessenger(this.messenger);
-    this.transactions.setMessenger(this.messenger);
+    this.setMessenger(this.messenger);
+  }
+
+  public shardingStructures(shardingStructures: ShardingItem[]) {
+    for (const shard of shardingStructures) {
+      const shardID =
+        typeof shard.shardID === 'string' ? Number.parseInt(shard.shardID, 10) : shard.shardID;
+      this.messenger.shardProviders.set(shardID, {
+        current: shard.current !== undefined ? shard.current : false,
+        shardID,
+        http: new HttpProvider(shard.http),
+        ws: new WSProvider(shard.ws),
+      });
+    }
+    this.setMessenger(this.messenger);
+  }
+  private setMessenger(messenger: Messenger) {
+    this.blockchain.setMessenger(messenger);
+    this.wallet.setMessenger(messenger);
+    this.transactions.setMessenger(messenger);
   }
 }
