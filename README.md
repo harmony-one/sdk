@@ -152,11 +152,12 @@ async function crossShard() {
   console.log({ acc1: acc1.shards, acc2: acc2.shards });
 
   // now construct a ShardingTransaction, use `harmony.transactions.newTx(obj,true)`
-  // because `from` and `to` here ,are sharded addresses, like `bech32_{shardID}`
+  // because `from` and `to` here ,are sharded addresses, like `bech32-{shardID}`
   // you dont have to specify `shardID` and `toShardID`, it will handle it automatically.
 
   // 构建一个sharding transaction，注意，true这里需要标志好
   // 因为from，和 to已经被认定为带后缀的分片地址
+  // 格式为`bech32-{shardID}`
   // 在这里不需要指定 shardID和toShardID了，因为这个txn会自动把 shardID和toShardID填进去
   const txn = harmony.transactions.newTx(
     {
