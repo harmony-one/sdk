@@ -1,6 +1,6 @@
 import { bip39, hdkey, EncryptOptions, getAddress, generatePrivateKey } from '@harmony-js/crypto';
 import { Messenger } from '@harmony-js/network';
-import { isPrivateKey, isAddress } from '@harmony-js/utils';
+import { isPrivateKey, isAddress, ChainType } from '@harmony-js/utils';
 import { Transaction } from '@harmony-js/transaction';
 import { Account } from './account';
 import { defaultMessenger } from './utils';
@@ -63,7 +63,7 @@ class Wallet {
     const seed = bip39.mnemonicToSeed(phrase);
     const hdKey = hdkey.fromMasterSeed(seed);
     // TODO:hdkey should apply to Harmony's settings
-    const path = '1023';
+    const path = this.messenger.chainType === ChainType.Harmony ? '1023' : '60';
     const childKey = hdKey.derive(`m/44'/${path}'/0'/0/${index}`);
     const privateKey = childKey.privateKey.toString('hex');
     return this.addByPrivateKey(privateKey);

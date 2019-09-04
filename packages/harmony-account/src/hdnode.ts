@@ -1,4 +1,4 @@
-import {bip39, hdkey, getAddress, BN, Signature} from '@harmony-js/crypto';
+import { bip39, hdkey, getAddress, BN, Signature } from '@harmony-js/crypto';
 import {
   HDPath,
   // defineReadOnly,
@@ -10,13 +10,9 @@ import {
   isHex,
   hexToNumber,
 } from '@harmony-js/utils';
-import {Messenger, HttpProvider, WSProvider} from '@harmony-js/network';
-import {
-  Transaction,
-  TxStatus,
-  TransasctionReceipt,
-} from '@harmony-js/transaction';
-import {Account} from './account';
+import { Messenger, HttpProvider, WSProvider } from '@harmony-js/network';
+import { Transaction, TxStatus, TransasctionReceipt } from '@harmony-js/transaction';
+import { Account } from './account';
 
 export interface WalletsInterfaces {
   [key: string]: Account;
@@ -76,7 +72,7 @@ export class HDNode {
     this.hdwallet = undefined;
     this.addresses = [];
     this.wallets = {};
-    this.path = HDPath;
+    this.path = chainType === ChainType.Harmony ? HDPath : `m/44'/60'/0'/0/`;
     this.index = index;
     this.addressCount = addressCount;
     this.getHdWallet(menmonic || HDNode.generateMnemonic());
@@ -151,9 +147,7 @@ export class HDNode {
   }
   // tslint:disable-next-line: ban-types
   async signTransaction(txParams: any | Web3TxPrams) {
-    const from: string = txParams.from
-      ? getAddress(txParams.from).checksum
-      : '0x';
+    const from: string = txParams.from ? getAddress(txParams.from).checksum : '0x';
     const accountNonce = await this.messenger.send(
       'hmy_getTransactionCount',
       [from, 'latest'],
@@ -170,40 +164,30 @@ export class HDNode {
         : this.gasLimit;
     }
     if (txParams.gasLimit !== undefined && isHex(txParams.gasLimit)) {
-      gasLimit = new BN(hexToNumber(txParams.gasLimit)).lt(
-        new BN(this.gasLimit),
-      )
+      gasLimit = new BN(hexToNumber(txParams.gasLimit)).lt(new BN(this.gasLimit))
         ? txParams.gasLimit
         : this.gasLimit;
     }
 
     let gasPrice = new Unit('0').asWei().toWei();
     if (txParams.gasPrice !== undefined && isHex(txParams.gasPrice)) {
-      gasPrice = new BN(hexToNumber(txParams.gasPrice)).lt(
-        new BN(this.gasPrice),
-      )
+      gasPrice = new BN(hexToNumber(txParams.gasPrice)).lt(new BN(this.gasPrice))
         ? txParams.gasPrice
         : this.gasPrice;
     }
 
-    const value =
-      txParams.value !== undefined && isHex(txParams.value)
-        ? txParams.value
-        : '0';
+    const value = txParams.value !== undefined && isHex(txParams.value) ? txParams.value : '0';
     const nonce =
       txParams.nonce !== undefined && isHex(txParams.nonce)
         ? Number.parseInt(hexToNumber(txParams.nonce), 10)
         : Number.parseInt(hexToNumber(accountNonce.result), 10);
-    const data =
-      txParams.data !== undefined && isHex(txParams.data)
-        ? txParams.data
-        : '0x';
+    const data = txParams.data !== undefined && isHex(txParams.data) ? txParams.data : '0x';
     const prv = this.wallets[from].privateKey;
 
     const signerAccount = new Account(prv, this.messenger);
 
     const tx = new Transaction(
-      {...txParams, from, to, gasLimit, gasPrice, value, nonce, data},
+      { ...txParams, from, to, gasLimit, gasPrice, value, nonce, data },
       this.messenger,
       TxStatus.INTIALIZED,
     );
