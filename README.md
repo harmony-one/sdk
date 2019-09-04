@@ -138,8 +138,8 @@ async function crossShard() {
   await acc1.updateBalances();
   await acc2.updateBalances();
 
-  // to get sharded address, the format goes `bech32_{shardID}`
-  // 获得分片地址，返回格式为 `bech32_{shardID}`
+  // to get sharded address, the format goes `bech32-{shardID}`
+  // 获得分片地址，返回格式为 `bech32-{shardID}`
   const from = acc1.getAddressFromShardID(0);
   const to = acc2.getAddressFromShardID(1);
 

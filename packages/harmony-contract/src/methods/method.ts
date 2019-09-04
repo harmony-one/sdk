@@ -189,22 +189,21 @@ export class ContractMethod {
   protected async signTransaction(updateNonce: boolean) {
     try {
       let signed;
-      signed =
-        this.wallet instanceof Wallet
-          ? await this.wallet.signTransaction(
-              this.transaction,
-              this.wallet.signer,
-              undefined,
-              updateNonce,
-              'rlp',
-              'latest', // 'pending',
-            )
-          : await this.wallet.signTransaction(
-              this.transaction,
-              updateNonce,
-              'rlp',
-              'latest', // 'pending',
-            );
+      signed = this.wallet.signer
+        ? await this.wallet.signTransaction(
+            this.transaction,
+            this.wallet.signer,
+            undefined,
+            updateNonce,
+            'rlp',
+            'latest', // 'pending',
+          )
+        : await this.wallet.signTransaction(
+            this.transaction,
+            updateNonce,
+            'rlp',
+            'latest', // 'pending',
+          );
       this.contract.address = TransactionFactory.getContractAddress(signed);
       this.contract.setStatus(ContractStatus.SIGNED);
       return signed;
