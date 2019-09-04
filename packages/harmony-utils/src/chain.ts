@@ -64,6 +64,6 @@ export abstract class HarmonyCore {
   }
 }
 
-export const HDPath = `m/44'/60'/0'/0/`;
+export const HDPath = `m/44'/1023'/0'/0/`;
 
 export const AddressSuffix = '-';

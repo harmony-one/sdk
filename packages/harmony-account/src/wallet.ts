@@ -1,15 +1,9 @@
-import {
-  bip39,
-  hdkey,
-  EncryptOptions,
-  getAddress,
-  generatePrivateKey,
-} from '@harmony-js/crypto';
-import {Messenger} from '@harmony-js/network';
-import {isPrivateKey, isAddress} from '@harmony-js/utils';
-import {Transaction} from '@harmony-js/transaction';
-import {Account} from './account';
-import {defaultMessenger} from './utils';
+import { bip39, hdkey, EncryptOptions, getAddress, generatePrivateKey } from '@harmony-js/crypto';
+import { Messenger } from '@harmony-js/network';
+import { isPrivateKey, isAddress } from '@harmony-js/utils';
+import { Transaction } from '@harmony-js/transaction';
+import { Account } from './account';
+import { defaultMessenger } from './utils';
 
 class Wallet {
   // static method generate Mnemonic
@@ -69,7 +63,7 @@ class Wallet {
     const seed = bip39.mnemonicToSeed(phrase);
     const hdKey = hdkey.fromMasterSeed(seed);
     // TODO:hdkey should apply to Harmony's settings
-    const path = '60';
+    const path = '1023';
     const childKey = hdKey.derive(`m/44'/${path}'/0'/0/${index}`);
     const privateKey = childKey.privateKey.toString('hex');
     return this.addByPrivateKey(privateKey);
@@ -131,18 +125,11 @@ class Wallet {
    * @description create a new account using Mnemonic
    * @return {Account} {description}
    */
-  async createAccount(
-    password?: string,
-    options?: EncryptOptions,
-  ): Promise<Account> {
+  async createAccount(password?: string, options?: EncryptOptions): Promise<Account> {
     const prv = generatePrivateKey();
     const acc = this.addByPrivateKey(prv);
     if (acc.address && password) {
-      const encrypted = await this.encryptAccount(
-        acc.address,
-        password,
-        options,
-      );
+      const encrypted = await this.encryptAccount(acc.address, password, options);
       return encrypted;
     } else if (acc.address && !password) {
       return acc;
@@ -168,18 +155,10 @@ class Wallet {
   ): Promise<Account> {
     try {
       const foundAcc = this.getAccount(address);
-      if (
-        foundAcc &&
-        foundAcc.privateKey &&
-        isPrivateKey(foundAcc.privateKey)
-      ) {
+      if (foundAcc && foundAcc.privateKey && isPrivateKey(foundAcc.privateKey)) {
         await foundAcc.toFile(password, options);
         return foundAcc;
-      } else if (
-        foundAcc &&
-        foundAcc.privateKey &&
-        !isPrivateKey(foundAcc.privateKey)
-      ) {
+      } else if (foundAcc && foundAcc.privateKey && !isPrivateKey(foundAcc.privateKey)) {
         return foundAcc;
       } else {
         throw new Error('encrypt account failed');
@@ -200,18 +179,10 @@ class Wallet {
   async decryptAccount(address: string, password: string): Promise<Account> {
     try {
       const foundAcc = this.getAccount(address);
-      if (
-        foundAcc &&
-        foundAcc.privateKey &&
-        !isPrivateKey(foundAcc.privateKey)
-      ) {
+      if (foundAcc && foundAcc.privateKey && !isPrivateKey(foundAcc.privateKey)) {
         await foundAcc.fromFile(foundAcc.privateKey, password);
         return foundAcc;
-      } else if (
-        foundAcc &&
-        foundAcc.privateKey &&
-        isPrivateKey(foundAcc.privateKey)
-      ) {
+      } else if (foundAcc && foundAcc.privateKey && isPrivateKey(foundAcc.privateKey)) {
         foundAcc.encrypted = false;
         return foundAcc;
       } else {
@@ -270,19 +241,12 @@ class Wallet {
     if (!toSignWith) {
       throw new Error('no signer found or did not provide correct account');
     }
-    if (
-      toSignWith instanceof Account &&
-      toSignWith.encrypted &&
-      toSignWith.address
-    ) {
+    if (toSignWith instanceof Account && toSignWith.encrypted && toSignWith.address) {
       if (!password) {
         throw new Error('must provide password to further execution');
       }
       try {
-        const decrypted = await this.decryptAccount(
-          toSignWith.address,
-          password,
-        );
+        const decrypted = await this.decryptAccount(toSignWith.address, password);
         const signed = await decrypted.signTransaction(
           transaction,
           updateNonce,
@@ -294,11 +258,7 @@ class Wallet {
       } catch (error) {
         throw error;
       }
-    } else if (
-      toSignWith instanceof Account &&
-      !toSignWith.encrypted &&
-      toSignWith.address
-    ) {
+    } else if (toSignWith instanceof Account && !toSignWith.encrypted && toSignWith.address) {
       try {
         const signed = await toSignWith.signTransaction(
           transaction,
@@ -329,4 +289,4 @@ class Wallet {
   }
 }
 
-export {Wallet};
+export { Wallet };
