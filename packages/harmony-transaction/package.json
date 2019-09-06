@@ -1,6 +1,6 @@
 {
   "name": "@harmony-js/transaction",
-  "version": "0.1.14",
+  "version": "0.1.17",
   "description": "transaction package for harmony",
   "main": "dist/index.js",
   "node": "dist/index.js",
