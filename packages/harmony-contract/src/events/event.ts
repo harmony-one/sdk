@@ -8,13 +8,8 @@ export class EventMethod extends LogSub {
   methodKey: string;
   contract: Contract;
   abiItem: AbiItemModel;
-  constructor(
-    methodKey: string,
-    params: any,
-    abiItem: AbiItemModel,
-    contract: Contract,
-  ) {
-    super(inputLogFormatter(params), contract.wallet.messenger);
+  constructor(methodKey: string, params: any, abiItem: AbiItemModel, contract: Contract) {
+    super(inputLogFormatter(params), contract.wallet.messenger, contract.shardID);
     this.methodKey = methodKey;
     this.contract = contract;
     this.params = params;
@@ -28,15 +23,9 @@ export class EventMethod extends LogSub {
 
   onNewSubscriptionItem(subscriptionItem: any) {
     const formatted = outputLogFormatter(
-      subscriptionItem.method !== undefined
-        ? subscriptionItem.params.result
-        : subscriptionItem,
+      subscriptionItem.method !== undefined ? subscriptionItem.params.result : subscriptionItem,
     );
-    const log = eventLogDecoder(
-      this.contract.abiCoder,
-      this.abiItem,
-      formatted,
-    );
+    const log = eventLogDecoder(this.contract.abiCoder, this.abiItem, formatted);
 
     if (log.removed && this.emitter) {
       this.emitter.emit('changed', log);

@@ -63,8 +63,13 @@ class Blockchain {
     return this.getRpcResult(result);
   }
 
-  async getBlockNumber() {
-    const result = await this.messenger.send(RPCMethod.BlockNumber, [], this.messenger.chainPrefix);
+  async getBlockNumber(shardID: number = 0) {
+    const result = await this.messenger.send(
+      RPCMethod.BlockNumber,
+      [],
+      this.messenger.chainPrefix,
+      shardID,
+    );
     return this.getRpcResult(result);
   }
   /**
@@ -73,18 +78,22 @@ class Blockchain {
   @assertObject({
     blockHash: ['isHash', AssertType.required],
     returnObject: ['isBoolean', AssertType.optional],
+    shardID: ['isNumber', AssertType.optional],
   })
   async getBlockByHash({
     blockHash,
     returnObject = true,
+    shardID = 0,
   }: {
     blockHash: string;
     returnObject?: boolean;
+    shardID?: number;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetBlockByHash,
       [blockHash, returnObject],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }
@@ -95,42 +104,62 @@ class Blockchain {
   @assertObject({
     blockNumber: ['isBlockNumber', AssertType.optional],
     returnObject: ['isBoolean', AssertType.optional],
+    shardID: ['isNumber', AssertType.optional],
   })
   async getBlockByNumber({
     blockNumber = DefaultBlockParams.latest,
     returnObject = true,
+    shardID = 0,
   }: {
     blockNumber?: string;
     returnObject?: boolean;
+    shardID?: number;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetBlockByNumber,
       [blockNumber, returnObject],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }
 
   @assertObject({
     blockHash: ['isHash', AssertType.required],
+    shardID: ['isNumber', AssertType.optional],
   })
-  async getBlockTransactionCountByHash({ blockHash }: { blockHash: string }) {
+  async getBlockTransactionCountByHash({
+    blockHash,
+    shardID = 0,
+  }: {
+    blockHash: string;
+    shardID?: number;
+  }) {
     const result = await this.messenger.send(
       RPCMethod.GetBlockTransactionCountByHash,
       [blockHash],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }
 
   @assertObject({
     blockNumber: ['isBlockNumber', AssertType.required],
+    shardID: ['isNumber', AssertType.optional],
   })
-  async getBlockTransactionCountByNumber({ blockNumber }: { blockNumber: string }) {
+  async getBlockTransactionCountByNumber({
+    blockNumber,
+    shardID = 0,
+  }: {
+    blockNumber: string;
+    shardID?: number;
+  }) {
     const result = await this.messenger.send(
       RPCMethod.GetBlockTransactionCountByNumber,
       [blockNumber],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }
@@ -164,18 +193,22 @@ class Blockchain {
   @assertObject({
     blockNumber: ['isBlockNumber', AssertType.optional],
     index: ['isHex', AssertType.required],
+    shardID: ['isNumber', AssertType.optional],
   })
   async getTransactionByBlockNumberAndIndex({
     blockNumber = DefaultBlockParams.latest,
     index,
+    shardID = 0,
   }: {
     blockNumber?: string;
     index: string;
+    shardID?: number;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionByBlockNumberAndIndex,
       [blockNumber, index],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }
@@ -216,38 +249,43 @@ class Blockchain {
   @assertObject({
     address: ['isValidAddress', AssertType.required],
     blockNumber: ['isBlockNumber', AssertType.optional],
+    shardID: ['isNumber', AssertType.optional],
   })
   async getCode({
     address,
     blockNumber = DefaultBlockParams.latest,
+    shardID = 0,
   }: {
     address: string;
     blockNumber?: string;
+    shardID?: number;
   }) {
     const result = await this.messenger.send(
       RPCMethod.GetCode,
       [getAddress(address).checksum, blockNumber],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }
 
-  async net_peerCount() {
-    const result = await this.messenger.send(RPCMethod.PeerCount, [], 'net');
+  async net_peerCount(shardID: number = 0) {
+    const result = await this.messenger.send(RPCMethod.PeerCount, [], 'net', shardID);
 
     return this.getRpcResult(result);
   }
-  async net_version() {
-    const result = await this.messenger.send(RPCMethod.NetVersion, [], 'net');
+  async net_version(shardID: number = 0) {
+    const result = await this.messenger.send(RPCMethod.NetVersion, [], 'net', shardID);
 
     return this.getRpcResult(result);
   }
 
-  async getProtocolVersion() {
+  async getProtocolVersion(shardID: number = 0) {
     const result = await this.messenger.send(
       RPCMethod.ProtocolVersion,
       [],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }
@@ -337,10 +375,10 @@ class Blockchain {
 
   createObservedTransaction(transaction: Transaction) {
     try {
-      transaction.sendTransaction().then((response) => {
+      transaction.sendTransaction().then((response: any) => {
         const [txReturned, TranID] = response;
 
-        txReturned.confirm(TranID).then((txConfirmed) => {
+        txReturned.confirm(TranID).then((txConfirmed: Transaction) => {
           transaction.emitter.resolve(txConfirmed);
         });
       });
@@ -353,32 +391,42 @@ class Blockchain {
   @assertObject({
     to: ['isValidAddress', AssertType.optional],
     data: ['isHex', AssertType.optional],
+    shardID: ['isNumber', AssertType.optional],
   })
-  async estimateGas({ to, data }: { to: string; data: string }) {
+  async estimateGas({ to, data, shardID = 0 }: { to: string; data: string; shardID?: number }) {
     const result = await this.messenger.send(
       RPCMethod.EstimateGas,
       [{ to: getAddress(to).checksum, data }],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }
 
-  async gasPrice() {
-    const result = await this.messenger.send(RPCMethod.GasPrice, [], this.messenger.chainPrefix);
+  async gasPrice(shardID: number = 0) {
+    const result = await this.messenger.send(
+      RPCMethod.GasPrice,
+      [],
+      this.messenger.chainPrefix,
+      shardID,
+    );
     return this.getRpcResult(result);
   }
 
   async call({
     payload,
     blockNumber = DefaultBlockParams.latest,
+    shardID = 0,
   }: {
     payload: any;
     blockNumber?: string;
+    shardID?: number;
   }) {
     const result = await this.messenger.send(
       RPCMethod.Call,
       [payload, blockNumber],
       this.messenger.chainPrefix,
+      shardID,
     );
     return this.getRpcResult(result);
   }

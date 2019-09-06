@@ -479,7 +479,14 @@ class Transaction {
 
   async getBlockNumber(): Promise<BN> {
     try {
-      const currentBlock = await this.messenger.send(RPCMethod.BlockNumber, []);
+      const currentBlock = await this.messenger.send(
+        RPCMethod.BlockNumber,
+        [],
+        this.messenger.chainPrefix,
+        typeof this.txParams.shardID === 'string'
+          ? Number.parseInt(this.txParams.shardID, 10)
+          : this.txParams.shardID,
+      );
       if (currentBlock.isError()) {
         throw currentBlock.message;
       }
@@ -490,7 +497,14 @@ class Transaction {
   }
   async getBlockByNumber(blockNumber: string) {
     try {
-      const block = await this.messenger.send(RPCMethod.GetBlockByNumber, [blockNumber, true]);
+      const block = await this.messenger.send(
+        RPCMethod.GetBlockByNumber,
+        [blockNumber, true],
+        this.messenger.chainPrefix,
+        typeof this.txParams.shardID === 'string'
+          ? Number.parseInt(this.txParams.shardID, 10)
+          : this.txParams.shardID,
+      );
       if (block.isError()) {
         throw block.message;
       }

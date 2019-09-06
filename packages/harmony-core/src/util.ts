@@ -1,8 +1,8 @@
-import {ChainType, ChainID, defaultConfig} from '@harmony-js/utils';
-import {Harmony} from './harmony';
+import { ChainType, ChainID, defaultConfig } from '@harmony-js/utils';
+import { Harmony } from './harmony';
 
 export interface HarmonyConfig {
-  chainUrl: string;
+  chainUrl?: string;
   chainType: ChainType;
   chainId: ChainID;
 }
@@ -21,49 +21,39 @@ export function createWeb3(_web3: any) {
   _web3.eth.getRpcResult = harmony.blockchain.getRpcResult;
 
   // map blockchain to eth
-  const {blockchain} = harmony;
+  const { blockchain } = harmony;
   _web3.eth.getBlockNumber = () => blockchain.getBlockByNumber;
   _web3.eth.getBalance = (address: string, blockNumber?: string) =>
-    blockchain.getBalance({address, blockNumber});
+    blockchain.getBalance({ address, blockNumber });
   _web3.eth.getBlockByHash = (blockHash: string, returnObject?: boolean) =>
-    blockchain.getBlockByHash({blockHash, returnObject});
+    blockchain.getBlockByHash({ blockHash, returnObject });
   _web3.eth.getBlockByNumber = (blockNumber: string, returnObject?: boolean) =>
-    blockchain.getBlockByNumber({blockNumber, returnObject});
+    blockchain.getBlockByNumber({ blockNumber, returnObject });
   _web3.eth.getBlockTransactionCountByHash = (blockHash: string) =>
-    blockchain.getBlockTransactionCountByHash({blockHash});
+    blockchain.getBlockTransactionCountByHash({ blockHash });
   _web3.eth.getBlockTransactionCountByNumber = (blockNumber: string) =>
-    blockchain.getBlockTransactionCountByNumber({blockNumber});
-  _web3.eth.getTransactionByBlockHashAndIndex = (
-    blockHash: string,
-    index: string,
-  ) => blockchain.getTransactionByBlockHashAndIndex({blockHash, index});
-  _web3.eth.getTransactionByBlockNumberAndIndex = (
-    blockNumber: string,
-    index: string,
-  ) => blockchain.getTransactionByBlockNumberAndIndex({blockNumber, index});
+    blockchain.getBlockTransactionCountByNumber({ blockNumber });
+  _web3.eth.getTransactionByBlockHashAndIndex = (blockHash: string, index: string) =>
+    blockchain.getTransactionByBlockHashAndIndex({ blockHash, index });
+  _web3.eth.getTransactionByBlockNumberAndIndex = (blockNumber: string, index: string) =>
+    blockchain.getTransactionByBlockNumberAndIndex({ blockNumber, index });
   _web3.eth.getTransactionByHash = (txnHash: string) =>
-    blockchain.getTransactionByHash({txnHash});
+    blockchain.getTransactionByHash({ txnHash });
   _web3.eth.getTransactionReceipt = (txnHash: string) =>
-    blockchain.getTransactionReceipt({txnHash});
+    blockchain.getTransactionReceipt({ txnHash });
   _web3.eth.getCode = (address: string, blockNumber?: string) =>
-    blockchain.getCode({address, blockNumber});
+    blockchain.getCode({ address, blockNumber });
   _web3.eth.net_peerCount = () => blockchain.net_peerCount();
   _web3.eth.net_version = () => blockchain.net_version();
   _web3.eth.getProtocolVersion = () => blockchain.getProtocolVersion();
-  _web3.eth.getStorageAt = (
-    address: string,
-    position: string,
-    blockNumber: string | undefined,
-  ) => blockchain.getStorageAt({address, position, blockNumber});
-  _web3.eth.getTransactionCount = (
-    address: string,
-    blockNumber: string | undefined,
-  ) => blockchain.getTransactionCount({address, blockNumber});
-  _web3.eth.estimateGas = (to: string, data: string) =>
-    blockchain.estimateGas({to, data});
+  _web3.eth.getStorageAt = (address: string, position: string, blockNumber: string | undefined) =>
+    blockchain.getStorageAt({ address, position, blockNumber });
+  _web3.eth.getTransactionCount = (address: string, blockNumber: string | undefined) =>
+    blockchain.getTransactionCount({ address, blockNumber });
+  _web3.eth.estimateGas = (to: string, data: string) => blockchain.estimateGas({ to, data });
   _web3.eth.gasPrice = () => blockchain.gasPrice();
   _web3.eth.call = (payload: any, blockNumber: string | undefined) =>
-    blockchain.call({payload, blockNumber});
+    blockchain.call({ payload, blockNumber });
   _web3.eth.newPendingTransactions = () => blockchain.newPendingTransactions();
   _web3.eth.newBlockHeaders = () => blockchain.newBlockHeaders();
   _web3.eth.syncing = () => blockchain.syncing();
@@ -82,15 +72,9 @@ export function createWeb3(_web3: any) {
     return result;
   };
 
-  _web3.eth.accounts.decrypt = async (
-    keystoreJsonV3: any,
-    password: string,
-  ) => {
+  _web3.eth.accounts.decrypt = async (keystoreJsonV3: any, password: string) => {
     const newAcc = new harmony.Modules.Account();
-    const result = await newAcc.fromFile(
-      JSON.stringify(keystoreJsonV3),
-      password,
-    );
+    const result = await newAcc.fromFile(JSON.stringify(keystoreJsonV3), password);
     return result;
   };
 
@@ -102,5 +86,5 @@ export function createWeb3(_web3: any) {
   // map contract to web3
   _web3.eth.Contract = harmony.contracts.createContract;
 
-  _web3.utils = {..._web3.utils, ...harmony.utils, ...harmony.crypto};
+  _web3.utils = { ..._web3.utils, ...harmony.utils, ...harmony.crypto };
 }

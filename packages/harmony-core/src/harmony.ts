@@ -29,16 +29,15 @@ export class Harmony extends utils.HarmonyCore {
   utils: any;
   private provider: HttpProvider | WSProvider;
   constructor(
-    url: string = utils.defaultConfig.Default.Chain_URL,
+    url: string,
     config: HarmonyConfig = {
-      chainUrl: utils.defaultConfig.Default.Chain_URL,
       chainId: utils.defaultConfig.Default.Chain_ID,
       chainType: utils.defaultConfig.Default.Chain_Type,
     },
   ) {
     super(config.chainType, config.chainId);
 
-    const providerUrl = config.chainUrl || url;
+    const providerUrl = config.chainUrl || url || utils.defaultConfig.Default.Chain_URL;
 
     this.provider = new Provider(providerUrl).provider;
     this.messenger = new Messenger(this.provider, this.chainType, this.chainId);
