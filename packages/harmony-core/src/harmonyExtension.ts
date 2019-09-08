@@ -116,7 +116,7 @@ export class HarmonyExtension {
           });
         }
 
-        return signTransaction(transaction, updateNonce, encodeMode, blockNumber);
+        return signTransaction(transaction, false, encodeMode, blockNumber);
       };
     }
     if (!isExtension) {
