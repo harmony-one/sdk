@@ -48,7 +48,7 @@ class Blockchain {
   async getBalance({
     address,
     blockNumber = DefaultBlockParams.latest,
-    shardID = 0,
+    shardID = this.messenger.currentShard,
   }: {
     address: string;
     blockNumber?: string;
@@ -63,7 +63,7 @@ class Blockchain {
     return this.getRpcResult(result);
   }
 
-  async getBlockNumber(shardID: number = 0) {
+  async getBlockNumber(shardID: number = this.messenger.currentShard) {
     const result = await this.messenger.send(
       RPCMethod.BlockNumber,
       [],
@@ -83,7 +83,7 @@ class Blockchain {
   async getBlockByHash({
     blockHash,
     returnObject = true,
-    shardID = 0,
+    shardID = this.messenger.currentShard,
   }: {
     blockHash: string;
     returnObject?: boolean;
@@ -109,7 +109,7 @@ class Blockchain {
   async getBlockByNumber({
     blockNumber = DefaultBlockParams.latest,
     returnObject = true,
-    shardID = 0,
+    shardID = this.messenger.currentShard,
   }: {
     blockNumber?: string;
     returnObject?: boolean;
@@ -130,7 +130,7 @@ class Blockchain {
   })
   async getBlockTransactionCountByHash({
     blockHash,
-    shardID = 0,
+    shardID = this.messenger.currentShard,
   }: {
     blockHash: string;
     shardID?: number;
@@ -150,7 +150,7 @@ class Blockchain {
   })
   async getBlockTransactionCountByNumber({
     blockNumber,
-    shardID = 0,
+    shardID = this.messenger.currentShard,
   }: {
     blockNumber: string;
     shardID?: number;
@@ -175,7 +175,7 @@ class Blockchain {
   async getTransactionByBlockHashAndIndex({
     blockHash,
     index,
-    shardID = 0,
+    shardID = this.messenger.currentShard,
   }: {
     blockHash: string;
     index: string;
@@ -198,7 +198,7 @@ class Blockchain {
   async getTransactionByBlockNumberAndIndex({
     blockNumber = DefaultBlockParams.latest,
     index,
-    shardID = 0,
+    shardID = this.messenger.currentShard,
   }: {
     blockNumber?: string;
     index: string;
@@ -217,7 +217,13 @@ class Blockchain {
     txnHash: ['isHash', AssertType.required],
     shardID: ['isNumber', AssertType.optional],
   })
-  async getTransactionByHash({ txnHash, shardID = 0 }: { txnHash: string; shardID?: number }) {
+  async getTransactionByHash({
+    txnHash,
+    shardID = this.messenger.currentShard,
+  }: {
+    txnHash: string;
+    shardID?: number;
+  }) {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionByHash,
       [txnHash],
@@ -234,7 +240,13 @@ class Blockchain {
     txnHash: ['isString', AssertType.required],
     shardID: ['isNumber', AssertType.optional],
   })
-  async getTransactionReceipt({ txnHash, shardID = 0 }: { txnHash: string; shardID?: number }) {
+  async getTransactionReceipt({
+    txnHash,
+    shardID = this.messenger.currentShard,
+  }: {
+    txnHash: string;
+    shardID?: number;
+  }) {
     const result = await this.messenger.send(
       RPCMethod.GetTransactionReceipt,
       [txnHash],
@@ -254,7 +266,7 @@ class Blockchain {
   async getCode({
     address,
     blockNumber = DefaultBlockParams.latest,
-    shardID = 0,
+    shardID = this.messenger.currentShard,
   }: {
     address: string;
     blockNumber?: string;
@@ -269,18 +281,18 @@ class Blockchain {
     return this.getRpcResult(result);
   }
 
-  async net_peerCount(shardID: number = 0) {
+  async net_peerCount(shardID: number = this.messenger.currentShard) {
     const result = await this.messenger.send(RPCMethod.PeerCount, [], 'net', shardID);
 
     return this.getRpcResult(result);
   }
-  async net_version(shardID: number = 0) {
+  async net_version(shardID: number = this.messenger.currentShard) {
     const result = await this.messenger.send(RPCMethod.NetVersion, [], 'net', shardID);
 
     return this.getRpcResult(result);
   }
 
-  async getProtocolVersion(shardID: number = 0) {
+  async getProtocolVersion(shardID: number = this.messenger.currentShard) {
     const result = await this.messenger.send(
       RPCMethod.ProtocolVersion,
       [],
@@ -300,7 +312,7 @@ class Blockchain {
     address,
     position,
     blockNumber = DefaultBlockParams.latest,
-    shardID = 0,
+    shardID = this.messenger.currentShard,
   }: {
     address: string;
     position: string;
@@ -324,7 +336,7 @@ class Blockchain {
   async getTransactionCount({
     address,
     blockNumber = DefaultBlockParams.latest,
-    shardID = 0,
+    shardID = this.messenger.currentShard,
   }: {
     address: string;
     blockNumber?: string;
@@ -393,7 +405,15 @@ class Blockchain {
     data: ['isHex', AssertType.optional],
     shardID: ['isNumber', AssertType.optional],
   })
-  async estimateGas({ to, data, shardID = 0 }: { to: string; data: string; shardID?: number }) {
+  async estimateGas({
+    to,
+    data,
+    shardID = this.messenger.currentShard,
+  }: {
+    to: string;
+    data: string;
+    shardID?: number;
+  }) {
     const result = await this.messenger.send(
       RPCMethod.EstimateGas,
       [{ to: getAddress(to).checksum, data }],
@@ -403,7 +423,7 @@ class Blockchain {
     return this.getRpcResult(result);
   }
 
-  async gasPrice(shardID: number = 0) {
+  async gasPrice(shardID: number = this.messenger.currentShard) {
     const result = await this.messenger.send(
       RPCMethod.GasPrice,
       [],
@@ -416,7 +436,7 @@ class Blockchain {
   async call({
     payload,
     blockNumber = DefaultBlockParams.latest,
-    shardID = 0,
+    shardID = this.messenger.currentShard,
   }: {
     payload: any;
     blockNumber?: string;
@@ -431,7 +451,7 @@ class Blockchain {
     return this.getRpcResult(result);
   }
 
-  newPendingTransactions(shardID: number = 0) {
+  newPendingTransactions(shardID: number = this.messenger.currentShard) {
     if (this.messenger.provider instanceof WSProvider) {
       return new NewPendingTransactions(this.messenger, shardID);
     } else {
@@ -439,7 +459,7 @@ class Blockchain {
     }
   }
 
-  newBlockHeaders(shardID: number = 0) {
+  newBlockHeaders(shardID: number = this.messenger.currentShard) {
     if (this.messenger.provider instanceof WSProvider) {
       return new NewHeaders(this.messenger, shardID);
     } else {
@@ -447,7 +467,7 @@ class Blockchain {
     }
   }
 
-  syncing(shardID: number = 0) {
+  syncing(shardID: number = this.messenger.currentShard) {
     if (this.messenger.provider instanceof WSProvider) {
       return new Syncing(this.messenger, shardID);
     } else {
@@ -455,7 +475,7 @@ class Blockchain {
     }
   }
 
-  logs(options: any, shardID: number = 0) {
+  logs(options: any, shardID: number = this.messenger.currentShard) {
     if (this.messenger.provider instanceof WSProvider) {
       return new LogSub(options, this.messenger, shardID);
     } else {

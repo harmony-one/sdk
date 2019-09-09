@@ -29,6 +29,7 @@ class Messenger extends HarmonyCore {
   shardProviders: Map<number, ShardingProvider>;
 
   JsonRpc: JsonRpc;
+  defaultShardID?: number;
 
   constructor(
     provider: HttpProvider | WSProvider,
@@ -72,8 +73,8 @@ class Messenger extends HarmonyCore {
     this.shardProviders = new Map();
     // this.setShardingProviders();
   }
-  get currentShard(): number | undefined {
-    return this.getCurrentShardID();
+  get currentShard(): number {
+    return this.getCurrentShardID() || this.defaultShardID || 0;
   }
 
   get shardCount(): number {
@@ -90,7 +91,7 @@ class Messenger extends HarmonyCore {
     method: RPCMethod | string,
     params?: string | any[] | undefined,
     rpcPrefix?: string,
-    shardID: number = 0,
+    shardID: number = this.currentShard,
   ) => {
     this.providerCheck();
     let rpcMethod = method;
@@ -101,7 +102,6 @@ class Messenger extends HarmonyCore {
     }
     try {
       const payload = this.JsonRpc.toPayload(rpcMethod, params);
-
       const provider = this.getShardProvider(shardID);
       this.setResMiddleware(
         (data: any) => {
@@ -191,7 +191,7 @@ class Messenger extends HarmonyCore {
     params?: string | any[] | undefined,
     returnType: SubscribeReturns = SubscribeReturns.all,
     rpcPrefix: string = this.chainPrefix,
-    shardID: number = 0,
+    shardID: number = this.currentShard,
   ) => {
     let rpcMethod = method;
     if (rpcPrefix && isString(rpcPrefix) && rpcPrefix !== this.chainPrefix) {
@@ -237,7 +237,7 @@ class Messenger extends HarmonyCore {
     method: RPCMethod | string,
     params?: string | any[] | undefined,
     rpcPrefix?: string,
-    shardID: number = 0,
+    shardID: number = this.currentShard,
   ) => {
     let rpcMethod = method;
     if (rpcPrefix && isString(rpcPrefix) && rpcPrefix !== this.chainPrefix) {
@@ -301,6 +301,9 @@ class Messenger extends HarmonyCore {
         return shard[1].shardID;
       }
     }
+  }
+  setDefaultShardID(shardID: number) {
+    this.defaultShardID = shardID;
   }
 }
 export { Messenger };

@@ -27,7 +27,9 @@ export class Harmony extends utils.HarmonyCore {
   contracts: ContractFactory;
   crypto: any;
   utils: any;
+  defaultShardID?: number;
   private provider: HttpProvider | WSProvider;
+
   constructor(
     url: string,
     config: HarmonyConfig = {
@@ -47,6 +49,10 @@ export class Harmony extends utils.HarmonyCore {
     this.contracts = new ContractFactory(this.wallet);
     this.crypto = crypto;
     this.utils = utils;
+    this.defaultShardID = config.shardID;
+    if (this.defaultShardID !== undefined) {
+      this.setShardID(this.defaultShardID);
+    }
   }
   public setProvider(provider: string | HttpProvider | WSProvider): void {
     this.provider = new Provider(provider).provider;
@@ -57,6 +63,11 @@ export class Harmony extends utils.HarmonyCore {
   public setChainId(chainId: utils.ChainID) {
     this.chainId = chainId;
     this.messenger.setChainId(this.chainId);
+    this.setMessenger(this.messenger);
+  }
+  public setShardID(shardID: number) {
+    this.defaultShardID = shardID;
+    this.messenger.setDefaultShardID(this.defaultShardID);
     this.setMessenger(this.messenger);
   }
   public setChainType(chainType: utils.ChainType) {

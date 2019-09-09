@@ -34,7 +34,7 @@ export class Contract {
     this.abiModel = abiMapper(abi, this.abiCoder);
     this.options = options;
     this.address = this.options.address || address;
-    this.shardID = this.options.shardID || 0;
+    this.shardID = this.options.shardID || wallet.messenger.currentShard;
     this.wallet = wallet;
     this.methods = {};
     this.events = {};

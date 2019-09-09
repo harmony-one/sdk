@@ -5,6 +5,7 @@ export interface HarmonyConfig {
   chainUrl?: string;
   chainType: ChainType;
   chainId: ChainID;
+  shardID?: number;
 }
 
 // tslint:disable-next-line: variable-name

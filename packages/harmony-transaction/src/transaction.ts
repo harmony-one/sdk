@@ -9,7 +9,7 @@ import {
   getAddress,
   HarmonyAddress,
 } from '@harmony-js/crypto';
-import { add0xToString, numberToHex, ChainType, Unit } from '@harmony-js/utils';
+import { add0xToString, numberToHex, ChainType, Unit, hexToNumber } from '@harmony-js/utils';
 import {
   Messenger,
   RPCMethod,
@@ -76,8 +76,10 @@ class Transaction {
       params && params.gasLimit
         ? new Unit(params.gasLimit).asWei().toWei()
         : new Unit(0).asWei().toWei();
-    this.shardID = params && params.shardID ? params.shardID : 0;
-    this.toShardID = params && params.toShardID ? params.toShardID : 0;
+    this.shardID =
+      params && params.shardID !== undefined ? params.shardID : this.messenger.currentShard;
+    this.toShardID =
+      params && params.toShardID !== undefined ? params.toShardID : this.messenger.currentShard;
 
     this.to = params && params.to ? this.normalizeAddress(params.to) : '0x';
     this.value =
@@ -197,8 +199,8 @@ class Transaction {
       nonce: this.nonce || 0,
       gasPrice: this.gasPrice || new Unit(0).asWei().toWei(),
       gasLimit: this.gasLimit || new Unit(0).asWei().toWei(),
-      shardID: this.shardID || 0,
-      toShardID: this.toShardID || 0,
+      shardID: this.shardID !== undefined ? this.shardID : this.messenger.currentShard,
+      toShardID: this.toShardID !== undefined ? this.toShardID : this.messenger.currentShard,
       to: this.normalizeAddress(this.to) || '0x',
       value: this.value || new Unit(0).asWei().toWei(),
       data: this.data || '0x',
@@ -220,8 +222,10 @@ class Transaction {
       params && params.gasLimit
         ? new Unit(params.gasLimit).asWei().toWei()
         : new Unit(0).asWei().toWei();
-    this.shardID = params && params.shardID ? params.shardID : 0;
-    this.toShardID = params && params.toShardID ? params.toShardID : 0;
+    this.shardID =
+      params && params.shardID !== undefined ? params.shardID : this.messenger.currentShard;
+    this.toShardID =
+      params && params.toShardID !== undefined ? params.toShardID : this.messenger.currentShard;
     this.to = params && params.to ? this.normalizeAddress(params.to) : '0x';
     this.value =
       params && params.value ? new Unit(params.value).asWei().toWei() : new Unit(0).asWei().toWei();
@@ -384,6 +388,12 @@ class Transaction {
 
           if (newBlock.gte(nextBlock)) {
             checkBlock = newBlock;
+            this.emitTrack({
+              txHash,
+              attempt,
+              currentBlock: checkBlock.toString(),
+              shardID,
+            });
 
             if (await this.trackTx(txHash, shardID)) {
               this.emitConfirm(this.txStatus);
@@ -439,6 +449,12 @@ class Transaction {
       );
       newHeads.then((p) => {
         p.onData(async (data: any) => {
+          this.emitTrack({
+            txHash,
+            attempt: this.confirmationCheck,
+            currentBlock: hexToNumber(data.params.result.number),
+            shardID,
+          });
           if (!this.blockNumbers.includes(data.params.result.number)) {
             if (await this.trackTx(txHash, shardID)) {
               this.emitConfirm(this.txStatus);
@@ -475,6 +491,9 @@ class Transaction {
   }
   emitConfirm(data: any) {
     this.emitter.emit(TransactionEvents.confirmation, data);
+  }
+  emitTrack(data: any) {
+    this.emitter.emit(TransactionEvents.track, data);
   }
 
   async getBlockNumber(): Promise<BN> {
