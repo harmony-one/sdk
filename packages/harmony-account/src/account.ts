@@ -187,9 +187,12 @@ class Account {
     }
 
     if (updateNonce) {
-      await this.updateBalances(blockNumber);
+      // await this.updateBalances(blockNumber);
       const txShardID = transaction.txParams.shardID;
-      const shardBalanceObject = this.shards.get(txShardID);
+      const shardBalanceObject = await this.getShardBalance(
+        typeof txShardID === 'string' ? Number.parseInt(txShardID, 10) : txShardID,
+        blockNumber,
+      );
       if (shardBalanceObject !== undefined) {
         const shardNonce = shardBalanceObject.nonce;
         transaction.setParams({

@@ -449,13 +449,17 @@ class Transaction {
       );
       newHeads.then((p) => {
         p.onData(async (data: any) => {
+          const blockNumber =
+            this.messenger.chainPrefix === 'hmy'
+              ? data.params.result.Header.number
+              : data.params.result.number;
           this.emitTrack({
             txHash,
             attempt: this.confirmationCheck,
-            currentBlock: hexToNumber(data.params.result.number),
+            currentBlock: hexToNumber(blockNumber),
             shardID,
           });
-          if (!this.blockNumbers.includes(data.params.result.number)) {
+          if (!this.blockNumbers.includes(blockNumber)) {
             if (await this.trackTx(txHash, shardID)) {
               this.emitConfirm(this.txStatus);
               await p.unsubscribe();

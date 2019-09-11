@@ -52,6 +52,7 @@ export class HarmonyExtension {
   contracts: ContractFactory;
   crypto: any;
   utils: any;
+  defaultShardID?: number;
 
   constructor(wallet: ExtensionInterface) {
     this.extensionType = null;
@@ -75,6 +76,12 @@ export class HarmonyExtension {
   public setProvider(provider: string | HttpProvider | WSProvider): void {
     this.provider = new Provider(provider).provider;
     this.messenger.setProvider(this.provider);
+    this.setMessenger(this.messenger);
+  }
+
+  public setShardID(shardID: number) {
+    this.defaultShardID = shardID;
+    this.messenger.setDefaultShardID(this.defaultShardID);
     this.setMessenger(this.messenger);
   }
 
