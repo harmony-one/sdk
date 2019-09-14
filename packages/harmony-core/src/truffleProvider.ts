@@ -4,6 +4,7 @@ import {
   RPCRequestPayload,
   ResponseMiddleware,
 } from '@harmony-js/network';
+
 import { ChainID, ChainType } from '@harmony-js/utils';
 import { HDNode } from '@harmony-js/account';
 
@@ -43,7 +44,7 @@ export class TruffleProvider extends HDNode {
       chainType: ChainType.Harmony,
       chainId: ChainID.Default,
     },
-    transactionOptions = {
+    transactionOptions: TransactionOptions = {
       gasLimit: '10000000',
       gasPrice: '20000000000',
     },

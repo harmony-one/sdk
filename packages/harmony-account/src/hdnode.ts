@@ -164,21 +164,30 @@ export class HDNode {
     let gasLimit = new Unit('0').asWei().toWei();
 
     if (txParams.gas !== undefined && isHex(txParams.gas)) {
-      gasLimit = new BN(hexToNumber(txParams.gas)).lt(new BN(this.gasLimit))
-        ? txParams.gas
-        : this.gasLimit;
+      gasLimit = new Unit(txParams.gas)
+        .asWei()
+        .toWei()
+        .lt(new Unit(this.gasLimit).asWei().toWei())
+        ? new Unit(txParams.gas).asWei().toWei()
+        : new Unit(this.gasLimit).asWei().toWei();
     }
     if (txParams.gasLimit !== undefined && isHex(txParams.gasLimit)) {
-      gasLimit = new BN(hexToNumber(txParams.gasLimit)).lt(new BN(this.gasLimit))
-        ? txParams.gasLimit
-        : this.gasLimit;
+      gasLimit = new Unit(txParams.gasLimit)
+        .asWei()
+        .toWei()
+        .lt(new Unit(this.gasLimit).asWei().toWei())
+        ? new Unit(txParams.gasLimit).asWei().toWei()
+        : new Unit(this.gasLimit).asWei().toWei();
     }
 
     let gasPrice = new Unit('0').asWei().toWei();
     if (txParams.gasPrice !== undefined && isHex(txParams.gasPrice)) {
-      gasPrice = new BN(hexToNumber(txParams.gasPrice)).lt(new BN(this.gasPrice))
-        ? txParams.gasPrice
-        : this.gasPrice;
+      gasPrice = new Unit(txParams.gasPrice)
+        .asWei()
+        .toWei()
+        .lt(new Unit(this.gasPrice).asWei().toWei())
+        ? new Unit(txParams.gasPrice).asWei().toWei()
+        : new Unit(this.gasPrice).asWei().toWei();
     }
 
     const value = txParams.value !== undefined && isHex(txParams.value) ? txParams.value : '0';
@@ -198,7 +207,7 @@ export class HDNode {
     );
 
     const signed = await signerAccount.signTransaction(tx);
-    // console.log({ signed: signed.txParams });
+
     return signed.getRawTransaction();
   }
   getAddress(idx?: number) {
