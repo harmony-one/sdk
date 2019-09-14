@@ -4,7 +4,6 @@ import {
   RPCRequestPayload,
   ResponseMiddleware,
 } from '@harmony-js/network';
-
 import { ChainID, ChainType } from '@harmony-js/utils';
 import { HDNode } from '@harmony-js/account';
 
@@ -16,19 +15,50 @@ export interface ArgsResolver {
   callback: (error: any, res?: any) => void;
 }
 
+export interface HDOptions {
+  menmonic?: string;
+  index: number;
+  addressCount: number;
+}
+export interface ChainOptions {
+  shardID: number;
+  chainType: ChainType;
+  chainId: ChainID;
+}
+export interface TransactionOptions {
+  gasLimit: string;
+  gasPrice: string;
+}
+
 export class TruffleProvider extends HDNode {
   constructor(
     provider: string | HttpProvider | WSProvider = 'http://localhost:9500',
-    menmonic?: string,
-    index: number = 0,
-    addressCount: number = 1,
-    shardID: number = 0,
-    chainType: ChainType = ChainType.Harmony,
-    chainId: ChainID = ChainID.Default,
-    gasLimit = '10000000',
-    gasPrice = '20000000000',
+    hdOptions: HDOptions = {
+      menmonic: undefined,
+      index: 0,
+      addressCount: 1,
+    },
+    chainOptions: ChainOptions = {
+      shardID: 0,
+      chainType: ChainType.Harmony,
+      chainId: ChainID.Default,
+    },
+    transactionOptions = {
+      gasLimit: '10000000',
+      gasPrice: '20000000000',
+    },
   ) {
-    super(provider, menmonic, index, addressCount, shardID, chainType, chainId, gasLimit, gasPrice);
+    super(
+      provider,
+      hdOptions.menmonic,
+      hdOptions.index,
+      hdOptions.addressCount,
+      chainOptions.shardID,
+      chainOptions.chainType,
+      chainOptions.chainId,
+      transactionOptions.gasLimit,
+      transactionOptions.gasPrice,
+    );
   }
   async send(...args: [RPCRequestPayload<any>, any]) {
     const { newArgs, id, params, newMethod, callback } = this.resolveArgs(...args);
