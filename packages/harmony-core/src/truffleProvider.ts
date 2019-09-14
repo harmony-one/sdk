@@ -22,12 +22,13 @@ export class TruffleProvider extends HDNode {
     menmonic?: string,
     index: number = 0,
     addressCount: number = 1,
+    shardID: number = 0,
     chainType: ChainType = ChainType.Harmony,
     chainId: ChainID = ChainID.Default,
     gasLimit = '10000000',
     gasPrice = '20000000000',
   ) {
-    super(provider, menmonic, index, addressCount, chainType, chainId, gasLimit, gasPrice);
+    super(provider, menmonic, index, addressCount, shardID, chainType, chainId, gasLimit, gasPrice);
   }
   async send(...args: [RPCRequestPayload<any>, any]) {
     const { newArgs, id, params, newMethod, callback } = this.resolveArgs(...args);
@@ -93,6 +94,7 @@ export class TruffleProvider extends HDNode {
           newArgs,
           (err: any, res: ResponseMiddleware | any) => this.resolveCallback(err, res, callback),
         );
+
         return this.resolveResult(result);
         //  break;
       }
@@ -138,7 +140,10 @@ export class TruffleProvider extends HDNode {
       if (err) {
         callback(err);
       }
+
       const response = this.resolveResult(res);
+      // console.log({ response });
+      // console.log({ callback: callback.name });
       callback(null, response);
     } catch (error) {
       throw error;

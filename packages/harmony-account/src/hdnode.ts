@@ -48,6 +48,7 @@ export class HDNode {
   }
   public provider: HttpProvider | WSProvider;
   private messenger: Messenger;
+  private shardID: number;
   private hdwallet: hdkey | undefined;
   private path: string;
   private index: number;
@@ -62,13 +63,16 @@ export class HDNode {
     menmonic?: string,
     index: number = 0,
     addressCount: number = 1,
+    shardID: number = 0,
     chainType: ChainType = ChainType.Harmony,
     chainId: ChainID = ChainID.Default,
     gasLimit = '1000000',
     gasPrice = '2000000000',
   ) {
     this.provider = this.setProvider(provider);
+    this.shardID = shardID;
     this.messenger = new Messenger(this.provider, chainType, chainId);
+    this.messenger.setDefaultShardID(this.shardID);
     this.hdwallet = undefined;
     this.addresses = [];
     this.wallets = {};
@@ -152,6 +156,7 @@ export class HDNode {
       'hmy_getTransactionCount',
       [from, 'latest'],
       'hmy',
+      this.shardID,
     );
 
     const to: string = txParams.to ? getAddress(txParams.to).checksum : '0x';
@@ -187,11 +192,13 @@ export class HDNode {
     const signerAccount = new Account(prv, this.messenger);
 
     const tx = new Transaction(
-      { ...txParams, from, to, gasLimit, gasPrice, value, nonce, data },
+      { ...txParams, from, to, gasLimit, gasPrice, value, nonce, data, shardID: this.shardID },
       this.messenger,
       TxStatus.INTIALIZED,
     );
+
     const signed = await signerAccount.signTransaction(tx);
+    // console.log({ signed: signed.txParams });
     return signed.getRawTransaction();
   }
   getAddress(idx?: number) {
