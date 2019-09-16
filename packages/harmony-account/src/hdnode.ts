@@ -47,6 +47,9 @@ export class HDNode {
     return bip39.generateMnemonic();
   }
   public provider: HttpProvider | WSProvider;
+  public gasLimit: string;
+  public gasPrice: string;
+
   private messenger: Messenger;
   private shardID: number;
   private hdwallet: hdkey | undefined;
@@ -55,8 +58,6 @@ export class HDNode {
   private addressCount: number;
   private addresses: string[];
   private wallets: WalletsInterfaces;
-  private gasLimit: string;
-  private gasPrice: string;
 
   constructor(
     provider: string | HttpProvider | WSProvider = 'http://localhost:9500',

@@ -5,7 +5,7 @@ import {
   ResponseMiddleware,
 } from '@harmony-js/network';
 
-import { ChainID, ChainType } from '@harmony-js/utils';
+import { ChainID, ChainType, Unit } from '@harmony-js/utils';
 import { HDNode } from '@harmony-js/account';
 
 export interface ArgsResolver {
@@ -120,7 +120,35 @@ export class TruffleProvider extends HDNode {
         );
         return this.resolveResult(result);
       }
+      case 'hmy_getBlockByNumber': {
+        const result = await this.provider.send(newArgs, (err: any, res: any) => {
+          try {
+            if (err) {
+              callback(err);
+            }
+            const response = this.resolveResult(res);
+
+            if (
+              new Unit(response.result.gasLimit)
+                .asWei()
+                .toWei()
+                .gt(new Unit(this.gasLimit).asWei().toWei())
+            ) {
+              response.result.gasLimit = `0x${new Unit(this.gasLimit)
+                .asWei()
+                .toWei()
+                .toString('hex')}`;
+            }
+            callback(null, response);
+          } catch (error) {
+            throw error;
+          }
+        });
+        return this.resolveResult(result);
+      }
+
       default: {
+        // hmy_getBlockByNumber
         const result = await this.provider.send(
           newArgs,
           (err: any, res: ResponseMiddleware | any) => this.resolveCallback(err, res, callback),
@@ -171,10 +199,7 @@ export class TruffleProvider extends HDNode {
       if (err) {
         callback(err);
       }
-
       const response = this.resolveResult(res);
-      // console.log({ response });
-      // console.log({ callback: callback.name });
       callback(null, response);
     } catch (error) {
       throw error;
