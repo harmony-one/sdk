@@ -25,10 +25,10 @@ const config = {
   testURL: 'http://localhost',
   coverageThreshold: {
     global: {
-      branches: 15,
-      functions: 15,
-      lines: 15,
-      statements: 15,
+      branches: 10,
+      functions: 10,
+      lines: 10,
+      statements: 10,
     },
   },
   rootDir: process.cwd(),
@@ -42,15 +42,11 @@ const config = {
   ],
   timers: 'fake',
   setupFiles: ['<rootDir>/scripts/jest/jest.setup.js'],
-  setupTestFrameworkScriptFile:
-    '<rootDir>/scripts/jest/jest.framework-setup.js',
+  setupTestFrameworkScriptFile: '<rootDir>/scripts/jest/jest.framework-setup.js',
   testEnvironment: process.env.NODE_ENV === 'development' ? 'node' : 'jsdom',
   collectCoverage: true,
   automock: false,
-  watchPlugins: [
-    'jest-watch-typeahead/filename',
-    'jest-watch-typeahead/testname',
-  ],
+  watchPlugins: ['jest-watch-typeahead/filename', 'jest-watch-typeahead/testname'],
 };
 
 module.exports = config;

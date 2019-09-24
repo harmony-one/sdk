@@ -42,7 +42,7 @@ export class TruffleProvider extends HDNode {
     chainOptions: ChainOptions = {
       shardID: 0,
       chainType: ChainType.Harmony,
-      chainId: ChainID.Default,
+      chainId: ChainID.HmyLocal,
     },
     transactionOptions: TransactionOptions = {
       gasLimit: '10000000',

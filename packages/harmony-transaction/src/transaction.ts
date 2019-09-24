@@ -146,7 +146,7 @@ class Transaction {
 
   getRLPSigned(raw: any[], signature: Signature): string {
     // temp setting to be compatible with eth
-    const rawLength = this.messenger.chainType === ChainType.Harmony ? 10 : 9;
+    const rawLength = this.messenger.chainType === ChainType.Harmony ? 11 : 9;
     const sig = splitSignature(signature);
     let v = 27 + (sig.recoveryParam || 0);
     if (raw.length === rawLength) {

@@ -16,17 +16,21 @@ export const enum ChainID {
   EtcTestnet = 62,
   Geth = 1337,
   Ganache = 0,
+  HmyMainnet = 1,
+  HmyTestnet = 2,
+  HmyLocal = 2,
+  HmyPangaea = 3,
 }
 
 export const defaultConfig = {
   Default: {
-    Chain_ID: ChainID.Default,
+    Chain_ID: ChainID.HmyLocal,
     Chain_Type: ChainType.Harmony,
     Chain_URL: 'http://localhost:9500',
     Network_ID: 'Local',
   },
   DefaultWS: {
-    Chain_ID: ChainID.Default,
+    Chain_ID: ChainID.HmyLocal,
     Chain_Type: ChainType.Harmony,
     Chain_URL: 'ws://localhost:9800',
     Network_ID: 'LocalWS',
