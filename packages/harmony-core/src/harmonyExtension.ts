@@ -13,6 +13,7 @@ import * as utils from '@harmony-js/utils';
 import { Transaction, TransactionFactory } from '@harmony-js/transaction';
 import { Blockchain } from './blockchain';
 import { ContractFactory } from '@harmony-js/contract';
+import { HarmonyConfig } from './util';
 
 export enum ExtensionType {
   MathWallet = 'MathWallet',
@@ -54,17 +55,24 @@ export class HarmonyExtension {
   utils: any;
   defaultShardID?: number;
 
-  constructor(wallet: ExtensionInterface) {
+  constructor(
+    wallet: ExtensionInterface,
+    config: HarmonyConfig = {
+      chainId: utils.defaultConfig.Default.Chain_ID,
+      chainType: utils.defaultConfig.Default.Chain_Type,
+    },
+  ) {
     this.extensionType = null;
     this.wallet = wallet;
     // check if it is mathwallet
     this.isExtension(this.wallet);
+
     if (wallet.messenger) {
       this.provider = wallet.messenger.provider;
       this.messenger = wallet.messenger;
     } else {
-      this.provider = new Provider(wallet.network.chain_url).provider;
-      this.messenger = new Messenger(this.provider, utils.ChainType.Harmony, utils.ChainID.Default);
+      this.provider = new Provider(config.chainUrl || wallet.network.chain_url).provider;
+      this.messenger = new Messenger(this.provider, config.chainType, config.chainId);
     }
     this.wallet.messenger = this.messenger;
     this.blockchain = new Blockchain(this.messenger);
