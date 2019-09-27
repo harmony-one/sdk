@@ -63,7 +63,7 @@ export class TruffleProvider extends HDNode {
   }
   async send(...args: [RPCRequestPayload<any>, any]) {
     const { newArgs, id, params, newMethod, callback } = this.resolveArgs(...args);
-    console.log({ newMethod, newArgs, id, params });
+
     switch (newMethod) {
       case 'hmy_accounts': {
         const accounts = this.getAccounts();
