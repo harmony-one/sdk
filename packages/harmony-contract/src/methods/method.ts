@@ -131,12 +131,15 @@ export class ContractMethod {
         }
       }
 
-      const result = await (<Wallet>this.wallet).messenger.send(
-        RPCMethod.Call,
-        [sendPayload, blockNumber],
-        (<Wallet>this.wallet).messenger.chainPrefix,
-        shardID,
-      );
+      const result =
+        // tslint:disable-line
+        await (<Wallet>this.wallet).messenger.send(
+          RPCMethod.Call,
+          [sendPayload, blockNumber],
+          // tslint:disable-line
+          (<Wallet>this.wallet).messenger.chainPrefix,
+          shardID,
+        );
       this.callPayload = sendPayload;
       this.callResponse = result;
       if (result.isError()) {
@@ -155,6 +158,7 @@ export class ContractMethod {
   async estimateGas() {
     try {
       const result = getResultForData(
+        // tslint:disable-line
         await (<Wallet>this.wallet).messenger.send(RPCMethod.EstimateGas, [
           {
             to: this.transaction.txParams.to,
@@ -261,6 +265,7 @@ export class ContractMethod {
         data: this.encodeABI(),
       };
 
+      // tslint:disable-line
       const result = new TransactionFactory((<Wallet>this.wallet).messenger).newTx(txObject);
 
       return result;
