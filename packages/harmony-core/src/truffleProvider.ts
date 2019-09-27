@@ -63,6 +63,7 @@ export class TruffleProvider extends HDNode {
   }
   async send(...args: [RPCRequestPayload<any>, any]) {
     const { newArgs, id, params, newMethod, callback } = this.resolveArgs(...args);
+    console.log({ newMethod, newArgs, id, params });
     switch (newMethod) {
       case 'hmy_accounts': {
         const accounts = this.getAccounts();
@@ -120,6 +121,18 @@ export class TruffleProvider extends HDNode {
         );
         return this.resolveResult(result);
       }
+      case 'net_version': {
+        callback(null, {
+          result: String(this.messenger.chainId),
+          id,
+          jsonrpc: '2.0',
+        });
+        return {
+          result: String(this.messenger.chainId),
+          id,
+          jsonrpc: '2.0',
+        };
+      }
       case 'hmy_getBlockByNumber': {
         const result = await this.provider.send(newArgs, (err: any, res: any) => {
           try {
@@ -149,6 +162,7 @@ export class TruffleProvider extends HDNode {
 
       default: {
         // hmy_getBlockByNumber
+
         const result = await this.provider.send(
           newArgs,
           (err: any, res: ResponseMiddleware | any) => this.resolveCallback(err, res, callback),

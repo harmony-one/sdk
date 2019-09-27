@@ -49,8 +49,7 @@ export class HDNode {
   public provider: HttpProvider | WSProvider;
   public gasLimit: string;
   public gasPrice: string;
-
-  private messenger: Messenger;
+  public messenger: Messenger;
   private shardID: number;
   private hdwallet: hdkey | undefined;
   private path: string;
@@ -202,7 +201,18 @@ export class HDNode {
     const signerAccount = new Account(prv, this.messenger);
 
     const tx = new Transaction(
-      { ...txParams, from, to, gasLimit, gasPrice, value, nonce, data, shardID: this.shardID },
+      {
+        ...txParams,
+        from,
+        to,
+        gasLimit,
+        gasPrice,
+        value,
+        nonce,
+        data,
+        shardID: this.shardID,
+        chainId: this.messenger.chainId,
+      },
       this.messenger,
       TxStatus.INTIALIZED,
     );
