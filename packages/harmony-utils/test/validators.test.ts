@@ -16,7 +16,7 @@ function mapTest(testObject: any, testTrue: string[], testFunc: any) {
   });
 }
 
-describe('test transformer', () => {
+describe('test validator', () => {
   it('test isNumber', () => {
     const beTrue = ['zero', 'float', 'hexNumber'];
     mapTest(basicType, beTrue, validators.isNumber);
@@ -96,6 +96,51 @@ describe('test transformer', () => {
       validators.isBlockNumber(true);
     } catch (error) {
       expect(error.message).toEqual(`${true} is not valid blockNumber`);
+    }
+  });
+
+  it('test isHttp', () => {
+    expect(validators.isHttp('http://www.google.com')).toEqual(true);
+    expect(validators.isHttp('https://www.google.com')).toEqual(true);
+    expect(validators.isHttp('ftp://www.google.com')).toEqual(false);
+    try {
+      validators.isHttp(123);
+    } catch (error) {
+      expect(error.message).toEqual(`123 is not valid url`);
+    }
+  });
+  it('test isWs', () => {
+    expect(validators.isWs('ws://www.google.com')).toEqual(true);
+    expect(validators.isWs('wss://www.google.com')).toEqual(true);
+    expect(validators.isWs('ftp://www.google.com')).toEqual(false);
+    try {
+      validators.isWs(123);
+    } catch (error) {
+      expect(error.message).toEqual(`123 is not valid url`);
+    }
+  });
+
+  it('test isBech32Address', () => {
+    expect(validators.isBech32Address('one1au4f9jectk52k24rnk9hjuygt22q2045wcpfdp')).toEqual(true);
+    expect(validators.isBech32Address('xxx')).toEqual(false);
+  });
+  it('test isBech32Address', () => {
+    expect(
+      validators.isBech32TestNetAddress('tone1au4f9jectk52k24rnk9hjuygt22q2045wcpfdp'),
+    ).toEqual(true);
+    expect(validators.isBech32TestNetAddress('xxx')).toEqual(false);
+  });
+  it('test isValidAddress', () => {
+    expect(validators.isValidAddress('tone1au4f9jectk52k24rnk9hjuygt22q2045wcpfdp')).toEqual(true);
+    expect(validators.isValidAddress('one1au4f9jectk52k24rnk9hjuygt22q2045wcpfdp')).toEqual(true);
+    expect(validators.isValidAddress(advanceType.checkSumAddress)).toEqual(true);
+    expect(validators.isValidAddress(advanceType.address)).toEqual(true);
+    expect(validators.isValidAddress(advanceType.hexAddress)).toEqual(true);
+    expect(validators.isValidAddress('888')).toEqual(false);
+    try {
+      validators.isValidAddress(<any | string>123);
+    } catch (error) {
+      expect(error.message).toEqual(`123 is not string`);
     }
   });
 });

@@ -1,9 +1,9 @@
 import BN from 'bn.js';
-import {isString, isNumber, isHex} from './validators';
+import { isString, isNumber, isHex } from './validators';
 
 export const enum Units {
   wei = 'wei',
-  kwei = 'kwei',
+  Kwei = 'Kwei',
   Mwei = 'Mwei',
   Gwei = 'Gwei',
   szabo = 'szabo',
@@ -17,7 +17,7 @@ export const enum Units {
 
 export const unitMap = new Map([
   [Units.wei, '1'],
-  [Units.kwei, '1000'], // 1e3 wei
+  [Units.Kwei, '1000'], // 1e3 wei
   [Units.Mwei, '1000000'], // 1e6 wei
   [Units.Gwei, '1000000000'], // 1e9 wei
   [Units.szabo, '1000000000000'], // 1e12 wei
@@ -33,10 +33,7 @@ const DEFAULT_OPTIONS = {
   pad: false,
 };
 
-export const numberToString = (
-  obj: BN | number | string,
-  radix: number = 10,
-): string => {
+export const numberToString = (obj: BN | number | string, radix: number = 10): string => {
   if (BN.isBN(obj)) {
     return obj.toString(radix);
   } else if (isNumber(obj)) {
@@ -148,7 +145,7 @@ export const toWei = (input: BN | string, unit: Units): BN => {
       fraction = '0';
     }
     if (fraction.length > baseNumDecimals) {
-      throw new Error(`Cannot convert ${inputStr} to Qa.`);
+      throw new Error(`Cannot convert ${inputStr} to wei.`);
     }
 
     while (fraction.length < baseNumDecimals) {
@@ -169,11 +166,7 @@ export const toWei = (input: BN | string, unit: Units): BN => {
   }
 };
 
-export const fromWei = (
-  wei: BN | string,
-  unit: Units,
-  options: any = DEFAULT_OPTIONS,
-): string => {
+export const fromWei = (wei: BN | string, unit: Units, options: any = DEFAULT_OPTIONS): string => {
   try {
     const weiBN: BN = !BN.isBN(wei) ? new BN(wei) : wei;
 
@@ -261,6 +254,8 @@ export class Unit {
       this.unit = hexToNumber(str);
     } else if (!BN.isBN(str) && typeof str === 'number') {
       this.unit = str.toString();
+    } else if (str === '0x') {
+      this.unit = hexToNumber('0x0');
     } else {
       this.unit = str;
     }
@@ -273,7 +268,7 @@ export class Unit {
     return this;
   }
   asKwei() {
-    this.wei = toWei(this.unit, Units.kwei);
+    this.wei = toWei(this.unit, Units.Kwei);
     return this;
   }
   asMwei() {
@@ -309,17 +304,21 @@ export class Unit {
     return this;
   }
   asTether() {
-    this.wei = toWei(this.unit, Units.Gether);
+    this.wei = toWei(this.unit, Units.Tether);
     return this;
   }
 
   toWei() {
-    return this.wei;
+    if (this.wei) {
+      return this.wei;
+    } else {
+      throw new Error('error transforming');
+    }
   }
 
   toKwei() {
     if (this.wei) {
-      return fromWei(this.wei, Units.kwei);
+      return fromWei(this.wei, Units.Kwei);
     } else {
       throw new Error('error transforming');
     }
@@ -345,7 +344,7 @@ export class Unit {
       throw new Error('error transforming');
     }
   }
-  tofinney() {
+  toFinney() {
     if (this.wei) {
       return fromWei(this.wei, Units.finney);
     } else {

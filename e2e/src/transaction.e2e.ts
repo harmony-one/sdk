@@ -1,8 +1,8 @@
-import {harmony} from './harmony';
+import { harmony } from './harmony';
 // tslint:disable-next-line: no-implicit-dependencies
-import {Transaction, TxStatus} from '@harmony-js/transaction';
+import { Transaction, TxStatus } from '@harmony-js/transaction';
 // tslint:disable-next-line: no-implicit-dependencies
-import {isHash, numberToHex} from '@harmony-js/utils';
+import { isHash, numberToHex } from '@harmony-js/utils';
 import txnJsons from '../fixtures/transactions.json';
 import demoAccounts from '../fixtures/testAccount.json';
 
@@ -23,12 +23,8 @@ describe('test Transaction using SDK', () => {
       newTxn.recover(txns[i].rawTransaction);
       expect(newTxn.txParams.from).toEqual(txns[i].senderAddress);
       expect(newTxn.txParams.to).toEqual(txns[i].receiverAddress);
-      expect(`0x${newTxn.txParams.gasLimit.toString(16)}`).toEqual(
-        txns[i].gasLimit,
-      );
-      expect(`0x${newTxn.txParams.gasPrice.toString(16)}`).toEqual(
-        txns[i].gasPrice,
-      );
+      expect(`0x${newTxn.txParams.gasLimit.toString(16)}`).toEqual(txns[i].gasLimit);
+      expect(`0x${newTxn.txParams.gasPrice.toString(16)}`).toEqual(txns[i].gasPrice);
       expect(`0x${newTxn.txParams.value.toString(16)}`).toEqual(txns[i].value);
       expect(`${numberToHex(newTxn.txParams.nonce)}`).toEqual(txns[i].nonce);
     }
@@ -81,10 +77,9 @@ describe('test Transaction using SDK', () => {
         expect(checkTransactionReceipt(receipt)).toEqual(true);
       })
       .on('confirmation', (confirmation) => {
-        expect(
-          confirmation === TxStatus.REJECTED ||
-            confirmation === TxStatus.CONFIRMED,
-        ).toBe(true);
+        expect(confirmation === TxStatus.REJECTED || confirmation === TxStatus.CONFIRMED).toBe(
+          true,
+        );
       })
       .on('error', (error) => {
         expect(error).toBeTruthy();
@@ -104,20 +99,20 @@ function checkTransactionReceipt(data: any) {
       blockNumber: [harmony.utils.isHex],
       contractAddress: [
         // tslint:disable-next-line: no-shadowed-variable
-        (data: any) => data === null || harmony.utils.isAddress,
+        (data: any) => data === null || harmony.utils.isValidAddress,
       ],
       cumulativeGasUsed: [harmony.utils.isHex],
-      from: [harmony.utils.isAddress],
+      from: [harmony.utils.isValidAddress],
       gasUsed: [harmony.utils.isHex],
       logs: [harmony.utils.isArray],
       logsBloom: [harmony.utils.isHex],
-      root: [harmony.utils.isHash],
+
       shardID: [harmony.utils.isNumber],
       // tslint:disable-next-line: no-shadowed-variable
-      to: [(data: any) => data === '0x' || harmony.utils.isAddress],
+      to: [(data: any) => data === '0x' || harmony.utils.isValidAddress],
       transactionHash: [harmony.utils.isHash],
       transactionIndex: [harmony.utils.isHex],
     },
-    {},
+    { root: [harmony.utils.isHash] },
   );
 }

@@ -17,10 +17,7 @@ describe('e2e test transactions by RPC Method', () => {
     const { transactions } = txnJsons;
 
     for (const txn of transactions) {
-      const sent = await messenger.send(
-        'hmy_sendRawTransaction',
-        txn.rawTransaction,
-      );
+      const sent = await messenger.send('hmy_sendRawTransaction', txn.rawTransaction);
       expect(harmony.utils.isHash(sent.result)).toEqual(true);
       txnHashesFixtures.push(sent.result);
     }
@@ -46,60 +43,46 @@ describe('e2e test transactions by RPC Method', () => {
   it('should test hmy_getTransactionByBlockHashAndIndex', async () => {
     for (const some of transactionInfoList) {
       const transactionInfo: TransactionInfo = some;
-      const txnDetail: any = await harmony.blockchain.getTransactionByBlockHashAndIndex(
-        {
-          blockHash: transactionInfo.blockHash,
-          index: transactionInfo.index,
-        },
-      );
+      const txnDetail: any = await harmony.blockchain.getTransactionByBlockHashAndIndex({
+        blockHash: transactionInfo.blockHash,
+        index: transactionInfo.index,
+      });
       if (txnDetail.result !== null) {
         expect(checkTransactionDetail(txnDetail.result)).toEqual(true);
         expect(txnDetail.result.blockHash).toEqual(transactionInfo.blockHash);
-        expect(txnDetail.result.transactionIndex).toEqual(
-          transactionInfo.index,
-        );
+        expect(txnDetail.result.transactionIndex).toEqual(transactionInfo.index);
       }
     }
   });
   it('should test hmy_getTransactionByBlockNumberAndIndex', async () => {
     for (const some of transactionInfoList) {
       const transactionInfo: TransactionInfo = some;
-      const txnDetail: any = await harmony.blockchain.getTransactionByBlockNumberAndIndex(
-        {
-          blockNumber: transactionInfo.blockNumber,
-          index: transactionInfo.index,
-        },
-      );
+      const txnDetail: any = await harmony.blockchain.getTransactionByBlockNumberAndIndex({
+        blockNumber: transactionInfo.blockNumber,
+        index: transactionInfo.index,
+      });
       if (txnDetail.result !== null) {
         expect(checkTransactionDetail(txnDetail.result)).toEqual(true);
-        expect(txnDetail.result.blockNumber).toEqual(
-          transactionInfo.blockNumber,
-        );
-        expect(txnDetail.result.transactionIndex).toEqual(
-          transactionInfo.index,
-        );
+        expect(txnDetail.result.blockNumber).toEqual(transactionInfo.blockNumber);
+        expect(txnDetail.result.transactionIndex).toEqual(transactionInfo.index);
       }
     }
   });
   it('should test hmy_getTransactionCountByHash', async () => {
     for (const some of transactionInfoList) {
       const transactionInfo: TransactionInfo = some;
-      const txnCount: any = await harmony.blockchain.getBlockTransactionCountByHash(
-        {
-          blockHash: transactionInfo.blockHash,
-        },
-      );
+      const txnCount: any = await harmony.blockchain.getBlockTransactionCountByHash({
+        blockHash: transactionInfo.blockHash,
+      });
       expect(harmony.utils.isHex(txnCount.result)).toEqual(true);
     }
   });
   it('should test hmy_getTransactionCountByNumber', async () => {
     for (const some of transactionInfoList) {
       const transactionInfo: TransactionInfo = some;
-      const txnCount: any = await harmony.blockchain.getBlockTransactionCountByNumber(
-        {
-          blockNumber: transactionInfo.blockNumber,
-        },
-      );
+      const txnCount: any = await harmony.blockchain.getBlockTransactionCountByNumber({
+        blockNumber: transactionInfo.blockNumber,
+      });
       expect(harmony.utils.isHex(txnCount.result)).toEqual(true);
     }
   });
@@ -111,6 +94,7 @@ describe('e2e test transactions by RPC Method', () => {
       const receipt: any = await harmony.blockchain.getTransactionReceipt({
         txnHash,
       });
+
       if (receipt.result !== null) {
         expect(checkTransactionReceipt(receipt.result)).toEqual(true);
         expect(harmony.crypto.getAddress(receipt.result.from).checksum).toEqual(
@@ -119,15 +103,9 @@ describe('e2e test transactions by RPC Method', () => {
         expect(harmony.crypto.getAddress(receipt.result.to).checksum).toEqual(
           transactions[i].receiverAddress,
         );
-        expect(receipt.result.blockHash).toEqual(
-          transactionInfoList[i].blockHash,
-        );
-        expect(receipt.result.blockNumber).toEqual(
-          transactionInfoList[i].blockNumber,
-        );
-        expect(receipt.result.transactionIndex).toEqual(
-          transactionInfoList[i].index,
-        );
+        expect(receipt.result.blockHash).toEqual(transactionInfoList[i].blockHash);
+        expect(receipt.result.blockNumber).toEqual(transactionInfoList[i].blockNumber);
+        expect(receipt.result.transactionIndex).toEqual(transactionInfoList[i].index);
       }
     }
   });
@@ -151,7 +129,8 @@ function checkTransactionDetail(data: any) {
     {
       blockHash: [harmony.utils.isHash],
       blockNumber: [harmony.utils.isHex],
-      from: [harmony.utils.isAddress],
+      // tslint:disable-next-line: no-shadowed-variable
+      from: [harmony.utils.isValidAddress],
       gas: [harmony.utils.isHex],
       gasPrice: [harmony.utils.isHex],
       hash: [harmony.utils.isHash],
@@ -159,7 +138,7 @@ function checkTransactionDetail(data: any) {
       input: [(data: any) => data === '0x' || harmony.utils.isHex(data)],
       nonce: [harmony.utils.isHex],
       // tslint:disable-next-line: no-shadowed-variable
-      to: [(data: any) => data === '0x' || harmony.utils.isAddress(data)],
+      to: [(data: any) => data === '0x' || harmony.utils.isValidAddress(data)],
       transactionIndex: [harmony.utils.isHex],
       value: [harmony.utils.isHex],
       v: [harmony.utils.isHex],
@@ -177,20 +156,20 @@ function checkTransactionReceipt(data: any) {
       blockNumber: [harmony.utils.isHex],
       contractAddress: [
         // tslint:disable-next-line: no-shadowed-variable
-        (data: any) => data === null || harmony.utils.isAddress,
+        (data: any) => data === null || harmony.utils.isValidAddress,
       ],
       cumulativeGasUsed: [harmony.utils.isHex],
-      from: [harmony.utils.isAddress],
+      from: [harmony.utils.isValidAddress],
       gasUsed: [harmony.utils.isHex],
       logs: [harmony.utils.isArray],
       logsBloom: [harmony.utils.isHex],
-      root: [harmony.utils.isHash],
+
       shardID: [harmony.utils.isNumber],
       // tslint:disable-next-line: no-shadowed-variable
-      to: [(data: any) => data === '0x' || harmony.utils.isAddress],
+      to: [(data: any) => data === '0x' || harmony.utils.isValidAddress],
       transactionHash: [harmony.utils.isHash],
       transactionIndex: [harmony.utils.isHex],
     },
-    { blockHash: [harmony.utils.isHash] },
+    { blockHash: [harmony.utils.isHash], root: [harmony.utils.isHash] },
   );
 }

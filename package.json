@@ -24,7 +24,7 @@
     "test:src": "cross-env NODE_ENV=test jest --config ./scripts/jest/jest.src.config.js --verbose --runInBand --no-cache",
     "test:build": "cross-env TEST_ENV=unit jest -c jest.build.config.js",
     "test:integration": "cross-env TEST_ENV=integration jest -c jest.iconfig.js --runInBand --verbose --collectCoverage=false",
-    "test:e2e": "cross-env TEST_ENV=e2e jest -c ./scripts/jest/jest.e2e.config.js --runInBand --verbose --collectCoverage=false",
+    "test:e2e": "cross-env TEST_ENV=e2e jest -c ./scripts/jest/jest.e2e.config.js --runInBand --verbose",
     "docs:vue": "ts-node -P scripts/tsconfig.json scripts/docs.ts vuepress",
     "docs:gitbook": "ts-node -P scripts/tsconfig.json scripts/docs.ts gitbook",
     "docs:docusaurus": "ts-node -P scripts/tsconfig.json scripts/docs.ts docusaurus",
