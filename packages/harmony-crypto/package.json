@@ -16,7 +16,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@harmony-js/utils": "0.1.27",
     "aes-js": "^3.1.2",

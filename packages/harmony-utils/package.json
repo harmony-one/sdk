@@ -16,7 +16,7 @@
     "access": "public"
   },
   "author": "neeboo@firestack.one",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@types/bn.js": "^4.11.3",
     "bn.js": "^4.11.8"

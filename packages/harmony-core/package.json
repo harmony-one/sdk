@@ -16,7 +16,7 @@
     "access": "public"
   },
   "author": "neeboo@firestack.one",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@harmony-js/account": "0.1.27",
     "@harmony-js/contract": "0.1.27",
