@@ -10,8 +10,8 @@ import { SubscribeReturns, ShardingItem } from '../types';
 export interface ShardingProvider {
   current: boolean;
   shardID: number;
-  http: HttpProvider;
-  ws: WSProvider;
+  http: string;
+  ws: string;
 }
 
 /**
@@ -275,8 +275,8 @@ class Messenger extends HarmonyCore {
           this.shardProviders.set(shardID, {
             current: shard.current,
             shardID,
-            http: new HttpProvider(shard.http),
-            ws: new WSProvider(shard.ws),
+            http: shard.http,
+            ws: shard.ws,
           });
         }
       }
@@ -287,7 +287,9 @@ class Messenger extends HarmonyCore {
   getShardProvider(shardID: number): HttpProvider | WSProvider {
     const provider = this.shardProviders.get(shardID);
     if (provider) {
-      return this.provider instanceof HttpProvider ? provider.http : provider.ws;
+      return this.provider instanceof HttpProvider
+        ? new HttpProvider(provider.http)
+        : new WSProvider(provider.ws);
     }
     return this.provider;
   }
@@ -295,8 +297,8 @@ class Messenger extends HarmonyCore {
     for (const shard of this.shardProviders) {
       if (
         shard[1].current === true ||
-        shard[1].http.url === this.provider.url ||
-        shard[1].ws.url === this.provider.url
+        shard[1].http === this.provider.url ||
+        shard[1].ws === this.provider.url
       ) {
         return shard[1].shardID;
       }

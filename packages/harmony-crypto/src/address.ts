@@ -1,8 +1,4 @@
-import {
-  isAddress,
-  isBech32Address,
-  isBech32TestNetAddress,
-} from '@harmony-js/utils';
+import { isAddress, isBech32Address, isBech32TestNetAddress } from '@harmony-js/utils';
 
 import { toChecksumAddress } from './keyTool';
 import { fromBech32, toBech32, HRP, tHRP } from './bech32';
@@ -71,7 +67,7 @@ export class HarmonyAddress {
       return fromB32TestNet.replace('0x', '').toLowerCase();
     }
 
-    throw new Error(`${addr} is valid address format`);
+    throw new Error(`"${addr}" is an invalid address format`);
   }
 }
 

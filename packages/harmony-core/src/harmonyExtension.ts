@@ -152,8 +152,8 @@ export class HarmonyExtension {
       this.messenger.shardProviders.set(shardID, {
         current: shard.current !== undefined ? shard.current : false,
         shardID,
-        http: new HttpProvider(shard.http),
-        ws: new WSProvider(shard.ws),
+        http: shard.http,
+        ws: shard.ws,
       });
     }
     this.setMessenger(this.messenger);
