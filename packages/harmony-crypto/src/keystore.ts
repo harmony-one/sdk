@@ -1,5 +1,6 @@
 import aes from 'aes-js';
-import scrypt from 'scrypt.js';
+// import scrypt from 'scrypt.js';
+import scrypt from 'scrypt-shim';
 import { pbkdf2Sync } from 'pbkdf2';
 import uuid from 'uuid';
 import { isPrivateKey } from '@harmony-js/utils';
@@ -7,14 +8,7 @@ import { randomBytes } from './random';
 import { getAddressFromPrivateKey } from './keyTool';
 import { concat, hexToIntArray } from './bytes';
 import { keccak256 } from './keccak256';
-import {
-  KDF,
-  KDFParams,
-  EncryptOptions,
-  PBKDF2Params,
-  ScryptParams,
-  Keystore,
-} from './types';
+import { KDF, KDFParams, EncryptOptions, PBKDF2Params, ScryptParams, Keystore } from './types';
 
 const DEFAULT_ALGORITHM = 'aes-128-ctr';
 
@@ -29,11 +23,7 @@ const DEFAULT_ALGORITHM = 'aes-128-ctr';
  *
  * @returns {Promise<Buffer>}
  */
-async function getDerivedKey(
-  key: Buffer,
-  kdf: KDF,
-  params: KDFParams,
-): Promise<Buffer> {
+async function getDerivedKey(key: Buffer, kdf: KDF, params: KDFParams): Promise<Buffer> {
   const salt = Buffer.from(params.salt, 'hex');
 
   if (kdf === 'pbkdf2') {
@@ -77,10 +67,8 @@ export const encrypt = async (
 
   const salt = randomBytes(32);
   const iv = Buffer.from(randomBytes(16), 'hex');
-  const kdf =
-    options !== undefined ? (options.kdf ? options.kdf : 'scrypt') : 'scrypt';
-  const level =
-    options !== undefined ? (options.level ? options.level : 8192) : 8192;
+  const kdf = options !== undefined ? (options.kdf ? options.kdf : 'scrypt') : 'scrypt';
+  const level = options !== undefined ? (options.level ? options.level : 8192) : 8192;
 
   const uuidRandom = options !== undefined ? options.uuid : undefined;
 
@@ -94,18 +82,13 @@ export const encrypt = async (
   };
 
   const derivedKey = await getDerivedKey(Buffer.from(password), kdf, kdfparams);
-  const cipher = new aes.ModeOfOperation.ctr(
-    derivedKey.slice(0, 16),
-    new aes.Counter(iv),
-  );
+  const cipher = new aes.ModeOfOperation.ctr(derivedKey.slice(0, 16), new aes.Counter(iv));
 
   if (!cipher) {
     throw new Error('Unsupported cipher');
   }
 
-  const ciphertext = Buffer.from(
-    cipher.encrypt(Buffer.from(privateKey.replace('0x', ''), 'hex')),
-  );
+  const ciphertext = Buffer.from(cipher.encrypt(Buffer.from(privateKey.replace('0x', ''), 'hex')));
 
   const mac = keccak256(concat([derivedKey.slice(16, 32), ciphertext]));
 
@@ -132,24 +115,14 @@ export const encrypt = async (
  * @param  {string} password - password string
  * @return {string} privateKey
  */
-export const decrypt = async (
-  keystore: Keystore,
-  password: string,
-): Promise<string> => {
+export const decrypt = async (keystore: Keystore, password: string): Promise<string> => {
   const ciphertext = Buffer.from(keystore.Crypto.ciphertext, 'hex');
   const iv = Buffer.from(keystore.Crypto.cipherparams.iv, 'hex');
   const { kdfparams } = keystore.Crypto;
 
-  const derivedKey = await getDerivedKey(
-    Buffer.from(password),
-    keystore.Crypto.kdf,
-    kdfparams,
-  );
+  const derivedKey = await getDerivedKey(Buffer.from(password), keystore.Crypto.kdf, kdfparams);
 
-  const mac = keccak256(concat([derivedKey.slice(16, 32), ciphertext])).replace(
-    '0x',
-    '',
-  );
+  const mac = keccak256(concat([derivedKey.slice(16, 32), ciphertext])).replace('0x', '');
 
   if (mac.toUpperCase() !== keystore.Crypto.mac.toUpperCase()) {
     return Promise.reject(new Error('Failed to decrypt.'));
@@ -159,8 +132,7 @@ export const decrypt = async (
 
   const cipher = new CTR(derivedKey.slice(0, 16), new aes.Counter(iv));
 
-  const decrypted =
-    '0x' + Buffer.from(cipher.decrypt(ciphertext)).toString('hex');
+  const decrypted = '0x' + Buffer.from(cipher.decrypt(ciphertext)).toString('hex');
   return decrypted;
 };
 
@@ -174,10 +146,8 @@ export const encryptPhrase = async (
   }
   const salt = randomBytes(32);
   const iv = Buffer.from(randomBytes(16), 'hex');
-  const kdf =
-    options !== undefined ? (options.kdf ? options.kdf : 'scrypt') : 'scrypt';
-  const level =
-    options !== undefined ? (options.level ? options.level : 8192) : 8192;
+  const kdf = options !== undefined ? (options.kdf ? options.kdf : 'scrypt') : 'scrypt';
+  const level = options !== undefined ? (options.level ? options.level : 8192) : 8192;
 
   const uuidRandom = options !== undefined ? options.uuid : undefined;
 
@@ -190,10 +160,7 @@ export const encryptPhrase = async (
     dklen: 32,
   };
   const derivedKey = await getDerivedKey(Buffer.from(password), kdf, kdfparams);
-  const cipher = new aes.ModeOfOperation.ctr(
-    derivedKey.slice(0, 16),
-    new aes.Counter(iv),
-  );
+  const cipher = new aes.ModeOfOperation.ctr(derivedKey.slice(0, 16), new aes.Counter(iv));
 
   if (!cipher) {
     throw new Error('Unsupported cipher');
@@ -218,10 +185,7 @@ export const encryptPhrase = async (
   });
 };
 
-export const decryptPhrase = async (
-  keystore: Keystore,
-  password: string,
-): Promise<string> => {
+export const decryptPhrase = async (keystore: Keystore, password: string): Promise<string> => {
   const result = await decrypt(keystore, password);
   return Buffer.from(result.replace('0x', ''), 'hex').toString();
 };

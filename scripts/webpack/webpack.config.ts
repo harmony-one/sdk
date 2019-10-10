@@ -1,13 +1,13 @@
 import path from 'path';
 // tslint:disable-next-line: no-implicit-dependencies
-import UglifyJs from 'uglifyjs-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 // tslint:disable-next-line: no-implicit-dependencies
-import {Configuration} from 'webpack';
+import { Configuration } from 'webpack';
 
 // // tslint:disable-next-line: no-implicit-dependencies
 // import {createVariants} from 'parallel-webpack';
 
-import {packageList, PackageItem} from './packagesForWP';
+import { packageList, PackageItem } from './packagesForWP';
 
 function createBatchConfig(list: PackageItem[]) {
   return list.map((l: PackageItem) => {
@@ -37,9 +37,11 @@ function createBatchConfig(list: PackageItem[]) {
     const batchClientConfig = {
       ...batchBaseConfig,
       optimization: {
+        minimize: true,
         minimizer: [
-          new UglifyJs({
-            uglifyOptions: {
+          new TerserPlugin({
+            terserOptions: {
+              ecma: 6,
               compress: true,
               mangle: true,
               toplevel: false,

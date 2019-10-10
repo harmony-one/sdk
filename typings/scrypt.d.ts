@@ -1,4 +1,4 @@
-declare module 'scrypt.js' {
+declare module 'scrypt-shim' {
   export default function scrypt(
     key: Buffer,
     salt: Buffer,
