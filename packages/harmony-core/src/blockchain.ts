@@ -255,6 +255,20 @@ class Blockchain {
     );
     return this.getRpcResult(result);
   }
+
+  @assertObject({
+    txnHash: ['isString', AssertType.required],
+    shardID: ['isNumber', AssertType.required],
+  })
+  async getCxReceiptByHash({ txnHash, shardID }: { txnHash: string; shardID: number }) {
+    const result = await this.messenger.send(
+      RPCMethod.GetCXReceiptByHash,
+      [txnHash],
+      this.messenger.chainPrefix,
+      shardID,
+    );
+    return this.getRpcResult(result);
+  }
   /**
    *
    */

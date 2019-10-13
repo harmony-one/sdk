@@ -37,6 +37,10 @@ class Transaction {
   blockNumbers: string[] = [];
   confirmations: number = 0;
   confirmationCheck: number = 0;
+  cxStatus: TxStatus = TxStatus.INTIALIZED;
+  cxBlockNumbers: string[] = [];
+  cxConfirmations: number = 0;
+  cxConfirmationCheck: number = 0;
   receipt?: TransasctionReceipt;
 
   private id: string;
@@ -101,6 +105,7 @@ class Transaction {
           };
 
     this.receipt = params && params.receipt ? params.receipt : undefined;
+    this.cxStatus = this.isCrossShard() ? TxStatus.INTIALIZED : TxStatus.NONE;
   }
 
   setMessenger(messenger: Messenger) {
@@ -264,6 +269,13 @@ class Transaction {
   getTxStatus(): TxStatus {
     return this.txStatus;
   }
+  setCxStatus(cxStatus: TxStatus): void {
+    this.cxStatus = cxStatus;
+  }
+
+  getCxStatus(): TxStatus {
+    return this.cxStatus;
+  }
 
   // get status
   isInitialized(): boolean {
@@ -280,6 +292,18 @@ class Transaction {
   }
   isConfirmed(): boolean {
     return this.getTxStatus() === TxStatus.CONFIRMED;
+  }
+  isCxPending(): boolean {
+    return this.getCxStatus() === TxStatus.PENDING;
+  }
+  isCxRejected(): boolean {
+    return this.getCxStatus() === TxStatus.REJECTED;
+  }
+  isCxConfirmed(): boolean {
+    return this.getCxStatus() === TxStatus.CONFIRMED;
+  }
+  isCrossShard(): boolean {
+    return new BN(this.txParams.shardID).toString() !== new BN(this.txParams.toShardID).toString();
   }
 
   observed() {
@@ -353,7 +377,7 @@ class Transaction {
         return true;
       } else {
         this.txStatus = TxStatus.PENDING;
-        const currentBlock = await this.getBlockNumber();
+        const currentBlock = await this.getBlockNumber(shardID);
 
         this.blockNumbers.push('0x' + currentBlock.toString('hex'));
 
@@ -362,7 +386,7 @@ class Transaction {
       }
     } else {
       this.txStatus = TxStatus.PENDING;
-      const currentBlock = await this.getBlockNumber();
+      const currentBlock = await this.getBlockNumber(shardID);
       this.blockNumbers.push('0x' + currentBlock.toString('hex'));
       this.confirmationCheck += 1;
       return false;
@@ -377,12 +401,12 @@ class Transaction {
   ) {
     if (this.messenger.provider instanceof HttpProvider) {
       this.txStatus = TxStatus.PENDING;
-      const oldBlock = await this.getBlockNumber();
+      const oldBlock = await this.getBlockNumber(shardID);
       let checkBlock = oldBlock;
 
       for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
         try {
-          const newBlock = await this.getBlockNumber();
+          const newBlock = await this.getBlockNumber(shardID);
           // TODO: this is super ugly, must be a better way doing this
           const nextBlock = checkBlock.add(new BN(attempt === 0 ? attempt : 1));
 
@@ -499,16 +523,23 @@ class Transaction {
   emitTrack(data: any) {
     this.emitter.emit(TransactionEvents.track, data);
   }
+  emitCxReceipt(receipt: any) {
+    this.emitter.emit(TransactionEvents.cxReceipt, receipt);
+  }
+  emitCxConfirm(data: any) {
+    this.emitter.emit(TransactionEvents.cxConfirmation, data);
+  }
+  emitCxTrack(data: any) {
+    this.emitter.emit(TransactionEvents.cxTrack, data);
+  }
 
-  async getBlockNumber(): Promise<BN> {
+  async getBlockNumber(shardID: number | string): Promise<BN> {
     try {
       const currentBlock = await this.messenger.send(
         RPCMethod.BlockNumber,
         [],
         this.messenger.chainPrefix,
-        typeof this.txParams.shardID === 'string'
-          ? Number.parseInt(this.txParams.shardID, 10)
-          : this.txParams.shardID,
+        typeof shardID === 'string' ? Number.parseInt(shardID, 10) : shardID,
       );
       if (currentBlock.isError()) {
         throw currentBlock.message;
@@ -537,6 +568,149 @@ class Transaction {
     }
   }
 
+  async cxConfirm(
+    txHash: string,
+    maxAttempts: number = 20,
+    interval: number = 1000,
+    shardID: number | string = this.txParams.shardID,
+    toShardID: number | string = this.txParams.toShardID,
+  ) {
+    const normalConfirmed = await this.confirm(txHash, maxAttempts, interval, shardID);
+    if (this.isCrossShard()) {
+      if (normalConfirmed.isConfirmed()) {
+        if (this.messenger.provider instanceof HttpProvider) {
+          const oldBlock = await this.getBlockNumber(toShardID);
+          let checkBlock = oldBlock;
+
+          for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+            try {
+              const newBlock = await this.getBlockNumber(toShardID);
+              // TODO: this is super ugly, must be a better way doing this
+              const nextBlock = checkBlock.add(new BN(attempt === 0 ? attempt : 1));
+
+              if (newBlock.gte(nextBlock)) {
+                checkBlock = newBlock;
+                this.emitCxTrack({
+                  txHash,
+                  attempt,
+                  currentBlock: checkBlock.toString(),
+                  toShardID,
+                });
+
+                if (await this.trackCx(txHash, toShardID)) {
+                  this.emitCxConfirm(this.cxStatus);
+                  return this;
+                }
+              } else {
+                attempt = attempt - 1 >= 0 ? attempt - 1 : 0;
+              }
+            } catch (err) {
+              this.cxStatus = TxStatus.REJECTED;
+              this.emitCxConfirm(this.cxStatus);
+              throw err;
+            }
+
+            if (attempt + 1 < maxAttempts) {
+              // await sleep(interval * attempt);
+              await sleep(interval);
+            }
+          }
+          this.cxStatus = TxStatus.REJECTED;
+          this.emitCxConfirm(this.cxStatus);
+          throw new Error(`The transaction is still not confirmed after ${maxAttempts} attempts.`);
+        } else {
+          try {
+            if (await this.trackCx(txHash, toShardID)) {
+              this.emitCxConfirm(this.cxStatus);
+              return this;
+            } else {
+              const result = await this.socketCxConfirm(txHash, maxAttempts, toShardID);
+              return result;
+            }
+          } catch (error) {
+            this.cxStatus = TxStatus.REJECTED;
+            this.emitCxConfirm(this.cxStatus);
+            throw new Error(
+              `The transaction is still not confirmed after ${maxAttempts * interval} mil seconds.`,
+            );
+          }
+        }
+      }
+    } else {
+      return normalConfirmed;
+    }
+  }
+  async trackCx(txHash: string, toShardID: number | string) {
+    if (!this.messenger) {
+      throw new Error('Messenger not found');
+    }
+    // TODO: regex validation for txHash so we don't get garbage
+    const res = await this.messenger.send(
+      RPCMethod.GetCXReceiptByHash,
+      txHash,
+      this.messenger.chainPrefix,
+      typeof toShardID === 'string' ? Number.parseInt(toShardID, 10) : toShardID,
+    );
+
+    if (res.isResult() && res.result !== null) {
+      this.emitCxReceipt(res.result);
+      return true;
+    } else {
+      const currentBlock = await this.getBlockNumber(toShardID);
+      this.cxBlockNumbers.push('0x' + currentBlock.toString('hex'));
+      this.cxConfirmationCheck += 1;
+      return false;
+    }
+  }
+
+  socketCxConfirm(
+    txHash: string,
+    maxAttempts: number = 20,
+    toShardID: number | string = this.txParams.toShardID,
+  ): Promise<Transaction> {
+    return new Promise((resolve, reject) => {
+      const newHeads = Promise.resolve(
+        new NewHeaders(
+          this.messenger,
+          typeof toShardID === 'string' ? Number.parseInt(toShardID, 10) : toShardID,
+        ),
+      );
+      newHeads.then((p) => {
+        p.onData(async (data: any) => {
+          const blockNumber =
+            this.messenger.chainPrefix === 'hmy'
+              ? data.params.result.Header.number
+              : data.params.result.number;
+          this.emitCxTrack({
+            txHash,
+            attempt: this.cxConfirmationCheck,
+            currentBlock: hexToNumber(blockNumber),
+            toShardID,
+          });
+          if (!this.blockNumbers.includes(blockNumber)) {
+            if (await this.trackCx(txHash, toShardID)) {
+              this.emitCxConfirm(this.cxStatus);
+              await p.unsubscribe();
+              resolve(this);
+            } else {
+              if (this.cxConfirmationCheck === maxAttempts) {
+                this.cxStatus = TxStatus.REJECTED;
+                this.emitCxConfirm(this.cxStatus);
+                await p.unsubscribe();
+                resolve(this);
+              }
+            }
+          }
+        }).onError(async (error: any) => {
+          this.cxStatus = TxStatus.REJECTED;
+          this.emitCxConfirm(this.cxStatus);
+          this.emitError(error);
+          await p.unsubscribe();
+          reject(error);
+        });
+      });
+    });
+  }
   normalizeAddress(address: string) {
     if (address === '0x') {
       return '0x';

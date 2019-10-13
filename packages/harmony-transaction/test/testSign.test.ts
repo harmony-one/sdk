@@ -139,9 +139,13 @@ describe('test sign tranction', () => {
         expect(transaction.txParams.value.toString()).toEqual(hexToBN(vector.value).toString());
       }
       if (vector.to && vector.to !== '0x') {
-        expect(transaction.txParams.to).toEqual(getAddress(vector.to).checksum);
+        expect(getAddress(transaction.txParams.to).checksum).toEqual(
+          getAddress(vector.to).checksum,
+        );
       }
-      expect(transaction.txParams.from.toLowerCase()).toEqual(vector.accountAddress.toLowerCase());
+      expect(getAddress(transaction.txParams.from).checksum.toLowerCase()).toEqual(
+        getAddress(vector.accountAddress).checksum.toLowerCase(),
+      );
     }
   });
   it('should test transactionFactory', () => {

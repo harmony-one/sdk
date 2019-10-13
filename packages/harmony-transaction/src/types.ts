@@ -18,6 +18,7 @@ export interface TxParams {
 }
 
 export const enum TxStatus {
+  NONE = 'NONE',
   INTIALIZED = 'INITIALIZED',
   SIGNED = 'SIGNED',
   PENDING = 'PENDING',

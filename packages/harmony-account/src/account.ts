@@ -11,7 +11,13 @@ import {
   getAddress,
 } from '@harmony-js/crypto';
 
-import { isPrivateKey, add0xToString, hexToNumber, AddressSuffix } from '@harmony-js/utils';
+import {
+  isPrivateKey,
+  add0xToString,
+  hexToNumber,
+  AddressSuffix,
+  ChainType,
+} from '@harmony-js/utils';
 import { Transaction, RLPSign } from '@harmony-js/transaction';
 import { Messenger, RPCMethod } from '@harmony-js/network';
 import { Shards } from './types';
@@ -197,13 +203,19 @@ class Account {
         const shardNonce = shardBalanceObject.nonce;
         transaction.setParams({
           ...transaction.txParams,
-          from: this.checksumAddress || '0x',
+          from:
+            this.messenger.chainPrefix === ChainType.Harmony
+              ? this.bech32Address
+              : this.checksumAddress || '0x',
           nonce: shardNonce,
         });
       } else {
         transaction.setParams({
           ...transaction.txParams,
-          from: this.checksumAddress || '0x',
+          from:
+            this.messenger.chainPrefix === ChainType.Harmony
+              ? this.bech32Address
+              : this.checksumAddress || '0x',
           nonce: 0,
         });
       }
@@ -215,7 +227,15 @@ class Account {
         this.privateKey,
       );
       return transaction.map((obj: any) => {
-        return { ...obj, signature, rawTransaction, from: this.checksumAddress };
+        return {
+          ...obj,
+          signature,
+          rawTransaction,
+          from:
+            this.messenger.chainPrefix === ChainType.Harmony
+              ? this.bech32Address
+              : this.checksumAddress || '0x',
+        };
       });
     } else {
       // TODO: if we use other encode method, eg. protobuf, we should implement this

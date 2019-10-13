@@ -17,6 +17,8 @@ export const enum RPCMethod {
   GetTransactionByHash = 'hmy_getTransactionByHash',
 
   GetTransactionReceipt = 'hmy_getTransactionReceipt',
+
+  GetCXReceiptByHash = 'hmy_getCXReceiptByHash',
   // 9. hmy_syncing
   Syncing = 'hmy_syncing',
   // 10. net_peerCount

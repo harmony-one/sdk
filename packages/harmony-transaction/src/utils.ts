@@ -248,6 +248,9 @@ export enum TransactionEvents {
   confirmation = 'confirmation',
   receipt = 'receipt',
   track = 'track',
+  cxConfirmation = 'cxConfirmation',
+  cxReceipt = 'cxReceipt',
+  cxTrack = 'cxTrack',
 }
 
 export const defaultMessenger = new Messenger(
