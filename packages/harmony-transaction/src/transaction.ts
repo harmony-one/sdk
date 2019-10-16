@@ -654,11 +654,13 @@ class Transaction {
 
     if (res.isResult() && res.result !== null) {
       this.emitCxReceipt(res.result);
+      this.cxStatus = TxStatus.CONFIRMED;
       return true;
     } else {
       const currentBlock = await this.getBlockNumber(toShardID);
       this.cxBlockNumbers.push('0x' + currentBlock.toString('hex'));
       this.cxConfirmationCheck += 1;
+      this.cxStatus = TxStatus.REJECTED;
       return false;
     }
   }
