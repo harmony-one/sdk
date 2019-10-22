@@ -114,10 +114,9 @@ describe('test sign tranction', () => {
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < reTxnVectors.length; i += 1) {
       const vector = reTxnVectors[i];
-
-      const transaction: Transaction = new Transaction({});
-      transaction.setMessenger(hmyMessenger);
-      transaction.recover(vector.signedTransaction);
+      const factory = new TransactionFactory(hmyMessenger);
+      factory.setMessenger(hmyMessenger);
+      const transaction: Transaction = factory.recover(vector.signedTransaction);
 
       if (vector.gasLimit && vector.gasLimit !== '0x') {
         expect(transaction.txParams.gasLimit.toString()).toEqual(
@@ -151,7 +150,8 @@ describe('test sign tranction', () => {
   it('should test transactionFactory', () => {
     const hmyMessenger = new Messenger(provider, ChainType.Harmony, ChainID.Default);
     const factory = new TransactionFactory(hmyMessenger);
-    const txn = factory.newTx({}, false);
+    factory.setMessenger(hmyMessenger);
+    const txn = factory.newTx({});
     expect(txn.getRLPUnsigned()[0]).toBeTruthy();
     const txn2 = factory.newTx({}, true);
     expect(txn2.getRLPUnsigned()[0]).toBeTruthy();
