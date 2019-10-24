@@ -9,6 +9,7 @@
     { "path": "packages/harmony-utils" },
     { "path": "packages/harmony-network" },
     { "path": "packages/harmony-transaction" },
+    { "path": "packages/harmony-staking" },
     { "path": "packages/harmony-contract" }
   ]
 }

@@ -19,6 +19,7 @@ import {
   ChainType,
 } from '@harmony-js/utils';
 import { Transaction, RLPSign } from '@harmony-js/transaction';
+import { StakingTransaction } from '@harmony-js/staking';
 import { Messenger, RPCMethod } from '@harmony-js/network';
 import { Shards } from './types';
 import { defaultMessenger } from './utils';
@@ -240,6 +241,59 @@ class Account {
     } else {
       // TODO: if we use other encode method, eg. protobuf, we should implement this
       return transaction;
+    }
+  }
+  async signStaking(
+    staking: StakingTransaction,
+    updateNonce: boolean = true,
+    encodeMode: string = 'rlp',
+    blockNumber: string = 'latest',
+    shardID: number = this.messenger.currentShard,
+  ): Promise<StakingTransaction> {
+    if (!this.privateKey || !isPrivateKey(this.privateKey)) {
+      throw new Error(`${this.privateKey} is not found or not correct`);
+    }
+
+    if (updateNonce) {
+      // await this.updateBalances(blockNumber);
+      const txShardID = shardID;
+      const shardBalanceObject = await this.getShardBalance(
+        typeof txShardID === 'string' ? Number.parseInt(txShardID, 10) : txShardID,
+        blockNumber,
+      );
+      if (shardBalanceObject !== undefined) {
+        const shardNonce = shardBalanceObject.nonce;
+
+        staking.setFromAddress(
+          this.messenger.chainPrefix === ChainType.Harmony
+            ? this.bech32Address
+            : this.checksumAddress || '0x',
+        );
+        staking.setNonce(shardNonce);
+      } else {
+        staking.setFromAddress(
+          this.messenger.chainPrefix === ChainType.Harmony
+            ? this.bech32Address
+            : this.checksumAddress || '0x',
+        );
+        staking.setNonce(0);
+      }
+    }
+
+    if (encodeMode === 'rlp') {
+      const [signature, rawTransaction]: [Signature, string] = staking.rlpSign(this.privateKey);
+      staking.setRawTransaction(rawTransaction);
+      staking.setSignature(signature);
+      staking.setFromAddress(
+        this.messenger.chainPrefix === ChainType.Harmony
+          ? this.bech32Address
+          : this.checksumAddress || '0x',
+      );
+
+      return staking;
+    } else {
+      // TODO: if we use other encode method, eg. protobuf, we should implement this
+      return staking;
     }
   }
   setMessenger(messenger: Messenger) {

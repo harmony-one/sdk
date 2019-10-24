@@ -1,3 +1,5 @@
+// tslint:disable: max-classes-per-file
+
 import {
   encode,
   arrayify,
@@ -12,7 +14,7 @@ import {
   BN,
 } from '@harmony-js/crypto';
 import { TextEncoder } from 'text-encoding';
-import { Unit, numberToHex } from '@harmony-js/utils'; //add0xToString
+import { Unit, numberToHex } from '@harmony-js/utils';
 
 export class StakingSettings {
   public static PRECISION = 18;
@@ -33,9 +35,10 @@ export class StakingTransaction {
   private gasLimit: number | string;
   private gasPrice: number | string;
   private chainId: number;
-  // private rawTransaction: string;
-  // private unsignedRawTransaction: string;
-  // private signature: Signature;
+  private rawTransaction: string;
+  private unsignedRawTransaction: string;
+  private signature: Signature;
+  private from: string;
 
   constructor(
     directive: Directive,
@@ -53,22 +56,26 @@ export class StakingTransaction {
     this.nonce = nonce;
     this.gasLimit = gasLimit;
     this.gasPrice = gasPrice;
-    // this.rawTransaction = '0x';
-    // this.unsignedRawTransaction = '0x';
-    // this.signature = {
-    //   r: r,
-    //   s: s,
-    //   recoveryParam: 0,
-    //   v: v,
-    // };
+    this.rawTransaction = '0x';
+    this.unsignedRawTransaction = '0x';
+    this.signature = {
+      r,
+      s,
+      recoveryParam: 0,
+      v,
+    };
     this.chainId = chainID;
+    this.from = '0x';
   }
 
   encode(): [string, any[]] {
     const raw: Array<string | Uint8Array | Array<string | Uint8Array>> = [];
     // TODO: temporary hack for converting 0x00 to 0x
-    if (!this.directive) raw.push('0x');
-    else raw.push(hexlify(this.directive));
+    if (!this.directive) {
+      raw.push('0x');
+    } else {
+      raw.push(hexlify(this.directive));
+    }
     raw.push(this.stakeMsg.encode());
     raw.push(hexlify(this.nonce));
     raw.push(hexlify(this.gasPrice));
@@ -102,6 +109,39 @@ export class StakingTransaction {
 
     return encode(raw);
   }
+  setUnsigned(unSigned: string) {
+    this.unsignedRawTransaction = unSigned;
+  }
+  setRawTransaction(rawTransaction: string) {
+    this.rawTransaction = rawTransaction;
+  }
+  setSignature(signature: Signature) {
+    this.signature = {
+      r: signature.r,
+      s: signature.s,
+      v: signature.v,
+      recoveryParam: signature.recoveryParam,
+    };
+  }
+  setNonce(nonce: number) {
+    this.nonce = nonce;
+  }
+  setFromAddress(address: string) {
+    this.from = address;
+  }
+  getUnsignedRawTransaction() {
+    return this.unsignedRawTransaction;
+  }
+  getRawTransaction() {
+    return this.rawTransaction;
+  }
+  getSignature() {
+    return this.signature;
+  }
+
+  getFromAddress() {
+    return this.from;
+  }
 }
 
 export class Description {
@@ -127,7 +167,7 @@ export class Description {
 
   encode(): any[] {
     const raw: Array<string | Uint8Array> = [];
-    let enc = new TextEncoder();
+    const enc = new TextEncoder();
     raw.push(enc.encode(this.name));
     raw.push(enc.encode(this.identity));
     raw.push(enc.encode(this.website));
@@ -145,9 +185,10 @@ export class Decimal {
         `too much precision: ${precision}, should be less than ${StakingSettings.PRECISION}`,
       );
     }
-    let zerosToAdd = StakingSettings.PRECISION - precision;
-    let multiplier = Math.pow(10, zerosToAdd);
-    this.value = new Unit((value * multiplier).toString()).asWei().toWei(); //(value * multiplier).toString();
+    const zerosToAdd = StakingSettings.PRECISION - precision;
+    const multiplier = Math.pow(10, zerosToAdd);
+    // (value * multiplier).toString();
+    this.value = new Unit((value * multiplier).toString()).asWei().toWei();
   }
 
   encode(): any[] {
@@ -172,7 +213,7 @@ export class CommissionRate {
     raw.push(this.rate.encode());
     raw.push(this.maxRate.encode());
     raw.push(this.maxChangeRate.encode());
-    //console.log(decode(encode(raw)));
+    // console.log(decode(encode(raw)));
     return raw;
   }
 }
