@@ -90,6 +90,7 @@ export class StakingTransaction {
 
   rlpSign(prv: string): [Signature, string] {
     const [unsignedRawTransaction, raw] = this.encode();
+    this.setUnsigned(unsignedRawTransaction);
     const signature = sign(keccak256(unsignedRawTransaction), prv);
     const signed = this.getRLPSigned(raw, signature);
     return [signature, signed];
