@@ -8,6 +8,7 @@
   "references": [
     { "path": "../harmony-utils" },
     { "path": "../harmony-crypto" },
-    { "path": "../harmony-network" }
+    { "path": "../harmony-network" },
+    { "path": "../harmony-transaction" }
   ]
 }

@@ -7,14 +7,14 @@ import {
   stripZeros,
   Signature,
   splitSignature,
-  getAddress,
-  HarmonyAddress,
   keccak256,
   sign,
   BN,
 } from '@harmony-js/crypto';
 import { TextEncoder } from 'text-encoding';
 import { Unit, numberToHex } from '@harmony-js/utils';
+import { Messenger, RPCMethod } from '@harmony-js/network';
+import { defaultMessenger, TxStatus, TransactionBase } from '@harmony-js/transaction';
 
 export class StakingSettings {
   public static PRECISION = 18;
@@ -28,7 +28,7 @@ export const enum Directive {
   DirectiveUndelegate,
 }
 
-export class StakingTransaction {
+export class StakingTransaction extends TransactionBase {
   private directive: Directive;
   private stakeMsg: NewValidator | EditValidator | Delegate | Redelegate | Undelegate;
   private nonce: number | string;
@@ -50,7 +50,11 @@ export class StakingTransaction {
     v: number,
     r: string,
     s: string,
+    messenger: Messenger = defaultMessenger,
+    txStatus = TxStatus.INTIALIZED,
   ) {
+    super(messenger, txStatus);
+
     this.directive = directive;
     this.stakeMsg = stakeMsg;
     this.nonce = nonce;
@@ -110,6 +114,37 @@ export class StakingTransaction {
 
     return encode(raw);
   }
+
+  async sendTransaction(): Promise<[StakingTransaction, string]> {
+    if (this.rawTransaction === 'tx' || this.rawTransaction === undefined) {
+      throw new Error('Transaction not signed');
+    }
+    if (!this.messenger) {
+      throw new Error('Messenger not found');
+    }
+
+    const res = await this.messenger.send(
+      RPCMethod.SendRawStakingTransaction,
+      this.rawTransaction,
+      this.messenger.chainType,
+      0, // Staking tx always sent to shard 0
+    );
+
+    if (res.isResult()) {
+      this.id = res.result;
+      this.emitTransactionHash(this.id);
+      this.setTxStatus(TxStatus.PENDING);
+      return [this, res.result];
+    } else if (res.isError()) {
+      this.emitConfirm(`transaction failed:${res.error.message}`);
+      this.setTxStatus(TxStatus.REJECTED);
+      return [this, `transaction failed:${res.error.message}`];
+    } else {
+      this.emitError('transaction failed');
+      throw new Error('transaction failed');
+    }
+  }
+
   setUnsigned(unSigned: string) {
     this.unsignedRawTransaction = unSigned;
   }
@@ -247,7 +282,7 @@ export class NewValidator {
     raw.push(this.description.encode());
     raw.push(this.commission.encode());
     raw.push(hexlify(this.minSelfDelegation));
-    raw.push(hexlify(normalizeAddress(this.stakingAddress)));
+    raw.push(hexlify(TransactionBase.normalizeAddress(this.stakingAddress)));
     raw.push(this.pubKey);
     raw.push(hexlify(this.amount));
     return raw;
@@ -273,7 +308,7 @@ export class EditValidator {
   encode(): any[] {
     const raw: Array<string | Uint8Array | Array<string | Uint8Array>> = [];
     raw.push(this.description.encode());
-    raw.push(hexlify(normalizeAddress(this.stakingAddress)));
+    raw.push(hexlify(TransactionBase.normalizeAddress(this.stakingAddress)));
     raw.push(this.commissionRate.encode());
     raw.push(hexlify(this.minSelfDelegation));
     return raw;
@@ -291,8 +326,8 @@ export class Delegate {
   }
   encode(): any[] {
     const raw: Array<string | Uint8Array> = [];
-    raw.push(hexlify(normalizeAddress(this.delegatorAddress)));
-    raw.push(hexlify(normalizeAddress(this.validatorAddress)));
+    raw.push(hexlify(TransactionBase.normalizeAddress(this.delegatorAddress)));
+    raw.push(hexlify(TransactionBase.normalizeAddress(this.validatorAddress)));
     raw.push(hexlify(this.amount));
     return raw;
   }
@@ -316,9 +351,9 @@ export class Redelegate {
   }
   encode(): any[] {
     const raw: Array<string | Uint8Array> = [];
-    raw.push(hexlify(normalizeAddress(this.delegatorAddress)));
-    raw.push(hexlify(normalizeAddress(this.validatorSrcAddress)));
-    raw.push(hexlify(normalizeAddress(this.validatorDstAddress)));
+    raw.push(hexlify(TransactionBase.normalizeAddress(this.delegatorAddress)));
+    raw.push(hexlify(TransactionBase.normalizeAddress(this.validatorSrcAddress)));
+    raw.push(hexlify(TransactionBase.normalizeAddress(this.validatorDstAddress)));
     raw.push(hexlify(this.amount));
     return raw;
   }
@@ -335,23 +370,9 @@ export class Undelegate {
   }
   encode(): any[] {
     const raw: Array<string | Uint8Array> = [];
-    raw.push(hexlify(normalizeAddress(this.delegatorAddress)));
-    raw.push(hexlify(normalizeAddress(this.validatorAddress)));
+    raw.push(hexlify(TransactionBase.normalizeAddress(this.delegatorAddress)));
+    raw.push(hexlify(TransactionBase.normalizeAddress(this.validatorAddress)));
     raw.push(hexlify(this.amount));
     return raw;
-  }
-}
-
-export function normalizeAddress(address: string) {
-  if (address === '0x') {
-    return '0x';
-  } else if (
-    HarmonyAddress.isValidChecksum(address) ||
-    HarmonyAddress.isValidBech32(address) ||
-    HarmonyAddress.isValidBech32TestNet(address)
-  ) {
-    return getAddress(address).checksum;
-  } else {
-    throw new Error(`Address format is not supported`);
   }
 }

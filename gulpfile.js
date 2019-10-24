@@ -1,4 +1,4 @@
-const {task, src} = require('gulp');
+const { task, src } = require('gulp');
 const del = require('del');
 const fs = require('fs');
 const path = require('path');
@@ -11,6 +11,7 @@ const packages = [
   'harmony-contract',
   'harmony-utils',
   'harmony-transaction',
+  'harmony-staking',
 ];
 
 task('cleanBrowser', async () => {

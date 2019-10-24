@@ -68,6 +68,8 @@ export const enum RPCMethod {
   ProtocolVersion = 'hmy_protocolVersion',
   // 32. hmy_getShardingStructure
   GetShardingStructure = 'hmy_getShardingStructure',
+  // 33. hmy_sendRawStakingTransaction
+  SendRawStakingTransaction = 'hmy_sendRawStakingTransaction',
 }
 
 export const enum RPCErrorCode {
