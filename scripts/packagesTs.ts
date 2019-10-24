@@ -4,6 +4,7 @@ const packages = [
   'harmony-account',
   'harmony-network',
   'harmony-transaction',
+  'harmony-staking',
   'harmony-contract',
   'harmony-core',
 ];
