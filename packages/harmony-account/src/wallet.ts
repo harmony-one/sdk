@@ -2,6 +2,7 @@ import { bip39, hdkey, EncryptOptions, getAddress, generatePrivateKey } from '@h
 import { Messenger } from '@harmony-js/network';
 import { isPrivateKey, isAddress, ChainType } from '@harmony-js/utils';
 import { Transaction } from '@harmony-js/transaction';
+import { StakingTransaction } from '@harmony-js/staking';
 import { Account } from './account';
 import { defaultMessenger } from './utils';
 
@@ -265,6 +266,55 @@ class Wallet {
           updateNonce,
           encodeMode,
           blockNumber,
+        );
+        return signed;
+      } catch (error) {
+        throw error;
+      }
+    } else {
+      throw new Error('sign transaction failed');
+    }
+  }
+  async signStaking(
+    staking: StakingTransaction,
+    account: Account | undefined = this.signer,
+    // tslint:disable-next-line: no-unnecessary-initializer
+    password: string | undefined = undefined,
+    updateNonce: boolean = true,
+    encodeMode: string = 'rlp',
+    blockNumber: string = 'latest',
+    shardID: number = this.messenger.currentShard,
+  ): Promise<StakingTransaction> {
+    const toSignWith = account || this.signer;
+    if (!toSignWith) {
+      throw new Error('no signer found or did not provide correct account');
+    }
+    if (toSignWith instanceof Account && toSignWith.encrypted && toSignWith.address) {
+      if (!password) {
+        throw new Error('must provide password to further execution');
+      }
+      try {
+        const decrypted = await this.decryptAccount(toSignWith.address, password);
+        const signed = await decrypted.signStaking(
+          staking,
+          updateNonce,
+          encodeMode,
+          blockNumber,
+          shardID,
+        );
+        await this.encryptAccount(toSignWith.address, password);
+        return signed;
+      } catch (error) {
+        throw error;
+      }
+    } else if (toSignWith instanceof Account && !toSignWith.encrypted && toSignWith.address) {
+      try {
+        const signed = await toSignWith.signStaking(
+          staking,
+          updateNonce,
+          encodeMode,
+          blockNumber,
+          shardID,
         );
         return signed;
       } catch (error) {
