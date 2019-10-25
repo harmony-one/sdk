@@ -11,7 +11,6 @@ install:
 script:
   - yarn test:src
   - yarn dist
-  - yarn docs:gitbook # generate docs to ghpage
 cache:
   directories:
     - '$HOME/.yarn-cache'
