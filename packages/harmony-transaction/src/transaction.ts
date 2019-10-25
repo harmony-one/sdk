@@ -18,7 +18,7 @@ import {
   recoverETH,
 } from './utils';
 
-import { TransactionBase } from './base';
+import { TransactionBase } from './transactionBase';
 
 class Transaction extends TransactionBase {
   private from: string;
