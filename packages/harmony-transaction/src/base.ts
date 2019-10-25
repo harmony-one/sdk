@@ -1,36 +1,11 @@
-import {
-  BN,
-  encode,
-  arrayify,
-  hexlify,
-  stripZeros,
-  Signature,
-  splitSignature,
-  getAddress,
-  HarmonyAddress,
-} from '@harmony-js/crypto';
-import { add0xToString, numberToHex, ChainType, Unit, hexToNumber } from '@harmony-js/utils';
-import {
-  Messenger,
-  RPCMethod,
-  Emitter,
-  HttpProvider,
-  // WSProvider,
-  // SubscribeReturns,
-  NewHeaders,
-} from '@harmony-js/network';
-import { TxParams, TxStatus, TransasctionReceipt } from './types';
-import {
-  recover,
-  transactionFields,
-  sleep,
-  TransactionEvents,
-  defaultMessenger,
-  transactionFieldsETH,
-  recoverETH,
-} from './utils';
+import { BN, getAddress, HarmonyAddress } from '@harmony-js/crypto';
+import { hexToNumber } from '@harmony-js/utils';
+import { Messenger, RPCMethod, Emitter, HttpProvider, NewHeaders } from '@harmony-js/network';
+import { TxStatus, TransasctionReceipt } from './types';
+import { sleep, TransactionEvents } from './utils';
+import { AbstractTransaction } from './abstractTransaction';
 
-export class TransactionBase {
+export class TransactionBase implements AbstractTransaction {
   static normalizeAddress(address: string) {
     if (address === '0x') {
       return '0x';

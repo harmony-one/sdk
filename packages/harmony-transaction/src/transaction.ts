@@ -6,10 +6,8 @@ import {
   stripZeros,
   Signature,
   splitSignature,
-  getAddress,
-  HarmonyAddress,
 } from '@harmony-js/crypto';
-import { add0xToString, numberToHex, ChainType, Unit, hexToNumber } from '@harmony-js/utils';
+import { add0xToString, numberToHex, ChainType, Unit } from '@harmony-js/utils';
 import { Messenger, RPCMethod } from '@harmony-js/network';
 import { TxParams, TxStatus } from './types';
 import {
@@ -26,7 +24,7 @@ class Transaction extends TransactionBase {
   private from: string;
   private nonce: number | string;
   private to: string;
-  //private shardID: number | string;
+  // private shardID: number | string;
   private toShardID: number | string;
   private gasLimit: BN;
   private gasPrice: BN;
