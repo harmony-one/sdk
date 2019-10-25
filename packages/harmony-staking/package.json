@@ -1,6 +1,6 @@
 {
   "name": "@harmony-js/staking",
-  "version": "0.1.29",
+  "version": "0.1.31",
   "description": "staking transaction package for harmony",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -19,9 +19,9 @@
   "license": "MIT",
   "dependencies": {
     "@harmony-js/crypto": "0.1.28",
-    "@harmony-js/network": "0.1.29",
-    "@harmony-js/utils": "0.1.28",
+    "@harmony-js/network": "0.1.31",
     "@harmony-js/transaction": "0.1.29",
+    "@harmony-js/utils": "0.1.28",
     "text-encoding": "^0.7.0"
   },
   "gitHead": "775e2ba36924fcffd8d2c0b73587b549ed90bb81"
