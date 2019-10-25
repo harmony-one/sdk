@@ -20,7 +20,7 @@
   "dependencies": {
     "@harmony-js/utils": "0.1.28",
     "cross-fetch": "^3.0.2",
-    "mitt": "^1.1.3",
+    "mitt": "1.2.0",
     "websocket": "^1.0.28"
   },
   "gitHead": "775e2ba36924fcffd8d2c0b73587b549ed90bb81"

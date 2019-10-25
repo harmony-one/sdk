@@ -10,7 +10,7 @@ class Emitter {
   reject?: any;
   then?: any;
   constructor() {
-    this.emitter = new mitt(this.handlers);
+    this.emitter = mitt(this.handlers);
     this.off = this.emitter.off.bind(this);
     this.emit = this.emitter.emit.bind(this);
     // tslint:disable-next-line: no-empty

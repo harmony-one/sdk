@@ -34,7 +34,7 @@ class BaseSocket extends BaseProvider {
       throw new Error(`${url} is not websocket`);
     }
     this.url = url;
-    this.emitter = new mitt(this.handlers);
+    this.emitter = mitt(this.handlers);
   }
   resetHandlers() {
     // tslint:disable-next-line: forin

@@ -7,9 +7,8 @@ branches:
   except:
     - /^v[0-9]/
 install:
-  - yarn install
-script:
   - yarn bootstrap
+script:
   - yarn test:src
   - yarn dist
   - yarn docs:gitbook # generate docs to ghpage
