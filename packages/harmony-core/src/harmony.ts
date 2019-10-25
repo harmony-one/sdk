@@ -3,6 +3,7 @@ import * as utils from '@harmony-js/utils';
 
 import { Provider, HttpProvider, Messenger, WSProvider, ShardingItem } from '@harmony-js/network';
 import { TransactionFactory, Transaction } from '@harmony-js/transaction';
+import { StakingTransaction } from '@harmony-js/staking';
 import { ContractFactory, Contract } from '@harmony-js/contract';
 import { Wallet, Account } from '@harmony-js/account';
 import { Blockchain } from './blockchain';
@@ -17,6 +18,7 @@ export class Harmony extends utils.HarmonyCore {
     TransactionFactory,
     Wallet,
     Transaction,
+    StakingTransaction,
     Account,
     Contract,
   };

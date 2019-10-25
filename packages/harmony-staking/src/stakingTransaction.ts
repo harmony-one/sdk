@@ -115,7 +115,7 @@ export class StakingTransaction extends TransactionBase {
     return encode(raw);
   }
 
-  async sendTransaction(): Promise<[StakingTransaction, string]> {
+  public async sendTransaction(): Promise<[StakingTransaction, string]> {
     if (this.rawTransaction === 'tx' || this.rawTransaction === undefined) {
       throw new Error('Transaction not signed');
     }
@@ -127,7 +127,8 @@ export class StakingTransaction extends TransactionBase {
       RPCMethod.SendRawStakingTransaction,
       this.rawTransaction,
       this.messenger.chainType,
-      0, // Staking tx always sent to shard 0
+      this.messenger.currentShard,
+      // 0, // Staking tx always sent to shard 0
     );
 
     if (res.isResult()) {
@@ -177,6 +178,24 @@ export class StakingTransaction extends TransactionBase {
 
   getFromAddress() {
     return this.from;
+  }
+  async confirm(
+    txHash: string,
+    maxAttempts: number = 20,
+    interval: number = 1000,
+    shardID: number | string = this.messenger.currentShard,
+    toShardID: number | string = 0,
+  ) {
+    const txConfirmed = await this.txConfirm(txHash, maxAttempts, interval, shardID);
+    if (shardID === toShardID) {
+      return txConfirmed;
+    }
+    if (txConfirmed.isConfirmed()) {
+      const cxConfirmed = await this.cxConfirm(txHash, maxAttempts, interval, toShardID);
+      return cxConfirmed;
+    } else {
+      return txConfirmed;
+    }
   }
 }
 

@@ -19,6 +19,7 @@ import {
 import { getAddress } from '@harmony-js/crypto';
 
 import { Transaction } from '@harmony-js/transaction';
+import { StakingTransaction } from '@harmony-js/staking';
 
 class Blockchain {
   messenger: Messenger;
@@ -394,7 +395,7 @@ class Blockchain {
       throw new Error('transaction is not signed or not exist');
     }
     const [txn, result] = await transaction.sendTransaction();
-    if (txn.isPending) {
+    if (txn.isPending()) {
       return result;
     }
   }
@@ -409,6 +410,30 @@ class Blockchain {
         });
       });
       return transaction.emitter;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async sendRawStakingTransaction(staking: StakingTransaction) {
+    if (!staking.isSigned() || !staking) {
+      throw new Error('staking transaction is not signed or not exist');
+    }
+    const [txn, result] = await staking.sendTransaction();
+    if (txn.isPending()) {
+      return result;
+    }
+  }
+  createObservedStakingTransaction(staking: StakingTransaction) {
+    try {
+      staking.sendTransaction().then((response: any) => {
+        const [txReturned, TranID] = response;
+
+        txReturned.confirm(TranID).then((txConfirmed: StakingTransaction) => {
+          staking.emitter.resolve(txConfirmed);
+        });
+      });
+      return staking.emitter;
     } catch (err) {
       throw err;
     }
