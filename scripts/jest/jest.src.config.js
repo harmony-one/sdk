@@ -43,6 +43,7 @@ const config = {
     'packages/harmony-crypto/src/**/*.ts',
     'packages/harmony-transaction/src/**/*.ts',
     'packages/harmony-staking/src/**/*.ts',
+    'packages/harmony-contract/src/**/*.ts',
   ],
   // timers: 'fake',
   setupFiles: ['<rootDir>/scripts/jest/jest.setup.js'],
