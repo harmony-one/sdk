@@ -20,7 +20,7 @@
   "dependencies": {
     "@harmony-js/crypto": "0.1.28",
     "@harmony-js/network": "0.1.31",
-    "@harmony-js/transaction": "0.1.29",
+    "@harmony-js/transaction": "0.1.31",
     "@harmony-js/utils": "0.1.28",
     "text-encoding": "^0.7.0"
   },

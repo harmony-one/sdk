@@ -138,8 +138,5 @@
       "pre-commit": "pretty-quick --staged"
     }
   },
-  "name": "harmony-sdk-core",
-  "dependencies": {
-    "text-encoding": "^0.7.0"
-  }
+  "name": "harmony-sdk-core"
 }

@@ -7,7 +7,9 @@ import { TxParams, TxStatus } from './types';
 export class TransactionFactory {
   static getContractAddress(tx: Transaction) {
     const { from, nonce } = tx.txParams;
-    return getAddress(getContractAddress(from, Number.parseInt(`${nonce}`, 10))).checksum;
+    return getAddress(
+      getContractAddress(getAddress(from).checksum, Number.parseInt(`${nonce}`, 10)),
+    ).checksum;
   }
 
   messenger: Messenger;
