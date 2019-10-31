@@ -1,14 +1,47 @@
 [![npm version](https://img.shields.io/npm/v/@harmony-js/core.svg?style=flat-square)](https://www.npmjs.com/package/@harmony-js/core)
 [![Build Status](https://travis-ci.com/FireStack-Lab/Harmony-sdk-core.svg?branch=master)](https://travis-ci.com/FireStack-Lab/Harmony-sdk-core)
 
-# Harmony-SDK-Core
 
-A Harmony's blockchain javascript library
+1. [About this SDK](#about-this-sdk)
+2. [How to Install](#how-to-install)
+   1. [Enviorment requirement](#enviorment-requirement)
+   2. [Install from npm/yarn](#install-from-npmyarn)
+   3. [Quick start](#quick-start)
+3. [Build from source files](#build-from-source-files)
+   1. [Install `lerna` and `typescript` globally](#install-lerna-and-typescript-globally)
+   2. [Bootstrap and build](#bootstrap-and-build)
+   3. [Bundle](#bundle)
+4. [Tests](#tests)
+   1. [Unit tests](#unit-tests)
+   2. [e2e tests](#e2e-tests)
+5. [More examples](#more-examples)
 
-It's a mono-repo library, not yet published to npm.
+# About this SDK
+
+A Harmony's blockchain javascript library, which provides an easier way to interact with Harmony's blockchain.
+
+This libraries contains a few packages.
+
+1. [@harmony-js/core](https://github.com/harmony-one/sdk/tree/master/packages/harmony-core)
+2. [@harmony-js/account](https://github.com/harmony-one/sdk/tree/master/packages/harmony-account)
+3. [@harmony-js/crypto](https://github.com/harmony-one/sdk/tree/master/packages/harmony-crypto)
+4. [@harmony-js/network](https://github.com/harmony-one/sdk/tree/master/packages/harmony-network)
+5. [@harmony-js/utils](https://github.com/harmony-one/sdk/tree/master/packages/harmony-utils)
+6. [@harmony-js/transaction](https://github.com/harmony-one/sdk/tree/master/packages/harmony-transaction)
+7. [@harmony-js/contract](https://github.com/harmony-one/sdk/tree/master/packages/harmony-contract)
+8. [@harmony-js/staking](https://github.com/harmony-one/sdk/tree/master/packages/harmony-contract)
 
 
-# Install from npm/yarn
+# How to Install
+
+This library works on both nodejs and browser. Please use it according to your use case.
+
+## Enviorment requirement
+
+* Nodejs: 10.0+
+* Browser: Latest Chrome and Firefox
+
+## Install from npm/yarn
 
 **Note: we added a @next tag to npm package, please use the following command to install with npm/yarn**
 
@@ -20,81 +53,181 @@ npm install @harmony-js/core@next
 # yarn
 yarn add @harmony-js/core@next
 
-# tslib may be required, we'd better install it as well
+# tslib is required, we'd better install it as well
 npm install tslib
 yarn add tslib
 
 ```
-# Examples with tutorials
 
-* [harmony-sdk-examples](https://github.com/FireStack-Lab/harmony-sdk-examples)
+## Quick start
 
-# Packages
+1. You need Harmony local testnet running.
+   instruction here:[harmony-one/harmony](https://github.com/harmony-one/harmony)
+2. Run this example under nodejs enviorment.
 
-1. [@harmony-js/core](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-core)
-2. [@harmony-js/account](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-account)
-3. [@harmony-js/crypto](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-crypto)
-4. [@harmony-js/network](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-network)
-5. [@harmony-js/utils](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-utils)
-6. [@harmony-js/transaction](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-transaction)
-7. [@harmony-js/contract](https://github.com/FireStack-Lab/Harmony-sdk-core/tree/master/packages/harmony-contract)
+```javascript
+// import or require Harmony class
+const { Harmony } = require('@harmony-js/core');
 
-# Hacking from source files
+// import or require settings
+const { ChainID, ChainType } = require('@harmony-js/utils');
 
-1. install `lerna` and `typescript` globally (if you have these, you can skip)
+// 1. initialize the Harmony instance
+
+const harmony = new Harmony(
+  // rpc url
+  'http://localhost:9500',
+  {
+    // chainType set to Harmony
+    chainType: ChainType.Harmony,
+    // chainType set to HmyLocal
+    chainId: ChainID.HmyLocal,
+  },
+);
+
+// 2. get wallet ready
+// specify the privateKey
+const privateKey = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+// add privateKey to wallet
+const sender = harmony.wallet.addByPrivateKey(privateKey);
+
+// 3. get sharding info
+async function setSharding() {
+  // Harmony is a sharded blockchain, each endpoint have sharding structure,
+  // However sharding structure is different between mainnet, testnet and local testnet
+  // We need to get sharding info before doing cross-shard transaction
+  const res = await harmony.blockchain.getShardingStructure();
+  harmony.shardingStructures(res.result);
+}
+
+// 4. get transaction payload ready
+
+async function transfer() {
+  // run set sharding first, if you want to make a cross-shard transaction
+  await setSharding();
+
+  const txn = harmony.transactions.newTx({
+    //  token send to
+    to: 'one166axnkjmghkf3df7xfvd0hn4dft8kemrza4cd2',
+    // amount to send
+    value: '10000',
+    // gas limit, you can use string
+    gasLimit: '210000',
+    // send token from shardID
+    shardID: 0,
+    // send token to toShardID
+    toShardID: 0,
+    // gas Price, you can use Unit class, and use Gwei, then remember to use toWei(), which will be transformed to BN
+    gasPrice: new harmony.utils.Unit('100').asGwei().toWei(),
+  });
+
+  // sign the transaction use wallet;
+
+  const signedTxn = await harmony.wallet.signTransaction(txn);
+
+  // Now you can use `Transaction.observed()` to listen events
+
+  signedTxn
+    .observed()
+    .on('transactionHash', (txnHash) => {
+      console.log('');
+      console.log('--- hash ---');
+      console.log('');
+      console.log(txnHash);
+      console.log('');
+    })
+    .on('receipt', (receipt) => {
+      console.log('');
+      console.log('--- receipt ---');
+      console.log('');
+      console.log(receipt);
+      console.log('');
+    })
+    .on('cxReceipt', (receipt) => {
+      console.log('');
+      console.log('--- cxReceipt ---');
+      console.log('');
+      console.log(receipt);
+      console.log('');
+    })
+    .on('error', (error) => {
+      console.log('');
+      console.log('--- error ---');
+      console.log('');
+      console.log(error);
+      console.log('');
+    });
+
+  // send the txn, get [Transaction, transactionHash] as result
+
+  const [sentTxn, txnHash] = await signedTxn.sendTransaction();
+
+  // to confirm the result if it is already there
+
+  const confiremdTxn = await sentTxn.confirm(txnHash);
+
+  // if the transactino is cross-shard transaction
+  if (!confiremdTxn.isCrossShard()) {
+    if (confiremdTxn.isConfirmed()) {
+      console.log('--- Result ---');
+      console.log('');
+      console.log('Normal transaction');
+      console.log(`${txnHash} is confirmed`);
+      console.log('');
+      process.exit();
+    }
+  }
+  if (confiremdTxn.isConfirmed() && confiremdTxn.isCxConfirmed()) {
+    console.log('--- Result ---');
+    console.log('');
+    console.log('Cross-Shard transaction');
+    console.log(`${txnHash} is confirmed`);
+    console.log('');
+    process.exit();
+  }
+}
+
+transfer();
+
+```
+
+
+
+# Build from source files
+
+## Install `lerna` and `typescript` globally
+
 ```bash
 yarn global add lerna && yarn global add typescript
 ```
-2. bootstrap repostory
-```bash
-yarn install && yarn bootstrap
-```
-3. run watcher before editing any source file
-```bash
-yarn watch
-```
-4. if you are ready to build/test/bundle, please refer to the following section:
-- [Build](#Build)
-- [Bundle](#Bundle)
-- [E2E Tests](#E2E-tests)
-
-
-# Manually Build/bundle
-
-## Build
+## Bootstrap and build
 
 ```bash
-yarn build
-
+yarn bootstrap
 ```
 
 ## Bundle
 
-There are 2 ways bundling files.
+build `umd` and `esm` version javascript for each sub-packages, which can be accessed by `import` or `require`
 
-1. building the `es5` version bundled javascript for each sub-packages, which can be run in Browser directly.
-
-    ```bash
-    yarn dist
-    ```
-    All files are exported in `/dist` folder
-
-2. build `umd` and `esm` version javascript for each sub-packages, which can be accessed by `import` or `require`
-
-    ```bash 
-    yarn bundle
-    ```
-    All files are exported in `packages/dist` folder, use `**.esm.js` or `**.umd.js` format
+```bash 
+yarn dist
+```
+All files are exported in `packages/dist` folder, use `**.esm.js` or `**.umd.js` format
 
 
-
-
-# E2E tests
-
+# Tests
+## Unit tests
+```bash
+yarn test:src
+```
+## e2e tests
 **Contantly updating now, please get back later**
 
 1. edit `.env` file if you have custom setting
-2. run harmony node locally(this fork currently : https://github.com/mikedoan/harmony/tree/enable_tx)
+   
+2. run harmony node locally, follow this instruction : https://github.com/harmony-one/harmony)
+   
 3. wait for 1-2 mins, and run this:
 
 ```bash
@@ -102,102 +235,11 @@ yarn build && yarn test:e2e
 ```
 
 
-# Cross-Shard
-```javascript
-async function crossShard() {
-  //  manually set the shardingStructure
-  // 手动设置 sharding
-  const shardingArray = [
-    {
-      shardID: 0,
-      http: 'http://localhost:9500',
-      ws: 'ws://localhost:9800',
-    },
-    {
-      shardID: 1,
-      http: 'http://localhost:9501',
-      ws: 'ws://localhost:9801',
-    },
-  ];
 
-  // get shardingStructure from rpc
-  // 通过api获取sharding设置
-  const res = await harmony.blockchain.getShardingStructure();
-  if (res.result) {
-    // if we can get from network use `harmony.shardingStructures` to set the structure to all sub module
-    //如果网络获取成功，通过`harmony.shardingStructures`进行设置
-    harmony.shardingStructures(res.result);
-  } else {
-    // or set it using local setting  
-    // 否则加载本地的设置
-    harmony.shardingStructures(shardingArray);
-  }
+# More examples
 
-  // each account should update it's own shard
-  // 每个帐号更新自己的sharding
-  await acc1.updateBalances();
-  await acc2.updateBalances();
-
-  // to get sharded address, the format goes `bech32-{shardID}`
-  // 获得分片地址，返回格式为 `bech32-{shardID}`
-  const from = acc1.getAddressFromShardID(0);
-  const to = acc2.getAddressFromShardID(1);
-
-  // use `getShardBalance(shardID:number)` to get balance in shardID 
-  // 可以获得指定shard的余额
-  acc1.getShardBalance(0).then(console.log);
-
-  // you can print the sharding map for each account
-  // 打印每个帐号的sharding结构
-  console.log({ acc1: acc1.shards, acc2: acc2.shards });
-
-  // now construct a ShardingTransaction, use `harmony.transactions.newTx(obj,true)`
-  // because `from` and `to` here ,are sharded addresses, like `bech32-{shardID}`
-  // you dont have to specify `shardID` and `toShardID`, it will handle it automatically.
-
-  // 构建一个sharding transaction，注意，true这里需要标志好
-  // 因为from，和 to已经被认定为带后缀的分片地址
-  // 格式为`bech32-{shardID}`
-  // 在这里不需要指定 shardID和toShardID了，因为这个txn会自动把 shardID和toShardID填进去
-  const txn = harmony.transactions.newTx(
-    {
-      from,
-      to,
-      value: '10000',
-      gasLimit: '210000',
-      gasPrice: new harmony.utils.Unit('1000000000').asWei().toWei(),
-    },
-    true,
-  );
-
-  // now use acc1 to sign, it will use specific shardID to get the nonce of sharded address
-  // 正常使用acc1进行签名，这里会自动根据shardID来取指定分片的nonce
-  const signed = await acc1.signTransaction(txn, true);
-
-  // send the transaction, it will also use speicific shardID to send the transaction
-  // 发送交易，同样会根据shardID来进行交易的发送
-  const [sent, id] = await signed.sendTransaction();
-
-   // print the id(transactionHash), and the class that return as well
-  // 打印返回的Transaction Class，和transaction ID
-  console.log({ sent, id });
+* [dapp-examples](https://github.com/harmony-one/dapp-examples)
 
 
-  // you can use Transaction.confirm() to confirm the transaction is on the blockchain or not
-  //使用confirm进行transactionReceipt的获取以确认
-  await sent.confirm(id);
 
-  // of course you can use blockchain.getTransactionReceipt to get the receipt
-  // you have to specify the shardID here.
-  // 同样可以通过blockchain类来获取transaction Receipt
-  // 注意你需要指定shardID
 
-  const receipt = await harmony.blockchain.getTransactionReceipt({
-    txnHash: id,
-    shardID: sent.txParams.shardID,
-  });
-
-  console.log({ receipt: receipt.result });
-}
-
-```
