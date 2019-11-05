@@ -1,36 +1,37 @@
 // tslint:disable: max-classes-per-file
 
 import {
-  encode,
   arrayify,
+  BN,
+  encode,
   hexlify,
-  stripZeros,
-  Signature,
-  splitSignature,
   keccak256,
   sign,
-  BN,
+  Signature,
+  splitSignature,
+  stripZeros,
 } from '@harmony-js/crypto';
-import { TextEncoder } from 'text-encoding';
-import { Unit, numberToHex } from '@harmony-js/utils';
 import { Messenger, RPCMethod } from '@harmony-js/network';
-import { defaultMessenger, TxStatus, TransactionBase } from '@harmony-js/transaction';
+import { defaultMessenger, TransactionBase, TxStatus } from '@harmony-js/transaction';
+import { numberToHex, Unit } from '@harmony-js/utils';
+import { TextEncoder } from 'text-encoding';
 
 export class StakingSettings {
   public static PRECISION = 18;
+  public static MAX_DECIMAL = 1000000000000000000;
 }
 
 export const enum Directive {
-  DirectiveNewValidator,
+  DirectiveCreateValidator,
   DirectiveEditValidator,
   DirectiveDelegate,
-  DirectiveRedelegate,
   DirectiveUndelegate,
+  DirectiveCollectRewards,
 }
 
 export class StakingTransaction extends TransactionBase {
   private directive: Directive;
-  private stakeMsg: NewValidator | EditValidator | Delegate | Redelegate | Undelegate;
+  private stakeMsg: CreateValidator | EditValidator | Delegate | Undelegate | CollectRewards;
   private nonce: number | string;
   private gasLimit: number | string;
   private gasPrice: number | string;
@@ -42,7 +43,7 @@ export class StakingTransaction extends TransactionBase {
 
   constructor(
     directive: Directive,
-    stakeMsg: NewValidator | EditValidator | Delegate | Redelegate | Undelegate,
+    stakeMsg: CreateValidator | EditValidator | Delegate | Undelegate | CollectRewards,
     nonce: number | string,
     gasPrice: number | string,
     gasLimit: number | string,
@@ -234,16 +235,53 @@ export class Description {
 
 export class Decimal {
   value: BN;
-  constructor(value: number, precision: number) {
-    if (precision > StakingSettings.PRECISION) {
+
+  constructor(value: string) {
+    if (value.length == 0) {
+      throw new Error(`decimal string is empty`);
+    }
+    var value1 = value;
+    if (value[0] == '-') {
+      throw new Error(`decimal fraction should be be between [0, 1]`);
+    }
+    if (value[0] == '+') {
+      value1 = value.substr(1);
+    }
+    if (value1.length == 0) {
+      throw new Error(`decimal string is empty`);
+    }
+    const spaced = value1.split(' ');
+    if (spaced.length > 1) {
+      throw new Error(`bad decimal string`);
+    }
+    const splitted = value1.split('.');
+    var len = 0;
+    var combinedStr = splitted[0];
+    if (splitted.length == 2) {
+      len = splitted[1].length;
+      if (len == 0 || combinedStr.length == 0) {
+        throw new Error(`bad decimal length`);
+      }
+      if (splitted[1][0] == '-') {
+        throw new Error(`bad decimal string`);
+      }
+      combinedStr += splitted[1];
+    } else if (splitted.length > 2) {
+      throw new Error(`too many periods to be a decimal string`);
+    }
+    if (len > StakingSettings.PRECISION) {
       throw new Error(
-        `too much precision: ${precision}, should be less than ${StakingSettings.PRECISION}`,
+        `too much precision: precision should be less than ${StakingSettings.PRECISION}`,
       );
     }
-    const zerosToAdd = StakingSettings.PRECISION - precision;
-    const multiplier = Math.pow(10, zerosToAdd);
-    // (value * multiplier).toString();
-    this.value = new Unit((value * multiplier).toString()).asWei().toWei();
+    const zerosToAdd = StakingSettings.PRECISION - len;
+    combinedStr += '0'.repeat(zerosToAdd);
+    combinedStr = combinedStr.replace(/^0+/, '');
+    const val = new Unit(combinedStr).asWei().toWei();
+    if (val.gt(new Unit(StakingSettings.MAX_DECIMAL.toString()).asWei().toWei())) {
+      throw new Error(`too large decimal fraction`);
+    }
+    this.value = val;
   }
 
   encode(): any[] {
@@ -268,68 +306,91 @@ export class CommissionRate {
     raw.push(this.rate.encode());
     raw.push(this.maxRate.encode());
     raw.push(this.maxChangeRate.encode());
-    // console.log(decode(encode(raw)));
     return raw;
   }
 }
 
-export class NewValidator {
+export class CreateValidator {
+  validatorAddress: string;
   description: Description;
-  commission: CommissionRate;
+  commissionRates: CommissionRate;
   minSelfDelegation: number;
-  stakingAddress: string;
-  pubKey: string;
+  maxTotalDelegation: number;
+  slotPubKeys: string[];
   amount: number;
   constructor(
+    validatorAddress: string,
     description: Description,
-    commission: CommissionRate,
+    commissionRates: CommissionRate,
     minSelfDelegation: number,
-    stakingAddress: string,
-    pubKey: string,
+    maxTotalDelegation: number,
+    slotPubKeys: string[],
     amount: number,
   ) {
+    this.validatorAddress = validatorAddress;
     this.description = description;
-    this.commission = commission;
+    this.commissionRates = commissionRates;
     this.minSelfDelegation = minSelfDelegation;
-    this.stakingAddress = stakingAddress;
-    this.pubKey = pubKey;
+    this.maxTotalDelegation = maxTotalDelegation;
+    this.slotPubKeys = slotPubKeys;
     this.amount = amount;
   }
 
   encode(): any[] {
     const raw: Array<string | Uint8Array | Array<string | Uint8Array>> = [];
+    raw.push(hexlify(TransactionBase.normalizeAddress(this.validatorAddress)));
     raw.push(this.description.encode());
-    raw.push(this.commission.encode());
+    raw.push(this.commissionRates.encode());
     raw.push(hexlify(this.minSelfDelegation));
-    raw.push(hexlify(TransactionBase.normalizeAddress(this.stakingAddress)));
-    raw.push(this.pubKey);
+    raw.push(hexlify(this.maxTotalDelegation));
+    raw.push(this.encodeArr());
     raw.push(hexlify(this.amount));
+    return raw;
+  }
+
+  encodeArr(): any[] {
+    var raw: Array<string | Uint8Array | Array<string | Uint8Array>> = [];
+    this.slotPubKeys.forEach((pubKey) => {
+      raw.push(pubKey);
+    });
     return raw;
   }
 }
 
 export class EditValidator {
+  validatorAddress: string;
   description: Description;
-  stakingAddress: string;
   commissionRate: Decimal;
   minSelfDelegation: number;
+  maxTotalDelegation: number;
+  slotKeyToRemove: string;
+  slotKeyToAdd: string;
   constructor(
+    validatorAddress: string,
     description: Description,
-    stakingAddress: string,
     commissionRate: Decimal,
     minSelfDelegation: number,
+    maxTotalDelegation: number,
+    slotKeyToRemove: string,
+    slotKeyToAdd: string,
   ) {
+    this.validatorAddress = validatorAddress;
     this.description = description;
-    this.stakingAddress = stakingAddress;
     this.commissionRate = commissionRate;
     this.minSelfDelegation = minSelfDelegation;
+    this.maxTotalDelegation = maxTotalDelegation;
+    this.slotKeyToRemove = slotKeyToRemove;
+    this.slotKeyToAdd = slotKeyToAdd;
   }
   encode(): any[] {
     const raw: Array<string | Uint8Array | Array<string | Uint8Array>> = [];
+    raw.push(hexlify(TransactionBase.normalizeAddress(this.validatorAddress)));
     raw.push(this.description.encode());
-    raw.push(hexlify(TransactionBase.normalizeAddress(this.stakingAddress)));
     raw.push(this.commissionRate.encode());
     raw.push(hexlify(this.minSelfDelegation));
+    raw.push(hexlify(this.maxTotalDelegation));
+    raw.push(this.slotKeyToRemove);
+    raw.push(this.slotKeyToAdd);
     return raw;
   }
 }
@@ -352,32 +413,6 @@ export class Delegate {
   }
 }
 
-export class Redelegate {
-  delegatorAddress: string;
-  validatorSrcAddress: string;
-  validatorDstAddress: string;
-  amount: number;
-  constructor(
-    delegatorAddress: string,
-    validatorSrcAddress: string,
-    validatorDstAddress: string,
-    amount: number,
-  ) {
-    this.delegatorAddress = delegatorAddress;
-    this.validatorSrcAddress = validatorSrcAddress;
-    this.validatorDstAddress = validatorDstAddress;
-    this.amount = amount;
-  }
-  encode(): any[] {
-    const raw: Array<string | Uint8Array> = [];
-    raw.push(hexlify(TransactionBase.normalizeAddress(this.delegatorAddress)));
-    raw.push(hexlify(TransactionBase.normalizeAddress(this.validatorSrcAddress)));
-    raw.push(hexlify(TransactionBase.normalizeAddress(this.validatorDstAddress)));
-    raw.push(hexlify(this.amount));
-    return raw;
-  }
-}
-
 export class Undelegate {
   delegatorAddress: string;
   validatorAddress: string;
@@ -392,6 +427,18 @@ export class Undelegate {
     raw.push(hexlify(TransactionBase.normalizeAddress(this.delegatorAddress)));
     raw.push(hexlify(TransactionBase.normalizeAddress(this.validatorAddress)));
     raw.push(hexlify(this.amount));
+    return raw;
+  }
+}
+
+export class CollectRewards {
+  delegatorAddress: string;
+  constructor(delegatorAddress: string) {
+    this.delegatorAddress = delegatorAddress;
+  }
+  encode(): any[] {
+    const raw: Array<string | Uint8Array> = [];
+    raw.push(hexlify(TransactionBase.normalizeAddress(this.delegatorAddress)));
     return raw;
   }
 }

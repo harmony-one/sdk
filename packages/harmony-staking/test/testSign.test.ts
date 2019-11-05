@@ -1,10 +1,8 @@
-import { getAddressFromPrivateKey } from '@harmony-js/crypto';
-import { isValidAddress, ChainType, ChainID } from '@harmony-js/utils';
 // tslint:disable-next-line: no-implicit-dependencies
 import { Wallet } from '@harmony-js/account';
-
+import { getAddressFromPrivateKey } from '@harmony-js/crypto';
 import { HttpProvider, Messenger } from '@harmony-js/network';
-
+import { ChainID, ChainType, isValidAddress } from '@harmony-js/utils';
 // tslint:disable-next-line: no-implicit-dependencies
 import fetch from 'jest-fetch-mock';
 
@@ -17,11 +15,11 @@ const msgHttp = new Messenger(http, ChainType.Harmony, ChainID.HmyLocal);
 const walletHttp = new Wallet(msgHttp);
 
 import {
-  NewValidator,
+  CreateValidator,
   EditValidator,
   Delegate,
-  Redelegate,
   Undelegate,
+  CollectRewards,
   Directive,
   StakingTransaction,
   Description,
@@ -36,7 +34,7 @@ describe('test sign staking transaction', () => {
     fetch.resetMocks();
     // jest.clearAllTimers();
   });
-  it('should test sign new validator staking transaction', () => {
+  it('should test sign create validator staking transaction', () => {
     const testTx: any = testTransactions[0];
     const address = getAddressFromPrivateKey(testTx.privateKey);
     expect(isValidAddress(address)).toEqual(true);
@@ -47,21 +45,22 @@ describe('test sign staking transaction', () => {
       testTx.description.securityContact,
       testTx.description.details,
     );
-    const commission: CommissionRate = new CommissionRate(
-      new Decimal(testTx.commission.rate, 0),
-      new Decimal(testTx.commission.maxRate, 0),
-      new Decimal(testTx.commission.maxChangeRate, 0),
+    const commissionRates: CommissionRate = new CommissionRate(
+      new Decimal(testTx.commissionRates.rate),
+      new Decimal(testTx.commissionRates.maxRate),
+      new Decimal(testTx.commissionRates.maxChangeRate),
     );
-    const stakeMsg: NewValidator = new NewValidator(
+    const stakeMsg: CreateValidator = new CreateValidator(
+      testTx.validatorAddress,
       desc,
-      commission,
+      commissionRates,
       testTx.minSelfDelegation,
-      testTx.stakingAddress,
-      testTx.pubKey,
+      testTx.maxTotalDelegation,
+      testTx.slotPubKeys,
       testTx.amount,
     );
     const stakingTx: StakingTransaction = new StakingTransaction(
-      Directive.DirectiveNewValidator,
+      Directive.DirectiveCreateValidator,
       stakeMsg,
       testTx.nonce,
       testTx.gasPrice,
@@ -86,10 +85,13 @@ describe('test sign staking transaction', () => {
       testTx.description.details,
     );
     const stakeMsg: EditValidator = new EditValidator(
+      testTx.validatorAddress,
       desc,
-      testTx.stakingAddress,
-      new Decimal(testTx.commissionRate, 0),
+      new Decimal(testTx.commissionRate),
       testTx.minSelfDelegation,
+      testTx.maxTotalDelegation,
+      testTx.slotKeyToRemove,
+      testTx.slotKeyToAdd,
     );
     const stakingTx: StakingTransaction = new StakingTransaction(
       Directive.DirectiveEditValidator,
@@ -129,33 +131,8 @@ describe('test sign staking transaction', () => {
     const signed = stakingTx.rlpSign(testTx.privateKey);
     expect(signed[1]).toEqual(testTx.encoded);
   });
-  it('should test sign redelegate staking transaction', () => {
-    const testTx: any = testTransactions[3];
-    const address = getAddressFromPrivateKey(testTx.privateKey);
-    expect(isValidAddress(address)).toEqual(true);
-    const stakeMsg: Redelegate = new Redelegate(
-      testTx.delegatorAddress,
-      testTx.validatorSrcAddress,
-      testTx.validatorDstAddress,
-      testTx.amount,
-    );
-
-    const stakingTx: StakingTransaction = new StakingTransaction(
-      Directive.DirectiveRedelegate,
-      stakeMsg,
-      testTx.nonce,
-      testTx.gasPrice,
-      testTx.gasLimit,
-      testTx.chainID,
-      testTx.chainID,
-      '',
-      '',
-    );
-    const signed = stakingTx.rlpSign(testTx.privateKey);
-    expect(signed[1]).toEqual(testTx.encoded);
-  });
   it('should test sign undelegate staking transaction', () => {
-    const testTx: any = testTransactions[4];
+    const testTx: any = testTransactions[3];
     const address = getAddressFromPrivateKey(testTx.privateKey);
     expect(isValidAddress(address)).toEqual(true);
     const stakeMsg: Undelegate = new Undelegate(
@@ -178,7 +155,27 @@ describe('test sign staking transaction', () => {
     const signed = stakingTx.rlpSign(testTx.privateKey);
     expect(signed[1]).toEqual(testTx.encoded);
   });
-  it('should test sign new validator staking transaction using wallet', async () => {
+  it('should test sign collect rewards staking transaction', () => {
+    const testTx: any = testTransactions[4];
+    const address = getAddressFromPrivateKey(testTx.privateKey);
+    expect(isValidAddress(address)).toEqual(true);
+    const stakeMsg: CollectRewards = new CollectRewards(testTx.delegatorAddress);
+
+    const stakingTx: StakingTransaction = new StakingTransaction(
+      Directive.DirectiveCollectRewards,
+      stakeMsg,
+      testTx.nonce,
+      testTx.gasPrice,
+      testTx.gasLimit,
+      testTx.chainID,
+      testTx.chainID,
+      '',
+      '',
+    );
+    const signed = stakingTx.rlpSign(testTx.privateKey);
+    expect(signed[1]).toEqual(testTx.encoded);
+  });
+  it('should test sign create validator staking transaction using wallet', async () => {
     const testTx: any = testTransactions[0];
     const responses = [
       {
@@ -202,21 +199,22 @@ describe('test sign staking transaction', () => {
       testTx.description.securityContact,
       testTx.description.details,
     );
-    const commission: CommissionRate = new CommissionRate(
-      new Decimal(testTx.commission.rate, 0),
-      new Decimal(testTx.commission.maxRate, 0),
-      new Decimal(testTx.commission.maxChangeRate, 0),
+    const commissionRates: CommissionRate = new CommissionRate(
+      new Decimal(testTx.commissionRates.rate),
+      new Decimal(testTx.commissionRates.maxRate),
+      new Decimal(testTx.commissionRates.maxChangeRate),
     );
-    const stakeMsg: NewValidator = new NewValidator(
+    const stakeMsg: CreateValidator = new CreateValidator(
+      testTx.validatorAddress,
       desc,
-      commission,
+      commissionRates,
       testTx.minSelfDelegation,
-      testTx.stakingAddress,
-      testTx.pubKey,
+      testTx.maxTotalDelegation,
+      testTx.slotPubKeys,
       testTx.amount,
     );
     const stakingTx: StakingTransaction = new StakingTransaction(
-      Directive.DirectiveNewValidator,
+      Directive.DirectiveCreateValidator,
       stakeMsg,
       0,
       testTx.gasPrice,
@@ -255,10 +253,13 @@ describe('test sign staking transaction', () => {
       testTx.description.details,
     );
     const stakeMsg: EditValidator = new EditValidator(
+      testTx.validatorAddress,
       desc,
-      testTx.stakingAddress,
-      new Decimal(testTx.commissionRate, 0),
+      new Decimal(testTx.commissionRate),
       testTx.minSelfDelegation,
+      testTx.maxTotalDelegation,
+      testTx.slotKeyToRemove,
+      testTx.slotKeyToAdd,
     );
     const stakingTx: StakingTransaction = new StakingTransaction(
       Directive.DirectiveEditValidator,
@@ -313,47 +314,8 @@ describe('test sign staking transaction', () => {
     const signedStaking: StakingTransaction = await account.signStaking(stakingTx);
     expect(signedStaking.getRawTransaction()).toEqual(testTx.encoded);
   });
-  it('should test sign redelegate staking transaction using wallet', async () => {
-    const testTx: any = testTransactions[3];
-    const responses = [
-      {
-        jsonrpc: '2.0',
-        id: 1,
-        result: '0x666666666666',
-      },
-      {
-        jsonrpc: '2.0',
-        id: 1,
-        result: testTx.nonce,
-      },
-    ].map((res) => [JSON.stringify(res)] as [string]);
-
-    fetch.mockResponses(...responses);
-
-    const stakeMsg: Redelegate = new Redelegate(
-      testTx.delegatorAddress,
-      testTx.validatorSrcAddress,
-      testTx.validatorDstAddress,
-      testTx.amount,
-    );
-
-    const stakingTx: StakingTransaction = new StakingTransaction(
-      Directive.DirectiveRedelegate,
-      stakeMsg,
-      0,
-      testTx.gasPrice,
-      testTx.gasLimit,
-      testTx.chainID,
-      testTx.chainID,
-      '',
-      '',
-    );
-    const account: any = walletHttp.addByPrivateKey(testTx.privateKey);
-    const signedStaking: StakingTransaction = await account.signStaking(stakingTx);
-    expect(signedStaking.getRawTransaction()).toEqual(testTx.encoded);
-  });
   it('should test sign undelegate staking transaction using wallet', async () => {
-    const testTx: any = testTransactions[4];
+    const testTx: any = testTransactions[3];
 
     const responses = [
       {
@@ -391,6 +353,40 @@ describe('test sign staking transaction', () => {
     expect(signedStaking.getFromAddress()).toEqual(account.bech32Address);
     expect(signedStaking.getSignature()).toBeTruthy();
     expect(signedStaking.getUnsignedRawTransaction()).toBeTruthy();
+    expect(signedStaking.getRawTransaction()).toEqual(testTx.encoded);
+  });
+  it('should test sign collect rewards staking transaction using wallet', async () => {
+    const testTx: any = testTransactions[4];
+    const responses = [
+      {
+        jsonrpc: '2.0',
+        id: 1,
+        result: '0x666666666666',
+      },
+      {
+        jsonrpc: '2.0',
+        id: 1,
+        result: testTx.nonce,
+      },
+    ].map((res) => [JSON.stringify(res)] as [string]);
+
+    fetch.mockResponses(...responses);
+
+    const stakeMsg: CollectRewards = new CollectRewards(testTx.delegatorAddress);
+
+    const stakingTx: StakingTransaction = new StakingTransaction(
+      Directive.DirectiveCollectRewards,
+      stakeMsg,
+      0,
+      testTx.gasPrice,
+      testTx.gasLimit,
+      testTx.chainID,
+      testTx.chainID,
+      '',
+      '',
+    );
+    const account: any = walletHttp.addByPrivateKey(testTx.privateKey);
+    const signedStaking: StakingTransaction = await account.signStaking(stakingTx);
     expect(signedStaking.getRawTransaction()).toEqual(testTx.encoded);
   });
 });
