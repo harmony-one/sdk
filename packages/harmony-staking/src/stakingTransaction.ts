@@ -237,17 +237,17 @@ export class Decimal {
   value: BN;
 
   constructor(value: string) {
-    if (value.length == 0) {
+    if (value.length === 0) {
       throw new Error(`decimal string is empty`);
     }
-    var value1 = value;
-    if (value[0] == '-') {
+    let value1 = value;
+    if (value[0] === '-') {
       throw new Error(`decimal fraction should be be between [0, 1]`);
     }
-    if (value[0] == '+') {
+    if (value[0] === '+') {
       value1 = value.substr(1);
     }
-    if (value1.length == 0) {
+    if (value1.length === 0) {
       throw new Error(`decimal string is empty`);
     }
     const spaced = value1.split(' ');
@@ -255,14 +255,14 @@ export class Decimal {
       throw new Error(`bad decimal string`);
     }
     const splitted = value1.split('.');
-    var len = 0;
-    var combinedStr = splitted[0];
-    if (splitted.length == 2) {
+    let len = 0;
+    let combinedStr = splitted[0];
+    if (splitted.length === 2) {
       len = splitted[1].length;
-      if (len == 0 || combinedStr.length == 0) {
+      if (len === 0 || combinedStr.length === 0) {
         throw new Error(`bad decimal length`);
       }
-      if (splitted[1][0] == '-') {
+      if (splitted[1][0] === '-') {
         throw new Error(`bad decimal string`);
       }
       combinedStr += splitted[1];
@@ -349,7 +349,7 @@ export class CreateValidator {
   }
 
   encodeArr(): any[] {
-    var raw: Array<string | Uint8Array | Array<string | Uint8Array>> = [];
+    const raw: Array<string | Uint8Array | Array<string | Uint8Array>> = [];
     this.slotPubKeys.forEach((pubKey) => {
       raw.push(pubKey);
     });
