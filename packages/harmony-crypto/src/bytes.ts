@@ -25,16 +25,14 @@ export function isHexable(value: any): value is Hexable {
 }
 
 function addSlice(array: Uint8Array): Uint8Array {
-  if (array.slice) {
+  if (typeof array === 'object' && typeof array.slice === 'function') {
     return array;
   }
 
   // tslint:disable-next-line: only-arrow-functions
   array.slice = function() {
     const args = Array.prototype.slice.call(arguments);
-    return addSlice(
-      new Uint8Array(Array.prototype.slice.apply(array, [args[0], args[1]])),
-    );
+    return addSlice(new Uint8Array(Array.prototype.slice.apply(array, [args[0], args[1]])));
   };
 
   return array;
@@ -64,11 +62,10 @@ export function isArrayish(value: any): value is Arrayish {
 
 export function arrayify(value: Arrayish | Hexable): Uint8Array | null {
   if (value == null) {
-    errors.throwError(
-      'cannot convert null value to array',
-      errors.INVALID_ARGUMENT,
-      { arg: 'value', value },
-    );
+    errors.throwError('cannot convert null value to array', errors.INVALID_ARGUMENT, {
+      arg: 'value',
+      value,
+    });
   }
 
   if (isHexable(value)) {
@@ -86,11 +83,10 @@ export function arrayify(value: Arrayish | Hexable): Uint8Array | null {
     }
 
     if (match !== null && match[1] !== '0x') {
-      errors.throwError(
-        'hex string must have 0x prefix',
-        errors.INVALID_ARGUMENT,
-        { arg: 'value', value },
-      );
+      errors.throwError('hex string must have 0x prefix', errors.INVALID_ARGUMENT, {
+        arg: 'value',
+        value,
+      });
     }
 
     value = value.substring(2);
@@ -203,11 +199,10 @@ export function hexlify(value: Arrayish | Hexable | number): string {
 
   if (typeof value === 'number') {
     if (value < 0) {
-      errors.throwError(
-        'cannot hexlify negative value',
-        errors.INVALID_ARGUMENT,
-        { arg: 'value', value },
-      );
+      errors.throwError('cannot hexlify negative value', errors.INVALID_ARGUMENT, {
+        arg: 'value',
+        value,
+      });
     }
 
     // @TODO: Roll this into the above error as a numeric fault (overflow); next version, not backward compatible
@@ -246,11 +241,10 @@ export function hexlify(value: Arrayish | Hexable | number): string {
     }
 
     if (match !== null && match[1] !== '0x') {
-      errors.throwError(
-        'hex string must have 0x prefix',
-        errors.INVALID_ARGUMENT,
-        { arg: 'value', value },
-      );
+      errors.throwError('hex string must have 0x prefix', errors.INVALID_ARGUMENT, {
+        arg: 'value',
+        value,
+      });
     }
 
     if (value.length % 2) {
@@ -283,11 +277,7 @@ export function hexDataLength(data: string) {
   return (data.length - 2) / 2;
 }
 
-export function hexDataSlice(
-  data: string,
-  offset: number,
-  endOffset?: number,
-): string {
+export function hexDataSlice(data: string, offset: number, endOffset?: number): string {
   if (!isHexString(data)) {
     errors.throwError('invalid hex data', errors.INVALID_ARGUMENT, {
       arg: 'value',
@@ -346,9 +336,7 @@ export function bytesPadLeft(value: string, byteLength: number): string {
 
   const striped = value.substring(2);
   if (striped.length > byteLength * 2) {
-    throw new Error(
-      `hex string length = ${striped.length} beyond byteLength=${byteLength}`,
-    );
+    throw new Error(`hex string length = ${striped.length} beyond byteLength=${byteLength}`);
   }
   const padLength = byteLength * 2 - striped.length;
   const returnValue = '0x' + '0'.repeat(padLength) + striped;
@@ -364,9 +352,7 @@ export function bytesPadRight(value: string, byteLength: number): string {
 
   const striped = value.substring(2);
   if (striped.length > byteLength * 2) {
-    throw new Error(
-      `hex string length = ${striped.length} beyond byteLength=${byteLength}`,
-    );
+    throw new Error(`hex string length = ${striped.length} beyond byteLength=${byteLength}`);
   }
   const padLength = byteLength * 2 - striped.length;
   const returnValue = '0x' + striped + '0'.repeat(padLength);
@@ -432,13 +418,7 @@ export function splitSignature(signature: Arrayish | Signature): Signature {
 export function joinSignature(signature: Signature): string {
   signature = splitSignature(signature);
 
-  return hexlify(
-    concat([
-      signature.r,
-      signature.s,
-      signature.recoveryParam ? '0x1c' : '0x1b',
-    ]),
-  );
+  return hexlify(concat([signature.r, signature.s, signature.recoveryParam ? '0x1c' : '0x1b']));
 }
 
 /**
