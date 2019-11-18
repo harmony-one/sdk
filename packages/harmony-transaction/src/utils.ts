@@ -139,8 +139,8 @@ export const recover = (rawTransaction: string) => {
     } catch (error) {
       throw error;
     }
-
-    tx.rawTransaction = keccak256(rawTransaction);
+    tx.rawTransaction = rawTransaction;
+    tx.id = keccak256(rawTransaction);
   }
 
   return tx;
@@ -230,8 +230,8 @@ export const recoverETH = (rawTransaction: string) => {
     } catch (error) {
       throw error;
     }
-
-    tx.rawTransaction = keccak256(rawTransaction);
+    tx.rawTransaction = rawTransaction;
+    tx.id = keccak256(rawTransaction);
   }
 
   return tx;
