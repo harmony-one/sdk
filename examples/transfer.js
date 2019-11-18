@@ -21,9 +21,12 @@ const harmony = new Harmony(
 );
 
 // 2. get wallet ready
-// specify the privateKey
-// const privateKey = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+// one18n8e7472pg5fqvcfcr5hg0npquha24wsxmjheg
 const phrase = 'genius cable radar memory high catch blossom correct middle wish gentle fiscal';
+
+// one1a2rhuaqjcvfu69met9sque2l3w5v9z6qcdcz65
+// surge welcome lion goose gate consider taste injury health march debris kick
+
 // add privateKey to wallet
 const sender = harmony.wallet.addByMnemonic(phrase);
 
@@ -42,11 +45,12 @@ async function transfer(receiver) {
   // run set sharding first, if you want to make a cross-shard transaction
   await setSharding();
 
+  //1e18
   const txn = harmony.transactions.newTx({
     //  token send to
     to: receiver,
     // amount to send
-    value: '1000000000',
+    value: '1000000000000000000',
     // gas limit, you can use string
     gasLimit: '210000',
     // send token from shardID
@@ -59,10 +63,12 @@ async function transfer(receiver) {
 
   // sign the transaction use wallet;
 
+  // This will happen at the chrome extension.
   const signedTxn = await harmony.wallet.signTransaction(txn);
 
   // Now you can use `Transaction.observed()` to listen events
 
+  // Frontend received back the signedTxn and do the followings to Send transaction.
   signedTxn
     .observed()
     .on('transactionHash', (txnHash) => {
@@ -123,4 +129,5 @@ async function transfer(receiver) {
   }
 }
 
+// sending from one18n8e7472pg5fqvcfcr5hg0npquha24wsxmjheg to  one1a2rhuaqjcvfu69met9sque2l3w5v9z6qcdcz65
 transfer('one1a2rhuaqjcvfu69met9sque2l3w5v9z6qcdcz65');
