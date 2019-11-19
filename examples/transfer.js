@@ -50,7 +50,7 @@ async function transfer(receiver) {
     //  token send to
     to: receiver,
     // amount to send
-    value: '1000000000000000000',
+    value: '100000000000000000',
     // gas limit, you can use string
     gasLimit: '210000',
     // send token from shardID
