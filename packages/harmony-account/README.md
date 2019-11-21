@@ -1,3 +1,15 @@
+
+1. [About This Package](#about-this-package)
+2. [Usage of Account](#usage-of-account)
+   1. [Dependencies](#dependencies)
+   2. [Examples](#examples)
+      1. [create a random account](#create-a-random-account)
+      2. [import an existing privateKey to create Account](#import-an-existing-privatekey-to-create-account)
+      3. [Encrypt/Export keyStore file, Decrypt/Import keyStore file](#encryptexport-keystore-file-decryptimport-keystore-file)
+      4. [Address format getter](#address-format-getter)
+3. [Usage of Wallet](#usage-of-wallet)
+   1. [Dependencies](#dependencies-1)
+
 # About This Package
 
 `@harmony-js/account` is dealing with account related features.
