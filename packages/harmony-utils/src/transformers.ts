@@ -9,6 +9,7 @@ export const enum Units {
   szabo = 'szabo',
   finney = 'finney',
   ether = 'ether',
+  one = 'one',
   Kether = 'Kether',
   Mether = 'Mether',
   Gether = 'Gether',
@@ -23,6 +24,7 @@ export const unitMap = new Map([
   [Units.szabo, '1000000000000'], // 1e12 wei
   [Units.finney, '1000000000000000'], // 1e15 wei
   [Units.ether, '1000000000000000000'], // 1e18 wei
+  [Units.one, '1000000000000000000'], // 1e18 wei
   [Units.Kether, '1000000000000000000000'], // 1e21 wei
   [Units.Mether, '1000000000000000000000000'], // 1e24 wei
   [Units.Gether, '1000000000000000000000000000'], // 1e27 wei
@@ -233,6 +235,9 @@ export class Unit {
   static Ether(str: BN | string) {
     return new Unit(str).asEther();
   }
+  static One(str: BN | string) {
+    return new Unit(str).asOne();
+  }
   static Kether(str: BN | string) {
     return new Unit(str).asKether();
   }
@@ -289,6 +294,10 @@ export class Unit {
   }
   asEther() {
     this.wei = toWei(this.unit, Units.ether);
+    return this;
+  }
+  asOne() {
+    this.wei = toWei(this.unit, Units.one);
     return this;
   }
   asKether() {
@@ -354,6 +363,13 @@ export class Unit {
   toEther() {
     if (this.wei) {
       return fromWei(this.wei, Units.ether);
+    } else {
+      throw new Error('error transforming');
+    }
+  }
+  toOne() {
+    if (this.wei) {
+      return fromWei(this.wei, Units.one);
     } else {
       throw new Error('error transforming');
     }

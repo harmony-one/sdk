@@ -3,8 +3,8 @@
 2. [Usage of Account](#usage-of-account)
    1. [Dependencies](#dependencies)
    2. [Examples](#examples)
-      1. [create a random account](#create-a-random-account)
-      2. [import an existing privateKey to create Account](#import-an-existing-privatekey-to-create-account)
+      1. [Create a random account](#create-a-random-account)
+      2. [Import an existing privateKey to create Account](#import-an-existing-privatekey-to-create-account)
       3. [Encrypt/Export keyStore file, Decrypt/Import keyStore file](#encryptexport-keystore-file-decryptimport-keystore-file)
       4. [Address format getter](#address-format-getter)
       5. [Sign a transaction](#sign-a-transaction)
@@ -39,7 +39,7 @@ The `Wallet` class is class that stores all `Account` instance, you can do CRUD 
 
 ## Examples
 
-### create a random account
+### Create a random account
 ```typescript
 
     // import the Account class
@@ -77,7 +77,7 @@ The `Wallet` class is class that stores all `Account` instance, you can do CRUD 
 
 ```
 
-### import an existing privateKey to create Account
+### Import an existing privateKey to create Account
 
 ```typescript
 
