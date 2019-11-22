@@ -22,7 +22,9 @@ const harmony = new Harmony(
 
 // 2. get wallet ready
 // one18n8e7472pg5fqvcfcr5hg0npquha24wsxmjheg
-const phrase = 'genius cable radar memory high catch blossom correct middle wish gentle fiscal';
+// const phrase = 'genius cable radar memory high catch blossom correct middle wish gentle fiscal';
+const phrase =
+  'resemble rent deposit unique garment ripple burst negative else decorate menu theme';
 
 // one1a2rhuaqjcvfu69met9sque2l3w5v9z6qcdcz65
 // surge welcome lion goose gate consider taste injury health march debris kick
@@ -56,7 +58,7 @@ async function transfer(receiver) {
     // send token from shardID
     shardID: 0,
     // send token to toShardID
-    toShardID: 0,
+    toShardID: 1,
     // gas Price, you can use Unit class, and use Gwei, then remember to use toWei(), which will be transformed to BN
     gasPrice: new harmony.utils.Unit('100').asGwei().toWei(),
   });
@@ -116,6 +118,10 @@ async function transfer(receiver) {
       console.log('Normal transaction');
       console.log(`${txnHash} is confirmed`);
       console.log('');
+      console.log('please see detail in explorer:');
+      console.log('');
+      console.log('https://explorer.harmony.one/#/tx/' + txnHash);
+      console.log('');
       process.exit();
     }
   }
@@ -125,9 +131,13 @@ async function transfer(receiver) {
     console.log('Cross-Shard transaction');
     console.log(`${txnHash} is confirmed`);
     console.log('');
+    console.log('please see detail in explorer:');
+    console.log('');
+    console.log('https://explorer.harmony.one/#/tx/' + txnHash);
+    console.log('');
     process.exit();
   }
 }
 
 // sending from one18n8e7472pg5fqvcfcr5hg0npquha24wsxmjheg to  one1a2rhuaqjcvfu69met9sque2l3w5v9z6qcdcz65
-transfer('one1a2rhuaqjcvfu69met9sque2l3w5v9z6qcdcz65');
+// (async () => await transfer('one18n8e7472pg5fqvcfcr5hg0npquha24wsxmjheg'))();
