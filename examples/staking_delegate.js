@@ -25,7 +25,9 @@ const harmony = new Harmony(
 
 // add privateKey to wallet
 const private = 'fd416cb87dcf8ed187e85545d7734a192fc8e976f5b540e9e21e896ec2bc25c3';
+// one1pdv9lrdwl0rg5vglh4xtyrv3wjk3wsqket7zxy
 const sender = harmony.wallet.addByPrivateKey(private);
+console.log(sender.address);
 // const phrase =
 //     'genius cable radar memory high catch blossom correct middle wish gentle
 //     fiscal';
@@ -35,16 +37,28 @@ const sender = harmony.wallet.addByPrivateKey(private);
 
 // add privateKey to wallet
 // const sender = harmony.wallet.addByMnemonic(phrase);
-let r =
-  '0xf8f180f8a4940b585f8daefbc68a311fbd4cb20d9174ad174016f83885416c69636585616c69636591616c6963652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121ddc988016345785d8a0000c9880c7d713b49da0000c887b1a2bc2ec500000a820bb8f1b0b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b6224760861164008080830927c028a064b1b835f5b70a72228920db24e44c0a57d954c1d3dcac3b33c79d9593f96191a05577fd05064a37043a33ff7febb67ab126a8e1f0b67c92b7cab793a87ddf2c82';
+// let r =
+//   '0xf8f180f8a4940b585f8daefbc68a311fbd4cb20d9174ad174016f83885416c69636585616c69636591616c6963652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121ddc988016345785d8a0000c9880c7d713b49da0000c887b1a2bc2ec500000a820bb8f1b0b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b6224760861164008080830927c028a064b1b835f5b70a72228920db24e44c0a57d954c1d3dcac3b33c79d9593f96191a05577fd05064a37043a33ff7febb67ab126a8e1f0b67c92b7cab793a87ddf2c82';
 
 const delegateMsg = new Delegate(
-  'one1pf75h0t4am90z8uv3y0dgunfqp4lj8wr3t5rsp',
-  'one1pf75h0t4am90z8uv3y0dgunfqp4lj8wr3t5rsp',
-  '0x56BC75E2D63100000', // 0x56BC75E2D63100000
+  'one12fuf7x9rgtdgqg7vgq0962c556m3p7afsxgvll', // from delegate command.
+  'one1pdv9lrdwl0rg5vglh4xtyrv3wjk3wsqket7zxy', // fd416cb87dcf8ed187e85545d7734a192fc8e976f5b540e9e21e896ec2bc25c3
+  '0xde0b6b3a7640000', // 0x56BC75E2D63100000
 );
 
-const stakingTxn = new StakingTransaction('0x', delegateMsg, '0x2', '0x', '0x0927c0', 2, 2, '', '');
+// one12fuf7x9rgtdgqg7vgq0962c556m3p7afsxgvll;
+
+const stakingTxn = new StakingTransaction(
+  '0x2',
+  delegateMsg,
+  '0x2',
+  '0x',
+  '0x0927c0',
+  2,
+  2,
+  '',
+  '',
+);
 
 // 3. get sharding info
 async function setSharding() {
@@ -102,21 +116,19 @@ async function execute() {
   //     });
 
   // to confirm the result if it is already there
-  console.log(txnHash);
+  // console.log(txnHash);
   console.log(sentTxn);
 
   const confiremdTxn = await sentTxn.confirm(txnHash);
 
   // if the transactino is cross-shard transaction
-  if (!confiremdTxn.isCrossShard()) {
-    if (confiremdTxn.isConfirmed()) {
-      console.log('--- Result ---');
-      console.log('');
-      console.log('Normal transaction');
-      console.log(`${txnHash} is confirmed`);
-      console.log('');
-      process.exit();
-    }
+  if (confiremdTxn.isConfirmed()) {
+    console.log('--- Result ---');
+    console.log('');
+    console.log('Normal transaction');
+    console.log(`${txnHash} is confirmed`);
+    console.log('');
+    process.exit();
   }
   // if (confiremdTxn.isConfirmed() && confiremdTxn.isCxConfirmed()) {
   //   console.log('--- Result ---');
