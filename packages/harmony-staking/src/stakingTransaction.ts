@@ -48,9 +48,6 @@ export class StakingTransaction extends TransactionBase {
     gasPrice: number | string,
     gasLimit: number | string,
     chainID: number,
-    v: number,
-    r: string,
-    s: string,
     messenger: Messenger = defaultMessenger,
     txStatus = TxStatus.INTIALIZED,
   ) {
@@ -64,10 +61,10 @@ export class StakingTransaction extends TransactionBase {
     this.rawTransaction = '0x';
     this.unsignedRawTransaction = '0x';
     this.signature = {
-      r,
-      s,
+      r: '',
+      s: '',
       recoveryParam: 0,
-      v,
+      v: 0,
     };
     this.chainId = chainID;
     this.from = '0x';
@@ -82,7 +79,11 @@ export class StakingTransaction extends TransactionBase {
       raw.push(hexlify(this.directive));
     }
     raw.push(this.stakeMsg.encode());
-    raw.push(hexlify(this.nonce));
+    if (!this.nonce) {
+      raw.push('0x');
+    } else {
+      raw.push(hexlify(this.nonce));
+    }
     raw.push(hexlify(this.gasPrice));
     raw.push(hexlify(this.gasLimit));
     if (this.chainId != null && this.chainId !== 0) {

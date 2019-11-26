@@ -24,7 +24,7 @@ const harmony = new Harmony(
 // surge welcome lion goose gate consider taste injury health march debris kick
 
 // add privateKey to wallet
-const private = 'fd416cb87dcf8ed187e85545d7734a192fc8e976f5b540e9e21e896ec2bc25c3';
+const private = '63e35b761e9df0d50ddcdaa8e33c235b60c991bfed22925a12768b0c08ef822f';
 // one1pdv9lrdwl0rg5vglh4xtyrv3wjk3wsqket7zxy
 const sender = harmony.wallet.addByPrivateKey(private);
 console.log(sender.address);
@@ -41,7 +41,7 @@ console.log(sender.address);
 //   '0xf8f180f8a4940b585f8daefbc68a311fbd4cb20d9174ad174016f83885416c69636585616c69636591616c6963652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121ddc988016345785d8a0000c9880c7d713b49da0000c887b1a2bc2ec500000a820bb8f1b0b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b6224760861164008080830927c028a064b1b835f5b70a72228920db24e44c0a57d954c1d3dcac3b33c79d9593f96191a05577fd05064a37043a33ff7febb67ab126a8e1f0b67c92b7cab793a87ddf2c82';
 
 const delegateMsg = new Delegate(
-  'one12fuf7x9rgtdgqg7vgq0962c556m3p7afsxgvll', // from delegate command.
+  'one1pf75h0t4am90z8uv3y0dgunfqp4lj8wr3t5rsp', // from delegate command.
   'one1pdv9lrdwl0rg5vglh4xtyrv3wjk3wsqket7zxy', // fd416cb87dcf8ed187e85545d7734a192fc8e976f5b540e9e21e896ec2bc25c3
   '0xde0b6b3a7640000', // 0x56BC75E2D63100000
 );
@@ -54,10 +54,7 @@ const stakingTxn = new StakingTransaction(
   '0x2',
   '0x',
   '0x0927c0',
-  2,
-  2,
-  '',
-  '',
+  ChainID.HmyLocal,
 );
 
 // 3. get sharding info
