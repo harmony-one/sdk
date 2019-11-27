@@ -25,6 +25,7 @@ import {
   Description,
   CommissionRate,
   Decimal,
+  StakingFactory,
 } from '../src';
 
 import testTransactions from './transactions.json';
@@ -73,6 +74,43 @@ describe('test sign staking transaction', () => {
     const signed = stakingTx.rlpSign(testTx.privateKey);
     expect(signed[1]).toEqual(testTx.encoded);
   });
+
+  it('should test sign create validator staking transaction using factory', () => {
+    const testTx: any = testTransactions[0];
+
+    const address = getAddressFromPrivateKey(testTx.privateKey);
+    expect(isValidAddress(address)).toEqual(true);
+    const stakingFactory = new StakingFactory(msgHttp);
+    const stakingTx = stakingFactory
+      .createValidator({
+        validatorAddress: testTx.validatorAddress,
+        description: {
+          ...testTx.description,
+        },
+        commissionRate: {
+          ...testTx.commissionRates,
+        },
+        minSelfDelegation: testTx.minSelfDelegation,
+        maxTotalDelegation: testTx.maxTotalDelegation,
+        slotPubKeys: testTx.slotPubKeys,
+        amount: testTx.amount,
+      })
+      .setTxParams({
+        nonce: testTx.nonce,
+        gasPrice: testTx.gasPrice,
+        gasLimit: testTx.gasLimit,
+        chainId: testTx.chainID,
+        signature: {
+          v: 0,
+          r: '',
+          s: '',
+        },
+      })
+      .build();
+    const signed = stakingTx.rlpSign(testTx.privateKey);
+    expect(signed[1]).toEqual(testTx.encoded);
+  });
+
   it('should test sign edit validator staking transaction', () => {
     const testTx: any = testTransactions[1];
     const address = getAddressFromPrivateKey(testTx.privateKey);
@@ -107,6 +145,38 @@ describe('test sign staking transaction', () => {
     const signed = stakingTx.rlpSign(testTx.privateKey);
     expect(signed[1]).toEqual(testTx.encoded);
   });
+
+  it('should test sign edit validator staking transaction using factory', () => {
+    const testTx: any = testTransactions[1];
+    const address = getAddressFromPrivateKey(testTx.privateKey);
+    expect(isValidAddress(address)).toEqual(true);
+    const stakingFactory = new StakingFactory(msgHttp);
+    const stakingTx = stakingFactory
+      .editValidator({
+        validatorAddress: testTx.validatorAddress,
+        description: { ...testTx.description },
+        commissionRate: testTx.commissionRate,
+        minSelfDelegation: testTx.minSelfDelegation,
+        maxTotalDelegation: testTx.maxTotalDelegation,
+        slotKeyToRemove: testTx.slotKeyToRemove,
+        slotKeyToAdd: testTx.slotKeyToAdd,
+      })
+      .setTxParams({
+        nonce: testTx.nonce,
+        gasPrice: testTx.gasPrice,
+        gasLimit: testTx.gasLimit,
+        chainId: testTx.chainID,
+        signature: {
+          v: 0,
+          r: '',
+          s: '',
+        },
+      })
+      .build();
+    const signed = stakingTx.rlpSign(testTx.privateKey);
+    expect(signed[1]).toEqual(testTx.encoded);
+  });
+
   it('should test sign delegate staking transaction', () => {
     const testTx: any = testTransactions[2];
     const address = getAddressFromPrivateKey(testTx.privateKey);
@@ -131,6 +201,35 @@ describe('test sign staking transaction', () => {
     const signed = stakingTx.rlpSign(testTx.privateKey);
     expect(signed[1]).toEqual(testTx.encoded);
   });
+
+  it('should test sign delegate staking transaction using factory', () => {
+    const testTx: any = testTransactions[2];
+    const address = getAddressFromPrivateKey(testTx.privateKey);
+    expect(isValidAddress(address)).toEqual(true);
+    const stakingFactory = new StakingFactory(msgHttp);
+    const stakingTx = stakingFactory
+      .delegate({
+        delegatorAddress: testTx.delegatorAddress,
+        validatorAddress: testTx.validatorAddress,
+        amount: testTx.amount,
+      })
+      .setTxParams({
+        nonce: testTx.nonce,
+        gasPrice: testTx.gasPrice,
+        gasLimit: testTx.gasLimit,
+        chainId: testTx.chainID,
+        signature: {
+          v: 0,
+          r: '',
+          s: '',
+        },
+      })
+      .build();
+
+    const signed = stakingTx.rlpSign(testTx.privateKey);
+    expect(signed[1]).toEqual(testTx.encoded);
+  });
+
   it('should test sign undelegate staking transaction', () => {
     const testTx: any = testTransactions[3];
     const address = getAddressFromPrivateKey(testTx.privateKey);
@@ -155,6 +254,34 @@ describe('test sign staking transaction', () => {
     const signed = stakingTx.rlpSign(testTx.privateKey);
     expect(signed[1]).toEqual(testTx.encoded);
   });
+
+  it('should test sign undelegate staking transaction using factory', () => {
+    const testTx: any = testTransactions[3];
+    const address = getAddressFromPrivateKey(testTx.privateKey);
+    expect(isValidAddress(address)).toEqual(true);
+    const stakingFactory = new StakingFactory(msgHttp);
+    const stakingTx = stakingFactory
+      .undelegate({
+        delegatorAddress: testTx.delegatorAddress,
+        validatorAddress: testTx.validatorAddress,
+        amount: testTx.amount,
+      })
+      .setTxParams({
+        nonce: testTx.nonce,
+        gasPrice: testTx.gasPrice,
+        gasLimit: testTx.gasLimit,
+        chainId: testTx.chainID,
+        signature: {
+          v: 0,
+          r: '',
+          s: '',
+        },
+      })
+      .build();
+    const signed = stakingTx.rlpSign(testTx.privateKey);
+    expect(signed[1]).toEqual(testTx.encoded);
+  });
+
   it('should test sign collect rewards staking transaction', () => {
     const testTx: any = testTransactions[4];
     const address = getAddressFromPrivateKey(testTx.privateKey);
@@ -172,6 +299,30 @@ describe('test sign staking transaction', () => {
       '',
       '',
     );
+    const signed = stakingTx.rlpSign(testTx.privateKey);
+    expect(signed[1]).toEqual(testTx.encoded);
+  });
+  it('should test sign collect rewards staking transaction using factory', () => {
+    const testTx: any = testTransactions[4];
+    const address = getAddressFromPrivateKey(testTx.privateKey);
+    expect(isValidAddress(address)).toEqual(true);
+    const stakingFactory = new StakingFactory(msgHttp);
+    const stakingTx = stakingFactory
+      .collectRewards({
+        delegatorAddress: testTx.delegatorAddress,
+      })
+      .setTxParams({
+        nonce: testTx.nonce,
+        gasPrice: testTx.gasPrice,
+        gasLimit: testTx.gasLimit,
+        chainId: testTx.chainID,
+        signature: {
+          v: 0,
+          r: '',
+          s: '',
+        },
+      })
+      .build();
     const signed = stakingTx.rlpSign(testTx.privateKey);
     expect(signed[1]).toEqual(testTx.encoded);
   });

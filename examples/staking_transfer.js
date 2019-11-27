@@ -6,7 +6,7 @@ const {
   CommissionRate,
   StakingTransaction,
   CreateValidator,
-} = require('../packages/harmony-staking'); //../packages/harmony-staking
+} = require('@harmony-js/staking'); //../packages/harmony-staking
 const { TxStatus } = require('@harmony-js/transaction');
 
 const LOCALNET = `http://localhost:9500`;

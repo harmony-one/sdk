@@ -6,7 +6,7 @@ const {
   Delegate,
   Undelegate,
   CollectRewards,
-} = require('../packages/harmony-staking');
+} = require('@harmony-js/staking');
 
 const createMsg = CreateValidator({
   validatorAddress: 'one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9',
