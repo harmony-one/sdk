@@ -3,7 +3,7 @@ import * as utils from '@harmony-js/utils';
 
 import { Provider, HttpProvider, Messenger, WSProvider, ShardingItem } from '@harmony-js/network';
 import { TransactionFactory, Transaction } from '@harmony-js/transaction';
-import { StakingTransaction } from '@harmony-js/staking';
+import { StakingTransaction, StakingFactory } from '@harmony-js/staking';
 import { ContractFactory, Contract } from '@harmony-js/contract';
 import { Wallet, Account } from '@harmony-js/account';
 import { Blockchain } from './blockchain';
@@ -16,6 +16,7 @@ export class Harmony extends utils.HarmonyCore {
     Messenger,
     Blockchain,
     TransactionFactory,
+    StakingFactory,
     Wallet,
     Transaction,
     StakingTransaction,
@@ -24,6 +25,7 @@ export class Harmony extends utils.HarmonyCore {
   };
   messenger: Messenger;
   transactions: TransactionFactory;
+  stakings: StakingFactory;
   wallet: Wallet;
   blockchain: Blockchain;
   contracts: ContractFactory;
@@ -47,6 +49,7 @@ export class Harmony extends utils.HarmonyCore {
     this.messenger = new Messenger(this.provider, this.chainType, this.chainId);
     this.blockchain = new Blockchain(this.messenger);
     this.transactions = new TransactionFactory(this.messenger);
+    this.stakings = new StakingFactory(this.messenger);
     this.wallet = new Wallet(this.messenger);
     this.contracts = new ContractFactory(this.wallet);
     this.crypto = crypto;
@@ -95,5 +98,6 @@ export class Harmony extends utils.HarmonyCore {
     this.blockchain.setMessenger(messenger);
     this.wallet.setMessenger(messenger);
     this.transactions.setMessenger(messenger);
+    this.stakings.setMessenger(messenger);
   }
 }

@@ -202,4 +202,7 @@ export class StakingFactory {
       TxStatus.INTIALIZED,
     );
   }
+  setMessenger(messenger: Messenger) {
+    this.messenger = messenger;
+  }
 }
