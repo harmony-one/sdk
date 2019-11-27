@@ -24,7 +24,7 @@ const stakingTxn = harmony.stakings
       securityContact: 'Bob',
       details: "Don't mess with me!!!",
     },
-    commissionRates: {
+    commissionRate: {
       rate: '0.1',
       maxRate: '0.9',
       maxChangeRate: '0.05',

@@ -53,7 +53,7 @@ const sender = harmony.wallet.addByPrivateKey(private);
 //   ChainID.HmyLocal,
 // );
 
-const stakingTxn = new StakingFactory(harmony.messenger)
+const stakingTxn = harmony.stakings
   .undelegate({
     delegatorAddress: 'one1pf75h0t4am90z8uv3y0dgunfqp4lj8wr3t5rsp',
     validatorAddress: 'one1pdv9lrdwl0rg5vglh4xtyrv3wjk3wsqket7zxy',

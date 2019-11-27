@@ -42,33 +42,31 @@ const sender = harmony.wallet.addByPrivateKey(private);
 // add privateKey to wallet
 // const sender = harmony.wallet.addByMnemonic(phrase);
 
-const desc = new Description('Alice', 'alice', 'alice.harmony.one', 'Bob', "Don't mess with me!!!");
-
-const rate = new Decimal('0.1');
-const max = new Decimal('0.9');
-const change = new Decimal('0.05');
-
-const commission = new CommissionRate(rate, max, change);
-const createMsg = new CreateValidator(
-  'one1pdv9lrdwl0rg5vglh4xtyrv3wjk3wsqket7zxy',
-  desc,
-  commission,
-  '0x8AC7230489E80000',
-  '0xA2A15D09519BE00000',
-  [
-    '0xb9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611',
-  ],
-  '0x56BC75E2D63100000', // 0x56BC75E2D63100000
-);
-
-const stakingTxn = new StakingTransaction(
-  '0x',
-  createMsg,
-  '0x2',
-  '0x',
-  '0x0927c0',
-  ChainID.HmyLocal,
-);
+const stakingTxn = harmony.stakings
+  .createValidator({
+    validatorAddress: 'one1pdv9lrdwl0rg5vglh4xtyrv3wjk3wsqket7zxy',
+    description: {
+      name: 'Alice',
+      identity: 'alice',
+      website: 'alice.harmony.one',
+      securityContact: 'Bob',
+      details: "Don't mess with me!!",
+    },
+    commissionRate: { rate: '0.1', maxRate: '0.9', maxChangeRate: '0.05' },
+    minSelfDelegation: '0x8AC7230489E80000',
+    maxTotalDelegation: '0xA2A15D09519BE00000',
+    slotPubKeys: [
+      '0xb9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611',
+    ],
+    amount: '0x56BC75E2D63100000',
+  })
+  .setTxParams({
+    nonce: '0x2',
+    gasPrice: '0x',
+    gasLimit: '0x0927c0',
+    chainId: ChainID.HmyLocal,
+  })
+  .build();
 
 // 3. get sharding info
 async function setSharding() {
