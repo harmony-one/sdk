@@ -171,27 +171,27 @@ describe('test sign staking transaction', () => {
     expect(signed[1]).toEqual(testTx.encoded);
   });
 
-  // it('should test sign delegate staking transaction', () => {
-  //   const testTx: any = testTransactions[2];
-  //   const address = getAddressFromPrivateKey(testTx.privateKey);
-  //   expect(isValidAddress(address)).toEqual(true);
-  //   const stakeMsg: Delegate = new Delegate(
-  //     testTx.delegatorAddress,
-  //     testTx.validatorAddress,
-  //     testTx.amount,
-  //   );
+  it('should test sign delegate staking transaction', () => {
+    const testTx: any = testTransactions[2];
+    const address = getAddressFromPrivateKey(testTx.privateKey);
+    expect(isValidAddress(address)).toEqual(true);
+    const stakeMsg: Delegate = new Delegate(
+      testTx.delegatorAddress,
+      testTx.validatorAddress,
+      testTx.amount,
+    );
 
-  //   const stakingTx: StakingTransaction = new StakingTransaction(
-  //     Directive.DirectiveDelegate,
-  //     stakeMsg,
-  //     testTx.nonce,
-  //     testTx.gasPrice,
-  //     testTx.gasLimit,
-  //     testTx.ChainID,
-  //   );
-  //   const signed = stakingTx.rlpSign(testTx.privateKey);
-  //   expect(signed[1]).toEqual(testTx.encoded);
-  // });
+    const stakingTx: StakingTransaction = new StakingTransaction(
+      Directive.DirectiveDelegate,
+      stakeMsg,
+      testTx.nonce,
+      testTx.gasPrice,
+      testTx.gasLimit,
+      testTx.chainID,
+    );
+    const signed = stakingTx.rlpSign(testTx.privateKey);
+    expect(signed[1]).toEqual(testTx.encoded);
+  });
 
   it('should test sign delegate staking transaction using factory', () => {
     const testTx: any = testTransactions[2];
