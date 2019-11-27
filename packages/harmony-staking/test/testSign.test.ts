@@ -67,9 +67,6 @@ describe('test sign staking transaction', () => {
       testTx.gasPrice,
       testTx.gasLimit,
       testTx.chainID,
-      testTx.chainID,
-      '',
-      '',
     );
     const signed = stakingTx.rlpSign(testTx.privateKey);
     expect(signed[1]).toEqual(testTx.encoded);
@@ -138,9 +135,6 @@ describe('test sign staking transaction', () => {
       testTx.gasPrice,
       testTx.gasLimit,
       testTx.chainID,
-      testTx.chainID,
-      '',
-      '',
     );
     const signed = stakingTx.rlpSign(testTx.privateKey);
     expect(signed[1]).toEqual(testTx.encoded);
@@ -193,10 +187,7 @@ describe('test sign staking transaction', () => {
       testTx.nonce,
       testTx.gasPrice,
       testTx.gasLimit,
-      testTx.chainID,
-      testTx.chainID,
-      '',
-      '',
+      testTx.ChainID,
     );
     const signed = stakingTx.rlpSign(testTx.privateKey);
     expect(signed[1]).toEqual(testTx.encoded);
@@ -247,9 +238,6 @@ describe('test sign staking transaction', () => {
       testTx.gasPrice,
       testTx.gasLimit,
       testTx.chainID,
-      testTx.chainID,
-      '',
-      '',
     );
     const signed = stakingTx.rlpSign(testTx.privateKey);
     expect(signed[1]).toEqual(testTx.encoded);
@@ -295,9 +283,6 @@ describe('test sign staking transaction', () => {
       testTx.gasPrice,
       testTx.gasLimit,
       testTx.chainID,
-      testTx.chainID,
-      '',
-      '',
     );
     const signed = stakingTx.rlpSign(testTx.privateKey);
     expect(signed[1]).toEqual(testTx.encoded);
@@ -371,9 +356,6 @@ describe('test sign staking transaction', () => {
       testTx.gasPrice,
       testTx.gasLimit,
       testTx.chainID,
-      testTx.chainID,
-      '',
-      '',
     );
     const account: any = walletHttp.addByPrivateKey(testTx.privateKey);
     const signedStaking: StakingTransaction = await account.signStaking(stakingTx);
@@ -419,9 +401,6 @@ describe('test sign staking transaction', () => {
       testTx.gasPrice,
       testTx.gasLimit,
       testTx.chainID,
-      testTx.chainID,
-      '',
-      '',
     );
     const account: any = walletHttp.addByPrivateKey(testTx.privateKey);
     const signedStaking: StakingTransaction = await account.signStaking(stakingTx);
@@ -457,9 +436,6 @@ describe('test sign staking transaction', () => {
       testTx.gasPrice,
       testTx.gasLimit,
       testTx.chainID,
-      testTx.chainID,
-      '',
-      '',
     );
     const account: any = walletHttp.addByPrivateKey(testTx.privateKey);
     const signedStaking: StakingTransaction = await account.signStaking(stakingTx);
@@ -495,9 +471,6 @@ describe('test sign staking transaction', () => {
       testTx.gasPrice,
       testTx.gasLimit,
       testTx.chainID,
-      testTx.chainID,
-      '',
-      '',
     );
     const account: any = walletHttp.addByPrivateKey(testTx.privateKey);
     const signedStaking: StakingTransaction = await account.signStaking(stakingTx);
@@ -532,9 +505,6 @@ describe('test sign staking transaction', () => {
       testTx.gasPrice,
       testTx.gasLimit,
       testTx.chainID,
-      testTx.chainID,
-      '',
-      '',
     );
     const account: any = walletHttp.addByPrivateKey(testTx.privateKey);
     const signedStaking: StakingTransaction = await account.signStaking(stakingTx);
