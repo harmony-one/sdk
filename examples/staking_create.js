@@ -13,7 +13,8 @@ const harmony = new Harmony('http://localhost:9500', {
   chainId: ChainID.HmyLocal,
   chainType: ChainType.Harmony,
 });
-const stakingTxn = new StakingFactory(harmony.messenger)
+
+const stakingTxn = harmony.stakings
   .createValidator({
     validatorAddress: 'one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9',
     description: {
@@ -45,7 +46,7 @@ const stakingTxn = new StakingFactory(harmony.messenger)
 
 stakingTxn
   .sendTransaction()
-  .then((stakingTxn, res) => {
+  .then(([stakingTxn, res]) => {
     console.log(res);
   })
   .catch((err) => {
