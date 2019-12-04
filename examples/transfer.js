@@ -6,31 +6,40 @@ const { ChainID, ChainType } = require('@harmony-js/utils');
 
 const URL_TESTNET = `https://api.s0.b.hmny.io`;
 const URL_MAINNET = `https://api.s0.t.hmny.io`;
+const URL_PANGAEA = 'https://api.s0.pga.hmny.io';
 
 // 1. initialize the Harmony instance
 
 const harmony = new Harmony(
   // rpc url
-  URL_TESTNET,
+  URL_PANGAEA,
   {
     // chainType set to Harmony
     chainType: ChainType.Harmony,
     // chainType set to HmyLocal
-    chainId: ChainID.HmyTestnet,
+    chainId: ChainID.HmyPangaea,
   },
 );
 
 // 2. get wallet ready
 // one18n8e7472pg5fqvcfcr5hg0npquha24wsxmjheg
-// const phrase = 'genius cable radar memory high catch blossom correct middle wish gentle fiscal';
-const phrase =
-  'resemble rent deposit unique garment ripple burst negative else decorate menu theme';
+const phrase = 'genius cable radar memory high catch blossom correct middle wish gentle fiscal';
+// const phrase =
+//   'resemble rent deposit unique garment ripple burst negative else decorate menu theme';
 
 // one1a2rhuaqjcvfu69met9sque2l3w5v9z6qcdcz65
 // surge welcome lion goose gate consider taste injury health march debris kick
 
 // add privateKey to wallet
+
+const privateKey = '63e35b761e9df0d50ddcdaa8e33c235b60c991bfed22925a12768b0c08ef822f';
+
 const sender = harmony.wallet.addByMnemonic(phrase);
+const sender2 = harmony.wallet.addByPrivateKey(privateKey);
+
+harmony.wallet.setSigner(sender2.address);
+
+console.log('sender2Address is : ', sender2.bech32Address);
 
 // 3. get sharding info
 async function setSharding() {
@@ -38,6 +47,7 @@ async function setSharding() {
   // However sharding structure is different between mainnet, testnet and local testnet
   // We need to get sharding info before doing cross-shard transaction
   const res = await harmony.blockchain.getShardingStructure();
+
   harmony.shardingStructures(res.result);
 }
 
@@ -52,7 +62,7 @@ async function transfer(receiver) {
     //  token send to
     to: receiver,
     // amount to send
-    value: '100000000000000000',
+    value: '100000000',
     // gas limit, you can use string
     gasLimit: '210000',
     // send token from shardID
@@ -60,7 +70,7 @@ async function transfer(receiver) {
     // send token to toShardID
     toShardID: 1,
     // gas Price, you can use Unit class, and use Gwei, then remember to use toWei(), which will be transformed to BN
-    gasPrice: new harmony.utils.Unit('100').asGwei().toWei(),
+    gasPrice: new harmony.utils.Unit('10').asGwei().toWei(),
   });
 
   // sign the transaction use wallet;
@@ -140,4 +150,4 @@ async function transfer(receiver) {
 }
 
 // sending from one18n8e7472pg5fqvcfcr5hg0npquha24wsxmjheg to  one1a2rhuaqjcvfu69met9sque2l3w5v9z6qcdcz65
-// (async () => await transfer('one18n8e7472pg5fqvcfcr5hg0npquha24wsxmjheg'))();
+(async () => await transfer('one1pf75h0t4am90z8uv3y0dgunfqp4lj8wr3t5rsp'))();

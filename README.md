@@ -15,6 +15,10 @@
    1. [Unit tests](#unit-tests)
    2. [e2e tests](#e2e-tests)
 5. [More examples](#more-examples)
+6. [Release Note](#release-note)
+   1. [Before Release](#before-release)
+   2. [Publish to npm using `dev:publish`](#publish-to-npm-using-devpublish)
+   3. [Publish to npm with `lerna`](#publish-to-npm-with-lerna)
 
 # About this SDK
 
@@ -240,6 +244,43 @@ yarn build && yarn test:e2e
 
 * [dapp-examples](https://github.com/harmony-one/dapp-examples)
 
+
+# Release Note
+## Before Release
+1. Build source first
+   ```bash
+    yarn build:ts
+   ```
+2. Run unit tests
+   ```bash
+   yarn test:src
+   ```
+3. Run e2e tests
+   ```bash
+   yarn test:e2e
+   ```
+4. Clean and build bundle
+   ```bash
+   yarn dist
+   ```
+## Publish to npm using `dev:publish`
+
+The packages is to be published to npm, using `@next` tag using script in `package.json`
+
+1. Commit all changes to github master
+2. Run publish script
+   ```bash
+   yarn dev:publish
+   ```
+3. Confirm all prompt with `Y`
+4. See version changes in `npmjs.com`
+
+## Publish to npm with `lerna`
+1. Commit all changes to github master
+2. Run `lerna publish`, `lerna` is required globally.
+   ```bash
+   lerna publish
+   ```
 
 
 
