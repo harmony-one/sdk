@@ -1,7 +1,7 @@
 import { Wallet } from '@harmony-js/account';
 import { TransactionFactory, Transaction, TxStatus } from '@harmony-js/transaction';
 import { RPCMethod, getResultForData, Emitter } from '@harmony-js/network';
-import { hexToNumber, hexToBN } from '@harmony-js/utils';
+import { hexToNumber, hexToBN, isValidAddress } from '@harmony-js/utils';
 import { getAddress } from '@harmony-js/crypto';
 import { AbiItemModel } from '../models/types';
 import { Contract } from '../contract';
@@ -265,6 +265,10 @@ export class ContractMethod {
         data: this.encodeABI(),
       };
 
+      if (txObject.from !== undefined && isValidAddress(txObject.from)) {
+        const originFrom = txObject.from;
+        txObject.from = getAddress(originFrom).checksum;
+      }
       // tslint:disable-line
       const result = new TransactionFactory((<Wallet>this.wallet).messenger).newTx(txObject);
 
