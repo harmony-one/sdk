@@ -60,7 +60,7 @@ export const encrypt = async (
   }
   // TODO: should use isString() to implement this
 
-  if (!password) {
+  if (password === undefined) {
     throw new Error('password is not found');
   }
   const address = getAddressFromPrivateKey(privateKey);
@@ -141,7 +141,7 @@ export const encryptPhrase = async (
   password: string,
   options?: EncryptOptions,
 ): Promise<string> => {
-  if (!password) {
+  if (password === undefined) {
     throw new Error('password is not found');
   }
   const salt = randomBytes(32);
