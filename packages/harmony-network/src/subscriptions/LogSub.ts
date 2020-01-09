@@ -26,11 +26,12 @@ export class LogSub extends SubscriptionMethod {
         }
 
         const logs = getPastLogs.result;
-
-        logs.forEach((log: any) => {
-          const formattedLog = this.onNewSubscriptionItem(log);
-          this.emitter.emit('data', formattedLog);
-        });
+        if (logs !== undefined) {
+          logs.forEach((log: any) => {
+            const formattedLog = this.onNewSubscriptionItem(log);
+            this.emitter.emit('data', formattedLog);
+          });
+        }
 
         delete this.options.fromBlock;
         // const sub = this.start();
