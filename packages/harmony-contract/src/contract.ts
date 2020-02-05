@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ *
+ */
+
 import { Wallet } from '@harmony-js/account';
 import { Messenger } from '@harmony-js/network';
 import { Transaction } from '@harmony-js/transaction';

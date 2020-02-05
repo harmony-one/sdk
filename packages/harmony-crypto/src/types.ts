@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-crypto
+ * @ignore
+ */
+
 export type KDF = 'pbkdf2' | 'scrypt';
 
 export interface PBKDF2Params {

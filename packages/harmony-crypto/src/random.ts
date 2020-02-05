@@ -1,4 +1,9 @@
 /**
+ * @packageDocumentation
+ * @ignore
+ */
+
+/**
  * @function randomBytes
  * @description Uses JS-native CSPRNG to generate a specified number of bytes.
  * NOTE: this method throws if no PRNG is available.
@@ -8,11 +13,7 @@
 export const randomBytes = (bytes: number): string => {
   let randBz: number[] | Uint8Array;
 
-  if (
-    typeof window !== 'undefined' &&
-    window.crypto &&
-    window.crypto.getRandomValues
-  ) {
+  if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
     randBz = window.crypto.getRandomValues(new Uint8Array(bytes));
   } else if (typeof require !== 'undefined') {
     randBz = require('crypto').randomBytes(bytes);

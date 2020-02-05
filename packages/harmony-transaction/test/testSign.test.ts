@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-transaction
+ * @ignore
+ */
+
 import { Transaction } from '../src/transaction';
 import { RLPSign } from '../src/utils';
 import { TxStatus } from '../src/types';

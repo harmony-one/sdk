@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-staking
+ */
+
 import { Messenger } from '@harmony-js/network';
 import { Signature } from '@harmony-js/crypto';
 

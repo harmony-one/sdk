@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-staking
+ */
+
 // tslint:disable: max-classes-per-file
 
 import {

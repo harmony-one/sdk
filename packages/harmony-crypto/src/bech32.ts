@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-crypto
+ */
+
 import { isAddress } from '@harmony-js/utils';
 
 import { toChecksumAddress } from './keyTool';
@@ -192,11 +197,7 @@ export const toBech32 = (address: string, useHRP: string = HRP): string => {
     throw new Error('Invalid address format.');
   }
 
-  const addrBz = convertBits(
-    Buffer.from(address.replace('0x', ''), 'hex'),
-    8,
-    5,
-  );
+  const addrBz = convertBits(Buffer.from(address.replace('0x', ''), 'hex'), 8, 5);
 
   if (addrBz === null) {
     throw new Error('Could not convert byte Buffer to 5-bit Buffer');

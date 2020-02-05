@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
 export const enum RPCMethod {
   // 1. hmy_getBlockByHash
   GetBlockByHash = 'hmy_getBlockByHash',

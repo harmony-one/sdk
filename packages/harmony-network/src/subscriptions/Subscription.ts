@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
 import { Messenger } from '../messenger/messenger';
 import { RPCMethod } from '../rpcMethod/rpc';
 import { WSProvider } from '../providers/ws';

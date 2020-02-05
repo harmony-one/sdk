@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ */
+
 // this file is mainly ported from `ethers.js`, but done some fixes
 // 1. added bytesPadRight support
 // 2. ts-lint
@@ -25,8 +30,7 @@ const NegativeOne: BN = new BN(-1);
 const One: BN = new BN(1);
 // const Two: BN = new BN(2);
 const Zero: BN = new BN(0);
-const HashZero =
-  '0x0000000000000000000000000000000000000000000000000000000000000000';
+const HashZero = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
 const MaxUint256: BN = hexToBN(
   '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
@@ -73,10 +77,7 @@ const paramTypeBytes = new RegExp(/^bytes([0-9]*)$/);
 const paramTypeNumber = new RegExp(/^(u?int)([0-9]*)$/);
 const paramTypeArray = new RegExp(/^(.*)\[([0-9]*)\]$/);
 
-export const defaultCoerceFunc: CoerceFunc = (
-  type: string,
-  value: any,
-): any => {
+export const defaultCoerceFunc: CoerceFunc = (type: string, value: any): any => {
   const match = type.match(paramTypeNumber);
   if (match && parseInt(match[2], 10) <= 48) {
     // return value.toNumber();
@@ -155,9 +156,7 @@ function parseParam(param: string, allowIndexed?: boolean): ParamType {
           node.type = verifyType(node.type);
         }
 
-        node.components = [
-          { type: '', name: '', parent: node, state: { allowType: true } },
-        ];
+        node.components = [{ type: '', name: '', parent: node, state: { allowType: true } }];
         node = node.components[0];
         break;
 
@@ -415,7 +414,7 @@ function parseSignatureFunction(fragment: string): FunctionFragment {
   // We have outputs
   if (comps.length > 1) {
     const right = comps[1].match(regexParen);
-    if (right === null || (right[1].trim() !== '' || right[3].trim() !== '')) {
+    if (right === null || right[1].trim() !== '' || right[3].trim() !== '') {
       throw new Error('unexpected tokens');
     }
 
@@ -439,20 +438,11 @@ function parseSignatureFunction(fragment: string): FunctionFragment {
 }
 
 // @TODO: Allow a second boolean to expose names and modifiers
-export function formatSignature(
-  fragment: EventFragment | FunctionFragment,
-): string {
-  return (
-    fragment.name +
-    '(' +
-    fragment.inputs.map((i) => formatParamType(i)).join(',') +
-    ')'
-  );
+export function formatSignature(fragment: EventFragment | FunctionFragment): string {
+  return fragment.name + '(' + fragment.inputs.map((i) => formatParamType(i)).join(',') + ')';
 }
 
-export function parseSignature(
-  fragment: string,
-): EventFragment | FunctionFragment {
+export function parseSignature(fragment: string): EventFragment | FunctionFragment {
   if (typeof fragment === 'string') {
     // Make sure the "returns" is surrounded by a space and all whitespace is exactly one space
     fragment = fragment.replace(/\s/g, ' ');
@@ -548,12 +538,7 @@ class CoderNull extends Coder {
 class CoderNumber extends Coder {
   readonly size: number;
   readonly signed: boolean;
-  constructor(
-    coerceFunc: CoerceFunc,
-    size: number,
-    signed: boolean,
-    localName: string,
-  ) {
+  constructor(coerceFunc: CoerceFunc, size: number, signed: boolean, localName: string) {
     const name = (signed ? 'int' : 'uint') + size * 8;
     super(coerceFunc, name, name, localName, false);
 
@@ -597,15 +582,11 @@ class CoderNumber extends Coder {
 
   decode(data: Uint8Array, offset: number): DecodedResult {
     if (data.length < offset + 32) {
-      throwError(
-        'insufficient data for ' + this.name + ' type',
-        INVALID_ARGUMENT,
-        {
-          arg: this.localName,
-          coderType: this.name,
-          value: hexlify(data.slice(offset, offset + 32)),
-        },
-      );
+      throwError('insufficient data for ' + this.name + ' type', INVALID_ARGUMENT, {
+        arg: this.localName,
+        coderType: this.name,
+        value: hexlify(data.slice(offset, offset + 32)),
+      });
     }
     const junkLength = 32 - this.size;
     const dataValue = hexlify(data.slice(offset + junkLength, offset + 32));
@@ -711,10 +692,7 @@ class CoderFixedBytes extends Coder {
 
     return {
       consumed: 32,
-      value: this.coerceFunc(
-        this.name,
-        hexlify(data.slice(offset, offset + this.length)),
-      ),
+      value: this.coerceFunc(this.name, hexlify(data.slice(offset, offset + this.length))),
     };
   }
 }
@@ -763,11 +741,7 @@ function _encodeDynamicBytes(value: Uint8Array): Uint8Array {
   return concat([uint256Coder.encode(new BN(value.length)), value, padding]);
 }
 
-function _decodeDynamicBytes(
-  data: Uint8Array,
-  offset: number,
-  localName: string,
-): DecodedResult {
+function _decodeDynamicBytes(data: Uint8Array, offset: number, localName: string): DecodedResult {
   if (data.length < offset + 32) {
     throwError('insufficient data for dynamicBytes length', INVALID_ARGUMENT, {
       arg: localName,
@@ -920,11 +894,7 @@ function pack(coders: Coder[], values: any[]): Uint8Array {
   return data;
 }
 
-function unpack(
-  coders: Coder[],
-  data: Uint8Array,
-  offset: number,
-): DecodedResult {
+function unpack(coders: Coder[], data: Uint8Array, offset: number): DecodedResult {
   const baseOffset = offset;
   let consumed = 0;
   const value: any = [];
@@ -974,12 +944,7 @@ function unpack(
 class CoderArray extends Coder {
   readonly coder: Coder;
   readonly length: number;
-  constructor(
-    coerceFunc: CoerceFunc,
-    coder: Coder,
-    length: number,
-    localName: string,
-  ) {
+  constructor(coerceFunc: CoerceFunc, coder: Coder, length: number, localName: string) {
     const type = coder.type + '[' + (length >= 0 ? length : '') + ']';
     const dynamic = length === -1 || coder.dynamic;
     super(coerceFunc, 'array', type, localName, dynamic);
@@ -1033,15 +998,11 @@ class CoderArray extends Coder {
       try {
         decodedLength = uint256Coder.decode(data, offset);
       } catch (error) {
-        throwError(
-          'insufficient data for dynamic array length',
-          INVALID_ARGUMENT,
-          {
-            arg: this.localName,
-            coderType: 'array',
-            value: error.value,
-          },
-        );
+        throwError('insufficient data for dynamic array length', INVALID_ARGUMENT, {
+          arg: this.localName,
+          coderType: 'array',
+          value: error.value,
+        });
       }
       try {
         count = decodedLength.value.toNumber();
@@ -1168,12 +1129,7 @@ function getParamCoder(coerceFunc: CoerceFunc, param: ParamType | any): any {
         value: param,
       });
     }
-    return new CoderNumber(
-      coerceFunc,
-      size / 8,
-      matcher[1] === 'int',
-      param.name || '',
-    );
+    return new CoderNumber(coerceFunc, size / 8, matcher[1] === 'int', param.name || '');
   }
 
   const matcher2 = param.type.match(paramTypeBytes);
@@ -1194,20 +1150,11 @@ function getParamCoder(coerceFunc: CoerceFunc, param: ParamType | any): any {
     param = shallowCopy(param);
     param.type = matcher3[1];
     param = deepCopy(param);
-    return new CoderArray(
-      coerceFunc,
-      getParamCoder(coerceFunc, param),
-      size,
-      param.name || '',
-    );
+    return new CoderArray(coerceFunc, getParamCoder(coerceFunc, param), size, param.name || '');
   }
 
   if (param.type.substring(0, 5) === 'tuple') {
-    return getTupleParamCoder(
-      coerceFunc,
-      param.components || [],
-      param.name || '',
-    );
+    return getTupleParamCoder(coerceFunc, param.components || [], param.name || '');
   }
 
   if (param.type === '') {
@@ -1307,9 +1254,7 @@ export function toUtf8String(bytes: Arrayish, ignoreErrors?: boolean): string {
     } else {
       if (!ignoreErrors) {
         if ((c & 0xc0) === 0x80) {
-          throw new Error(
-            'invalid utf8 byte sequence; unexpected continuation byte',
-          );
+          throw new Error('invalid utf8 byte sequence; unexpected continuation byte');
         }
         throw new Error('invalid utf8 byte sequence; invalid prefix');
       }
@@ -1350,9 +1295,7 @@ export function toUtf8String(bytes: Arrayish, ignoreErrors?: boolean): string {
 
     if (res === null) {
       if (!ignoreErrors) {
-        throw new Error(
-          'invalid utf8 byte sequence; invalid continuation byte',
-        );
+        throw new Error('invalid utf8 byte sequence; invalid continuation byte');
       }
       continue;
     }
@@ -1387,10 +1330,7 @@ export function toUtf8String(bytes: Arrayish, ignoreErrors?: boolean): string {
     }
 
     res -= 0x10000;
-    result += String.fromCharCode(
-      ((res >> 10) & 0x3ff) + 0xd800,
-      (res & 0x3ff) + 0xdc00,
-    );
+    result += String.fromCharCode(((res >> 10) & 0x3ff) + 0xd800, (res & 0x3ff) + 0xdc00);
   }
 
   return result;
@@ -1537,9 +1477,7 @@ export class AbiCoder {
 
       coders.push(getParamCoder(this.coerceFunc, typeObject));
     }, this);
-    const encodedArray = new CoderTuple(this.coerceFunc, coders, '_').encode(
-      values,
-    );
+    const encodedArray = new CoderTuple(this.coerceFunc, coders, '_').encode(values);
     return hexlify(encodedArray);
   }
 

@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @ignore
+ */
+
 import { AbiCoder } from '../src/abi/abiCoder';
 import { BN } from '@harmony-js/crypto';
 import { isArray } from '@harmony-js/utils';

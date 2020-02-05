@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-utils
+ */
+
 export const enum ChainType {
   Harmony = 'hmy',
   Ethereum = 'eth',

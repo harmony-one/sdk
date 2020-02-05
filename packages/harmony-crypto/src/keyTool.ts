@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-crypto
+ */
+
 import elliptic from 'elliptic';
 import * as bytes from './bytes';
 import * as errors from './errors';

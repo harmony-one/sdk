@@ -1,5 +1,10 @@
-import {RPCRequestPayload} from '../types';
-import {RPCMethod} from './rpc';
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
+import { RPCRequestPayload } from '../types';
+import { RPCMethod } from './rpc';
 /**
  * @class JsonRpc
  * @description json rpc instance
@@ -37,11 +42,7 @@ class JsonRpc {
     this.messageId += 1;
 
     const sendParams =
-      params === undefined
-        ? []
-        : typeof params === 'string'
-        ? [params]
-        : [...params];
+      params === undefined ? [] : typeof params === 'string' ? [params] : [...params];
 
     return {
       jsonrpc: '2.0',
@@ -52,4 +53,4 @@ class JsonRpc {
   };
 }
 
-export {JsonRpc};
+export { JsonRpc };

@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
 import { ReqMiddleware, ResMiddleware, MiddlewareType } from '../types';
 import { RPCMethod } from '../rpcMethod/rpc';
 
@@ -28,11 +33,7 @@ class BaseProvider {
     this.url = url;
   }
 
-  protected pushMiddleware(
-    fn: any,
-    type: MiddlewareType,
-    match: string | RPCMethod | RegExp,
-  ) {
+  protected pushMiddleware(fn: any, type: MiddlewareType, match: string | RPCMethod | RegExp) {
     if (type !== MiddlewareType.REQ && type !== MiddlewareType.RES) {
       throw new Error('Please specify the type of middleware being added');
     }
@@ -44,9 +45,7 @@ class BaseProvider {
       this.resMiddleware.set(match, [...current, <ResMiddleware>fn]);
     }
   }
-  protected getMiddleware(
-    method: RPCMethod | string,
-  ): [ReqMiddleware[], ResMiddleware[]] {
+  protected getMiddleware(method: RPCMethod | string): [ReqMiddleware[], ResMiddleware[]] {
     const requests: ReqMiddleware[] = [];
     const responses: ResMiddleware[] = [];
 

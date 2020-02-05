@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-core
+ */
+
 import * as crypto from '@harmony-js/crypto';
 import * as utils from '@harmony-js/utils';
 

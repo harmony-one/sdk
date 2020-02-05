@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-utils
+ * @ignore
+ */
+
 import * as validators from '../src/validators';
 import { basicType, advanceType } from './fixture';
 

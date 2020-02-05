@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-transaction
+ */
+
 export * from './factory';
 export * from './transaction';
 export * from './shardingTransaction';

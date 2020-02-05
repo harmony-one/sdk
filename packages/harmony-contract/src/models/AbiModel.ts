@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ */
+
 import { AbiItemModel } from './types';
 
 export class AbiModel {

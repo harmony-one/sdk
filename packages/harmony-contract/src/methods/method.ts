@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ */
+
 import { Wallet } from '@harmony-js/account';
 import { TransactionFactory, Transaction, TxStatus } from '@harmony-js/transaction';
 import { RPCMethod, getResultForData, Emitter } from '@harmony-js/network';
