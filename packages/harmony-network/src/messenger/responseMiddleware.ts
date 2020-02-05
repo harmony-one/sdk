@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
 import { RPCResponseBody } from '../types';
 import { isObject } from '@harmony-js/utils';
 /**
@@ -19,15 +24,11 @@ class ResponseMiddleware {
   }
 
   get getResult() {
-    return isObject(this.result)
-      ? { ...this.result, responseType: 'result' }
-      : this.result;
+    return isObject(this.result) ? { ...this.result, responseType: 'result' } : this.result;
   }
 
   get getError() {
-    return isObject(this.error)
-      ? { ...this.error, responseType: 'error' }
-      : this.error;
+    return isObject(this.error) ? { ...this.error, responseType: 'error' } : this.error;
   }
 
   get getRaw() {
@@ -37,10 +38,7 @@ class ResponseMiddleware {
   getResponseType(): string {
     if (this.error) {
       return 'error';
-    } else if (
-      this.result ||
-      (this.result === null && this.result !== undefined)
-    ) {
+    } else if (this.result || (this.result === null && this.result !== undefined)) {
       return 'result';
     } else {
       return 'raw';

@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-account
+ */
+
 import { bip39, hdkey, getAddress, BN, Signature } from '@harmony-js/crypto';
 import {
   HDPath,

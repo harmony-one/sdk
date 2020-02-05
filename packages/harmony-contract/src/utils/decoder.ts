@@ -1,11 +1,12 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ */
+
 import { AbiItemModel } from '../models/types';
 import { AbiCoderClass } from '../abi/api';
 
-export const decode = (
-  abiCoder: AbiCoderClass,
-  abiItemModel: AbiItemModel,
-  response: any,
-) => {
+export const decode = (abiCoder: AbiCoderClass, abiItemModel: AbiItemModel, response: any) => {
   let argumentTopics = response.topics;
 
   if (!abiItemModel.anonymous) {

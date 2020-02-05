@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-account
+ */
+
 import { bip39, hdkey, EncryptOptions, getAddress, generatePrivateKey } from '@harmony-js/crypto';
 import { Messenger } from '@harmony-js/network';
 import { isPrivateKey, isAddress, ChainType } from '@harmony-js/utils';

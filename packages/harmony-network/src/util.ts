@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
 import { ResponseMiddleware } from './messenger/responseMiddleware';
 
 /**

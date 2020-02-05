@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-transaction
+ */
+
 import { BN, Signature } from '@harmony-js/crypto';
 export interface TxParams {
   id: string;

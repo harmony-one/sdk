@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-account
+ *
+ */
+
 import {
   generatePrivateKey,
   getAddressFromPrivateKey,
@@ -183,6 +189,10 @@ class Account {
     }
   }
 
+  /**
+   * @function signTransaction
+   * @ignore
+   */
   async signTransaction(
     transaction: Transaction,
     updateNonce: boolean = true,

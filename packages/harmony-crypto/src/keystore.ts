@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-crypto
+ */
+
 import aes from 'aes-js';
 // import scrypt from 'scrypt.js';
 import scrypt from 'scrypt-shim';

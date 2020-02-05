@@ -1,4 +1,10 @@
-// tslint:disable-next-line: no-implicit-dependencies
+/**
+ * @packageDocumentation
+ * @module harmony-staking
+ * @ignore
+ */
+
+/ tslint:disable-next-line: no-implicit-dependencies
 import { Wallet } from '@harmony-js/account';
 import { getAddressFromPrivateKey } from '@harmony-js/crypto';
 import { HttpProvider, Messenger } from '@harmony-js/network';

@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-transaction
+ * @ignore
+ */
+
 import { TransactionFactory, Transaction, TxStatus } from '../src';
 // tslint:disable-next-line: no-implicit-dependencies
 import { Wallet } from '@harmony-js/account';

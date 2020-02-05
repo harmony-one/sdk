@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ */
+
 // defined by web3.js
 // fixed
 export interface AbiModel {

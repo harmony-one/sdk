@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ */
+
 import { AbiCoder as ABICoder, ParamType, toUtf8Bytes } from './abiCoder';
 import { isObject, isArray } from '@harmony-js/utils';
 import { keccak256, Arrayish } from '@harmony-js/crypto';
@@ -124,9 +129,7 @@ export class AbiCoderClass {
         decodedValue = values[index];
 
         returnValues[itemKey] = bnToString(decodedValue);
-        returnValues[nonIndexedInputItems[index].name] = bnToString(
-          decodedValue,
-        );
+        returnValues[nonIndexedInputItems[index].name] = bnToString(decodedValue);
       });
     }
 

@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-transaction
+ */
+
 import { Messenger } from '@harmony-js/network';
 import { TxStatus } from './types';
 

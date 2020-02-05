@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-transaction
+ */
+
 import {
   BN,
   encode,

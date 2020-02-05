@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ */
+
 import { isArray } from '@harmony-js/utils';
 import { AbiItemModel } from '../models/types';
 import { AbiCoderClass } from '../abi/api';

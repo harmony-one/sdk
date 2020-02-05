@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-utils
+ */
+
 import BN from 'bn.js';
 import { isString, isNumber, isHex } from './validators';
 

@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-transaction
+ */
+
 import { getContractAddress, getAddress } from '@harmony-js/crypto';
 import { Messenger } from '@harmony-js/network';
 import { Transaction } from './transaction';

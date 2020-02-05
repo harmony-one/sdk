@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-crypto
+ * @ignore
+ */
+
 import hdkey from 'hdkey';
 import bip39 from 'bip39';
 import BN from 'bn.js';

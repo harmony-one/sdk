@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-core
+ */
+
 import { HttpProvider, Messenger } from '@harmony-js/network';
 import { TransactionFactory, Transaction } from '@harmony-js/transaction';
 import { Wallet, Account } from '@harmony-js/account';

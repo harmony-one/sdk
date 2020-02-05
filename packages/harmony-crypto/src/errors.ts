@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-crypto
+ */
+
 // This file is ported from ether.js/src.ts/errors.ts
 
 // Unknown Error
@@ -62,11 +67,7 @@ let _permanentCensorErrors = false;
 let _censorErrors = false;
 
 // @TODO: Enum
-export function throwError(
-  message: string,
-  code: string | null | undefined,
-  params: any,
-): never {
+export function throwError(message: string, code: string | null | undefined, params: any): never {
   if (_censorErrors) {
     throw new Error('unknown error');
   }
@@ -111,11 +112,7 @@ export function checkNew(self: any, kind: any): void {
   }
 }
 
-export function checkArgumentCount(
-  count: number,
-  expectedCount: number,
-  suffix?: string,
-): void {
+export function checkArgumentCount(count: number, expectedCount: number, suffix?: string): void {
   if (!suffix) {
     suffix = '';
   }
@@ -155,18 +152,14 @@ export function checkNormalize(): void {
       }
     });
 
-    if (
-      String.fromCharCode(0xe9).normalize('NFD') !==
-      String.fromCharCode(0x65, 0x0301)
-    ) {
+    if (String.fromCharCode(0xe9).normalize('NFD') !== String.fromCharCode(0x65, 0x0301)) {
       throw new Error('broken implementation');
     }
   } catch (error) {
-    throwError(
-      'platform missing String.prototype.normalize',
-      UNSUPPORTED_OPERATION,
-      { operation: 'String.prototype.normalize', form: error.message },
-    );
+    throwError('platform missing String.prototype.normalize', UNSUPPORTED_OPERATION, {
+      operation: 'String.prototype.normalize',
+      form: error.message,
+    });
   }
 }
 
