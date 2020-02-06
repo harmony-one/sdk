@@ -125,7 +125,7 @@
     "tslib": "^1.11.1",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
-    "typedoc": "^0.16.9",
+    "typedoc": "^0.17.0-3",
     "typedoc-plugin-external-module-name": "^3.0.0",
     "typescript": "^3.8.3",
     "typescript-json-schema": "^0.36.0",

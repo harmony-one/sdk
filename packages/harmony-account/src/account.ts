@@ -126,8 +126,12 @@ class Account {
   }
 
   /**
-   * @function getBalance get Account's balance
-   * @return {type} {description}
+   * @example
+   * ```
+   * const helloworld = 'helloworld';
+   * const abcde = 'dceba'
+   * ```
+   * @return {type} {hahahhahaah}
    */
   async getBalance(blockNumber: string = 'latest'): Promise<object> {
     try {
@@ -191,7 +195,6 @@ class Account {
 
   /**
    * @function signTransaction
-   * @ignore
    */
   async signTransaction(
     transaction: Transaction,
@@ -390,4 +393,7 @@ class Account {
   }
 }
 
+/**
+ * This comment _supports_ [Markdown](https://marked.js.org/)
+ */
 export { Account };
