@@ -44,7 +44,30 @@ class Blockchain {
   }
 
   /**
+   * Get the balance of an address at a given block.
    *
+   * @param address the address to get the balance of.
+   * @param blockNumber (option) If you pass this parameter it will not use the default block set with `DefaultBlockParams.latest`
+   * @param shardID (option) If you pass this parameter it will not use the default block set with `this.messenger.currentShard`
+   *
+   * @returns The current balance for the given address in wei.
+   *
+   * @hint
+   * ```
+   * the third param `shardID` binding with the endpoint
+   * shard 0: localhost:9500
+   * shard 1: localhost:9501
+   * ```
+   *
+   * @example
+   * ```
+   * hmy.blockchain.getBalance({
+   *   address: 'one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7',
+   *   blockNumber: 'latest'
+   * }).then(value => {
+   *   console.log(value.result);
+   * });
+   * ```
    */
   @assertObject({
     address: ['isValidAddress', AssertType.required],
