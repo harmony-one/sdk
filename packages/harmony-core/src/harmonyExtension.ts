@@ -20,20 +20,32 @@ import { Blockchain } from './blockchain';
 import { ContractFactory } from '@harmony-js/contract';
 import { HarmonyConfig } from './util';
 
+/**
+ * @hidden
+ */
 export enum ExtensionType {
   MathWallet = 'MathWallet',
 }
 
+/**
+ * @hidden
+ */
 export interface ExtensionAccount {
   address: 'string';
   name: 'string';
 }
 
+/**
+ * @hidden
+ */
 export interface ExtensionNetwork {
   chain_url: string;
   net_version: number;
 }
 
+/**
+ * @hidden
+ */
 export interface ExtensionInterface {
   signTransaction: (
     transaction: Transaction,

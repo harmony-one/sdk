@@ -13,6 +13,9 @@ import {
 import { ChainID, ChainType, Unit } from '@harmony-js/utils';
 import { HDNode } from '@harmony-js/account';
 
+/**
+ * @hidden
+ */
 export interface ArgsResolver {
   newArgs: any;
   id: number;
@@ -21,16 +24,27 @@ export interface ArgsResolver {
   callback: (error: any, res?: any) => void;
 }
 
+/**
+ * @hidden
+ */
 export interface HDOptions {
   menmonic?: string;
   index: number;
   addressCount: number;
 }
+
+/**
+ * @hidden
+ */
 export interface ChainOptions {
   shardID: number;
   chainType: ChainType;
   chainId: ChainID;
 }
+
+/**
+ * @hidden
+ */
 export interface TransactionOptions {
   gasLimit: string;
   gasPrice: string;

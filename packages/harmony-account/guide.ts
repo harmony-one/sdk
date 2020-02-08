@@ -1,10 +1,5 @@
-/**
- * @packageDocumentation
- * @module harmony-account
- *
- */
-
 /** 
+# Contents
 1. [About This Package](#about-this-package)
 2. [Usage of Account](#usage-of-account)
    1. [Dependencies](#dependencies)
@@ -261,5 +256,7 @@ The `Wallet` class is class that stores all `Account` instance, you can do CRUD 
 
 ```
  * 
+ * @packageDocumentation
+ * @module harmony-account
  */
-export class INSTRUCTION {}
+export interface README {}
