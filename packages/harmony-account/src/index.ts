@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-account
+ * @ignore
  */
 
 export * from './account';

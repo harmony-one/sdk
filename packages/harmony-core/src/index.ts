@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-core
+ * @hidden
  */
 
 export * from './harmony';

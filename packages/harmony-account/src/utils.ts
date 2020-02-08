@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-account
+ * @hidden
  */
 
 import { HttpProvider, Messenger } from '@harmony-js/network';

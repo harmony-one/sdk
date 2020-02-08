@@ -1,15 +1,15 @@
 
-1. [About This Package](#about-this-package)
-2. [Usage of Account](#usage-of-account)
-   1. [Dependencies](#dependencies)
-   2. [Examples](#examples)
-      1. [Create a random account](#create-a-random-account)
-      2. [Import an existing privateKey to create Account](#import-an-existing-privatekey-to-create-account)
-      3. [Encrypt/Export keyStore file, Decrypt/Import keyStore file](#encryptexport-keystore-file-decryptimport-keystore-file)
-      4. [Address format getter](#address-format-getter)
-      5. [Sign a transaction](#sign-a-transaction)
-3. [Usage of Wallet](#usage-of-wallet)
-   1. [Dependencies](#dependencies-1)
+- [About This Package](#about-this-package)
+- [Usage of Account](#usage-of-account)
+  - [Dependencies](#dependencies)
+  - [Examples](#examples)
+    - [Create a random account](#create-a-random-account)
+    - [Import an existing privateKey to create Account](#import-an-existing-privatekey-to-create-account)
+    - [Encrypt/Export keyStore file, Decrypt/Import keyStore file](#encryptexport-keystore-file-decryptimport-keystore-file)
+    - [Address format getter](#address-format-getter)
+    - [Sign a transaction](#sign-a-transaction)
+- [Usage of Wallet](#usage-of-wallet)
+  - [Dependencies](#dependencies-1)
 
 # About This Package
 

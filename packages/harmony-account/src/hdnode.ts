@@ -19,10 +19,16 @@ import { Messenger, HttpProvider, WSProvider } from '@harmony-js/network';
 import { Transaction, TxStatus, TransasctionReceipt } from '@harmony-js/transaction';
 import { Account } from './account';
 
+/**
+ * @hidden
+ */
 export interface WalletsInterfaces {
   [key: string]: Account;
 }
 
+/**
+ * @hidden
+ */
 export interface Web3TxPrams {
   id?: string;
   from?: string;
