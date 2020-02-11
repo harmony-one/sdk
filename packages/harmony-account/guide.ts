@@ -259,4 +259,6 @@ The `Wallet` class is class that stores all `Account` instance, you can do CRUD 
  * @packageDocumentation
  * @module harmony-account
  */
+
+/**@ignore */
 export interface README {}
