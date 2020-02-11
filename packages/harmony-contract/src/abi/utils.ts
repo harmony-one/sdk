@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-contract
+ * @hidden
  */
 
 import { isObject, isArray } from '@harmony-js/utils';

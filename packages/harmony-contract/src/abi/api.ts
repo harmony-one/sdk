@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-contract
+ * @hidden
  */
 
 import { AbiCoder as ABICoder, ParamType, toUtf8Bytes } from './abiCoder';

@@ -966,6 +966,23 @@ class Blockchain {
     return this.getRpcResult(result);
   }
 
+  /**
+   * Executes a message call transaction,
+   * which is directly executed in the VM of the node, but never mined into the blockchain.
+   *
+   * @param payload some data you want put into these fucntions
+   * @param blockNumber by default it's `latest`
+   * @param shardID `shardID` is binding with the endpoint, IGNORE it!
+   *
+   * @example
+   * ```javascript
+   * hmy.blockchain.call({
+   *   to: "0x08AE1abFE01aEA60a47663bCe0794eCCD5763c19",
+   * }).then((value) => {
+   *   console.log(value);
+   * });
+   * ```
+   */
   async call({
     payload,
     blockNumber = DefaultBlockParams.latest,
