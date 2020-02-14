@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-transaction
+ * @hidden
  */
 
 export * from './factory';

@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-network
+ * @ignore
  */
 
 import { RPCMethod, RPCErrorCode } from './rpcMethod/rpc';

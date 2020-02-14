@@ -17,21 +17,45 @@ class Wallet {
     return bip39.generateMnemonic();
   }
 
+  /** @hidden */
   messenger: Messenger;
+  /** @hidden */
   protected defaultSigner?: string;
   /**
-   * @memberof Wallet
-   *
+   * @hidden
    */
   private accountMap: Map<string, Account> = new Map();
+
   /**
-   * @memberof Wallet
+   * get acounts addresses
+   *
    * @return {string[]} accounts addresses
+   *
+   * @example
+   * ```javascript
+   * const wallet = new Wallet(customMessenger);
+   * const key_1 = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+   * wallet.addByPrivateKey(key_1);
+   *
+   * console.log(wallet.accounts);
+   * ```
    */
   get accounts(): string[] {
     return [...this.accountMap.keys()];
   }
 
+  /**
+   * get the signer of the account, by default, using the first account
+   *
+   * @example
+   * ```javascript
+   * const wallet = new Wallet(customMessenger);
+   * const key_1 = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+   * wallet.addByPrivateKey(key_1);
+   *
+   * console.log(wallet.signer)
+   * ```
+   */
   get signer(): Account | undefined {
     if (this.defaultSigner) {
       return this.getAccount(this.defaultSigner);
@@ -43,6 +67,23 @@ class Wallet {
     }
   }
 
+  /**
+   * @example
+   * ```
+   * const { Wallet } = require('@harmony-js/account');
+   * const { HttpProvider, Messenger } = require('@harmony-js/network');
+   * const { ChainType, ChainID } = require('@harmony-js/utils');
+   *
+   * // create a custom messenger
+   * const customMessenger = new Messenger(
+   *   new HttpProvider('http://localhost:9500'),
+   *   ChainType.Harmony, // if you are connected to Harmony's blockchain
+   *   ChainID.HmyLocal, // check if the chainId is correct
+   * )
+   *
+   * const wallet = new Wallet(customMessenger);
+   * ```
+   */
   constructor(messenger: Messenger = defaultMessenger) {
     this.messenger = messenger;
   }
@@ -56,11 +97,18 @@ class Wallet {
   }
 
   /**
-   * @function addByMnemonic
-   * @memberof Wallet
-   * @description add account using Mnemonic phrases
+   * Add account using Mnemonic phrases
    * @param  {string} phrase - Mnemonic phrase
    * @param  {index} index - index to hdKey root
+   *
+   * @example
+   * ```javascript
+   * const mnemonic_1 = 'urge clog right example dish drill card maximum mix bachelor section select';
+   * const wallet = new Wallet(customMessenger);
+   * wallet.addByMnemonic(mnemonic_1);
+   *
+   * console.log(wallet.accounts);
+   * ```
    */
   addByMnemonic(phrase: string, index: number = 0) {
     if (!this.isValidMnemonic(phrase)) {
@@ -74,12 +122,19 @@ class Wallet {
     const privateKey = childKey.privateKey.toString('hex');
     return this.addByPrivateKey(privateKey);
   }
+
   /**
-   * @function addByPrivateKey
-   * @memberof Wallet
-   * @description add an account using privateKey
+   * Add an account using privateKey
+   *
    * @param  {string} privateKey - privateKey to add
    * @return {Account} return added Account
+   *
+   * @example
+   * ```javascript
+   * const wallet = new Wallet(customMessenger);
+   * const key_1 = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+   * console.log(wallet.addByPrivateKey(key_1));
+   * ```
    */
   addByPrivateKey(privateKey: string): Account {
     try {
@@ -100,9 +155,7 @@ class Wallet {
   }
 
   /**
-   * @function addByKeyStore
-   * @memberof Wallet
-   * @description add an account using privateKey
+   * Add an account using privateKey
    * @param  {string} keyStore - keystore jsonString to add
    * @param  {string} password - password to decrypt the file
    * @return {Account} return added Account
@@ -127,9 +180,17 @@ class Wallet {
   }
 
   /**
-   * @function createAccount
-   * @description create a new account using Mnemonic
+   * create a new account using Mnemonic
    * @return {Account} {description}
+   *
+   * @example
+   * ```javascript
+   * console.log(wallet.accounts);
+   * wallet.createAccount();
+   * wallet.createAccount();
+   *
+   * console.log(wallet.accounts);
+   * ````
    */
   async createAccount(password?: string, options?: EncryptOptions): Promise<Account> {
     const prv = generatePrivateKey();
@@ -145,14 +206,21 @@ class Wallet {
   }
 
   /**
-   * @function encryptAccount
-   * @memberof Wallet
-   * @description to encrypt an account that lives in the wallet,
+   * To encrypt an account that lives in the wallet.
    * if encrypted, returns original one, if not found, throw error
    * @param {string} address - address in accounts
    * @param {string} password - string that used to encrypt
    * @param {EncryptOptions} options - encryption options
    * @return {Promise<Account>}
+   *
+   * @example
+   * ```javascript
+   * const key_1 = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+   * wallet.addByPrivateKey(key_1);
+   * wallet.encryptAccount('one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7', '12345').then((value) => {
+   *   console.log(value);
+   * })
+   * ```
    */
   async encryptAccount(
     address: string,
@@ -173,14 +241,26 @@ class Wallet {
       throw error;
     }
   }
+
   /**
-   * @function decryptAccount
-   * @memberof Wallet
-   * @description to decrypt an account that lives in the wallet,if not encrypted, return original,
+   * To decrypt an account that lives in the wallet,if not encrypted, return original,
    * if not found, throw error
    * @param {string} address - address in accounts
    * @param {string} password - string that used to encrypt
    * @return {Promise<Account>}
+   *
+   * @example
+   * ```javascript
+   * const key_1 = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+   * wallet.addByPrivateKey(key_1);
+   * wallet.encryptAccount('one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7', '12345')
+   * .then(() => {
+   *   wallet.decryptAccount('one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7', '12345')
+   *   .then((value) =>{
+   *      console.log(value);
+   *   });
+   * });
+   * ```
    */
   async decryptAccount(address: string, password: string): Promise<Account> {
     try {
@@ -200,11 +280,16 @@ class Wallet {
   }
 
   /**
-   * @function getAccount
-   * @memberof Wallet
-   * @description get Account instance using address as param
+   * Get Account instance using address as param
    * @param  {string} address - address hex
    * @return {Account} Account instance which lives in Wallet
+   *
+   * @example
+   * ```
+   * const key_1 = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+   * wallet.addByPrivateKey(key_1);
+   * console.log(wallet.getAccount('one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7'));
+   * ```
    */
   getAccount(address: string): Account | undefined {
     return this.accountMap.get(getAddress(address).basicHex);
@@ -223,10 +308,31 @@ class Wallet {
     }
   }
 
+  /**
+   * Set Customer Messenage
+   * @param messenger
+   *
+   * @example
+   * ```javascript
+   * const customMessenger = new Messenger(
+   *   new HttpProvider('https://api.s0.b.hmny.io'),
+   *   ChainType.Harmony, // if you are connected to Harmony's blockchain
+   *   ChainID.HmyLocal, // check if the chainId is correct
+   * )
+   * const wallet = new Wallet();
+   * wallet.setMessenger(customMessenger);
+   * console.log(wallet.messenger);
+   * ```
+   */
   setMessenger(messenger: Messenger): void {
     this.messenger = messenger;
   }
 
+  /**
+   * Set signer
+   *
+   * @param address one of the address in the accounts
+   */
   setSigner(address: string): void {
     if (!isAddress(address) || !this.getAccount(address)) {
       throw new Error('could not set signer');
@@ -280,6 +386,7 @@ class Wallet {
       throw new Error('sign transaction failed');
     }
   }
+
   async signStaking(
     staking: StakingTransaction,
     account: Account | undefined = this.signer,
@@ -329,12 +436,14 @@ class Wallet {
       throw new Error('sign transaction failed');
     }
   }
+
   /**
    * @function isValidMnemonic
    * @memberof Wallet
    * @description check if Mnemonic is valid
    * @param  {string} phrase - Mnemonic phrase
    * @return {boolean}
+   * @ignore
    */
   private isValidMnemonic(phrase: string): boolean {
     if (phrase.trim().split(/\s+/g).length < 12) {

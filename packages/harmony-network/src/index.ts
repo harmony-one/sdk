@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-network
+ * @ignore
  */
 
 import mitt from 'mitt';

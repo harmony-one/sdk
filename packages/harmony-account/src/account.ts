@@ -32,55 +32,136 @@ import { defaultMessenger } from './utils';
 
 class Account {
   /**
-   * @function new static method create account
-   * @return {Account} Account instance
+   * static method create account
+   *
+   * @example
+   * ```javascript
+   * const account = new Account();
+   * console.log(account);
+   * ```
    */
   static new(): Account {
     const newAcc = new Account()._new();
     return newAcc;
   }
   /**
-   * @function add static method add a private key to Account
+   * Static Method: add a private key to Account
    * @param  {string} key - private Key
-   * @return {Account} Account instance
+   *
+   * @example
+   * ```javascript
+   * const account = new Account.add(key_1);
+   * console.log(account);
+   * ```
    */
   static add(key: string): Account {
     const newAcc = new Account()._import(key);
     return newAcc;
   }
 
+  /**@hidden */
   privateKey?: string;
+  /**@hidden */
   publicKey?: string;
+  /**@hidden */
   address?: string;
+  /**@hidden */
   balance?: string = '0';
+  /**@hidden */
   nonce?: number = 0;
+  /**@hidden */
   shardID: number;
+  /**@hidden */
   shards: Shards;
+  /**@hidden */
   messenger: Messenger;
+  /**@hidden */
   encrypted: boolean = false;
 
   /**
-   * @function checksumAddress checsumAddress getter
-   * @return {string} get the checksumAddress
+   * check sum address
+   *
+   * @example
+   * ```javascript
+   * console.log(account.checksumAddress);
+   * ```
    */
   get checksumAddress(): string {
     return this.address ? getAddress(this.address).checksum : '';
   }
+
+  /**
+   * Get bech32 Address
+   *
+   * @example
+   * ```javascript
+   * console.log(account.bech32Address);
+   * ```
+   */
   get bech32Address(): string {
     return this.address ? getAddress(this.address).bech32 : '';
   }
+
+  /**
+   * get Bech32 TestNet Address
+   *
+   * @example
+   * ```javascript
+   * console.log(account.bech32TestNetAddress);
+   * ```
+   */
   get bech32TestNetAddress(): string {
     return this.address ? getAddress(this.address).bech32TestNet : '';
   }
 
   /**
-   * @function getShardsCount getShards number with this Account
-   * @return {number} shard size
+   * get Shards number with this Account
+   *
+   * @example
+   * ```javascript
+   * console.log(account.getShardsCount);
+   * ```
    */
   get getShardsCount(): number {
     return this.shards.size;
   }
 
+  /**
+   * Generate an account object
+   *
+   * @param key import an existing privateKey, or create a random one
+   * @param messenger you can setMessage later, or set message on `new`
+   *
+   * @example
+   * ```javascript
+   * // import the Account class
+   * const { Account } = require('@harmony-js/account');
+   *
+   * // Messenger is optional, by default, we have a defaultMessenger
+   * // If you like to change, you will import related package here.
+   * const { HttpProvider, Messenger } = require('@harmony-js/network');
+   * const { ChainType, ChainID } = require('@harmony-js/utils');
+   *
+   * // create a custom messenger
+   * const customMessenger = new Messenger(
+   *   new HttpProvider('http://localhost:9500'),
+   *   ChainType.Harmony, // if you are connected to Harmony's blockchain
+   *   ChainID.HmyLocal, // check if the chainId is correct
+   * )
+   *
+   * // setMessenger later
+   * const randomAccount = new Account()
+   * randomAccount.setMessenger(customMessenger)
+   *
+   * // or you can set messenger on `new`
+   * const randomAccountWithCustomMessenger = new Account(undefined, customMessenger)
+   *
+   * // NOTED: Key with or without `0x` are accepted, makes no different
+   * // NOTED: DO NOT import `mnemonic phrase` using `Account` class, use `Wallet` instead
+   * const myPrivateKey = '0xe19d05c5452598e24caad4a0d85a49146f7be089515c905ae6a19e8a578a6930'
+   * const myAccountWithMyPrivateKey = new Account(myPrivateKey)
+   * ```
+   */
   constructor(key?: string, messenger: Messenger = defaultMessenger) {
     this.messenger = messenger;
     if (!key) {
@@ -126,12 +207,16 @@ class Account {
   }
 
   /**
+   * Get the account balance
+   *
+   * @param blockNumber by default, it's `latest`
+   *
    * @example
+   * ```javascript
+   * account.getBalance().then((value) => {
+   *   console.log(value);
+   * });
    * ```
-   * const helloworld = 'helloworld';
-   * const abcde = 'dceba'
-   * ```
-   * @return {type} {hahahhahaah}
    */
   async getBalance(blockNumber: string = 'latest'): Promise<object> {
     try {
@@ -174,7 +259,6 @@ class Account {
 
   /**
    * @function updateShards
-   * @return {Promise<string>} {description}
    */
   async updateBalances(blockNumber: string = 'latest'): Promise<void> {
     // this.messenger.setShardingProviders();
@@ -256,6 +340,16 @@ class Account {
       return transaction;
     }
   }
+
+  /**
+   * This function is still in development, coming soon!
+   *
+   * @param staking
+   * @param updateNonce
+   * @param encodeMode
+   * @param blockNumber
+   * @param shardID
+   */
   async signStaking(
     staking: StakingTransaction,
     updateNonce: boolean = true,
@@ -309,10 +403,40 @@ class Account {
       return staking;
     }
   }
+
+  /**
+   * @param messenger
+   *
+   * @example
+   * ```javascript
+   * // create a custom messenger
+   * const customMessenger = new Messenger(
+   *   new HttpProvider('http://localhost:9500'),
+   *   ChainType.Harmony, // if you are connected to Harmony's blockchain
+   *   ChainID.HmyLocal, // check if the chainId is correct
+   * )
+   *
+   * // to create an Account with random privateKey
+   * // and you can setMessenger later
+   * const randomAccount = new Account()
+   * randomAccount.setMessenger(customMessenger)
+   * ```
+   */
   setMessenger(messenger: Messenger) {
     this.messenger = messenger;
   }
 
+  /**
+   * Get account address from shard ID
+   * @param shardID
+   *
+   * @example
+   * ```javascript
+   * console.log(account.getAddressFromShardID(0));
+   *
+   * > one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7-0
+   * ```
+   */
   getAddressFromShardID(shardID: number) {
     const shardObject = this.shards.get(shardID);
     if (shardObject) {
@@ -321,6 +445,15 @@ class Account {
       return undefined;
     }
   }
+
+  /**
+   * Get all shards' addresses from the account
+   *
+   * @example
+   * ```javascript
+   * console.log(account.getAddresses());
+   * ```
+   */
   getAddresses(): string[] {
     const addressArray: string[] = [];
     for (const [name, val] of this.shards) {
@@ -330,6 +463,19 @@ class Account {
     return addressArray;
   }
 
+  /**
+   * Get the specific shard's balance
+   *
+   * @param shardID `shardID` is binding with the endpoint, IGNORE it!
+   * @param blockNumber by default, it's `latest`
+   *
+   * @example
+   * ```
+   * account.getShardBalance().then((value) => {
+   *   console.log(value);
+   * });
+   * ```
+   */
   async getShardBalance(shardID: number, blockNumber: string = 'latest') {
     const balance = await this.messenger.send(
       RPCMethod.GetBalance,
@@ -357,9 +503,11 @@ class Account {
       nonce: Number.parseInt(hexToNumber(nonce.result), 10),
     };
   }
+
   /**
    * @function _new private method create Account
    * @return {Account} Account instance
+   * @ignore
    */
   private _new(): Account {
     const prv = generatePrivateKey();
@@ -373,6 +521,7 @@ class Account {
    * @function _import private method import a private Key
    * @param  {string} key - private key
    * @return {Account} Account instance
+   * @ignore
    */
   private _import(key: string): Account {
     if (!isPrivateKey(key)) {
