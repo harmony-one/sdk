@@ -3,6 +3,7 @@
  * @module harmony-network
  */
 
+ /**@ignore */
 export const enum RPCMethod {
   // 1. hmy_getBlockByHash
   GetBlockByHash = 'hmy_getBlockByHash',
@@ -77,6 +78,7 @@ export const enum RPCMethod {
   SendRawStakingTransaction = 'hmy_sendRawStakingTransaction',
 }
 
+/**@ignore */
 export const enum RPCErrorCode {
   // Standard JSON-RPC 2.0 errors
   // RPC_INVALID_REQUEST is internally mapped to HTTP_BAD_REQUEST (400).

@@ -19,16 +19,12 @@ import { Messenger, HttpProvider, WSProvider } from '@harmony-js/network';
 import { Transaction, TxStatus, TransasctionReceipt } from '@harmony-js/transaction';
 import { Account } from './account';
 
-/**
- * @hidden
- */
+/** @hidden */
 export interface WalletsInterfaces {
   [key: string]: Account;
 }
 
-/**
- * @hidden
- */
+/** @hidden */
 export interface Web3TxPrams {
   id?: string;
   from?: string;
@@ -54,19 +50,29 @@ export class HDNode {
     }
     return bip39.validateMnemonic(phrase);
   }
+
   static generateMnemonic(): string {
     return bip39.generateMnemonic();
   }
+
   public provider: HttpProvider | WSProvider;
   public gasLimit: string;
   public gasPrice: string;
   public messenger: Messenger;
+
+  /** @hidden */
   private shardID: number;
+  /** @hidden */
   private hdwallet: hdkey | undefined;
+  /** @hidden */
   private path: string;
+  /** @hidden */
   private index: number;
+  /** @hidden */
   private addressCount: number;
+  /** @hidden */
   private addresses: string[];
+  /** @hidden */
   private wallets: WalletsInterfaces;
 
   constructor(

@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-transaction
+ * 
  */
 
 import { BN, Signature } from '@harmony-js/crypto';

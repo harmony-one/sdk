@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-network
+ * @ignore
  */
 
 export const DEFAULT_TIMEOUT: number = 120000;
