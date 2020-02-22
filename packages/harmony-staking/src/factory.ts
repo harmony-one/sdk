@@ -21,6 +21,7 @@ import {
 import { Unit } from '@harmony-js/utils';
 import { TxStatus } from '@harmony-js/transaction';
 
+/** @hidden */
 export interface DescriptionInterface {
   name: string;
   identity: string;
@@ -29,6 +30,7 @@ export interface DescriptionInterface {
   details: string;
 }
 
+/** @hidden */
 export interface CommissionRateInterface {
   rate: string;
   maxRate: string;

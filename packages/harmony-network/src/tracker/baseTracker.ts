@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-network
+ * @hidden
  */
 
 import { isHex, hexToNumber } from '@harmony-js/utils';

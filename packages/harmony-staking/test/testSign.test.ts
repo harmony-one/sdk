@@ -1,7 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-staking
- * @ig
+ * @ignore
  */
 
 import { Wallet } from '@harmony-js/account';

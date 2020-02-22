@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-crypto
+ * @hidden
  */
 
 // This file is ported from ether.js/src.ts/utils/bytes.ts

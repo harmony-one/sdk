@@ -1,5 +1,4 @@
 /**
- *
  * @packageDocumentation
  * @module harmony-contract
  */
@@ -27,18 +26,23 @@ import {
 } from '@harmony-js/crypto';
 import { hexToBN, defineReadOnly } from '@harmony-js/utils';
 
+/** @hidden */
 const NegativeOne: BN = new BN(-1);
+/** @hidden */
 const One: BN = new BN(1);
-// const Two: BN = new BN(2);
+/** @hidden */
 const Zero: BN = new BN(0);
+/** @hidden */
 const HashZero = '0x0000000000000000000000000000000000000000000000000000000000000000';
-
+/** @hidden */
 const MaxUint256: BN = hexToBN(
   '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
 );
 
+/** @hidden */
 export type CoerceFunc = (type: string, value: any) => any;
 
+/** @hidden */
 export interface ParamType {
   name?: string;
   type: string;
@@ -48,6 +52,7 @@ export interface ParamType {
 
 // @TODO: should this just be a combined Fragment?
 
+/** @hidden */
 export interface EventFragment {
   type: string;
   name: string;
@@ -57,6 +62,7 @@ export interface EventFragment {
   inputs: ParamType[];
 }
 
+/** @hidden */
 export interface FunctionFragment {
   type: string;
   name: string;
@@ -73,11 +79,14 @@ export interface FunctionFragment {
 }
 
 ///////////////////////////////
-
+/** @hidden */
 const paramTypeBytes = new RegExp(/^bytes([0-9]*)$/);
+/** @hidden */
 const paramTypeNumber = new RegExp(/^(u?int)([0-9]*)$/);
+/** @hidden */
 const paramTypeArray = new RegExp(/^(.*)\[([0-9]*)\]$/);
 
+/** @hidden */
 export const defaultCoerceFunc: CoerceFunc = (type: string, value: any): any => {
   const match = type.match(paramTypeNumber);
   if (match && parseInt(match[2], 10) <= 48) {
@@ -93,9 +102,12 @@ export const defaultCoerceFunc: CoerceFunc = (type: string, value: any): any => 
 ///////////////////////////////////
 // Parsing for Solidity Signatures
 
+/** @hidden */
 const regexParen = new RegExp('^([^)(]*)\\((.*)\\)([^)(]*)$');
+/** @hidden */
 const regexIdentifier = new RegExp('^[A-Za-z_][A-Za-z0-9_]*$');
 
+/** @hidden */
 function verifyType(type: string): string {
   // These need to be transformed to their full description
   if (type.match(/^uint($|[^1-9])/)) {
@@ -107,6 +119,7 @@ function verifyType(type: string): string {
   return type;
 }
 
+/** @hidden */
 interface ParseState {
   allowArray?: boolean;
   allowName?: boolean;
@@ -115,6 +128,7 @@ interface ParseState {
   readArray?: boolean;
 }
 
+/** @hidden */
 interface ParseNode {
   parent?: any;
   type?: string;
@@ -124,6 +138,7 @@ interface ParseNode {
   components?: any[];
 }
 
+/** @hidden */
 function parseParam(param: string, allowIndexed?: boolean): ParamType {
   const originalParam = param;
   // tslint:disable-next-line: no-shadowed-variable
@@ -298,6 +313,7 @@ function parseParam(param: string, allowIndexed?: boolean): ParamType {
 }
 
 // @TODO: Better return type
+/** @hidden */
 function parseSignatureEvent(fragment: string): EventFragment {
   const abi: EventFragment = {
     anonymous: false,
@@ -338,15 +354,18 @@ function parseSignatureEvent(fragment: string): EventFragment {
   return abi;
 }
 
+/** @hidden */
 export function parseParamType(type: string): ParamType {
   return parseParam(type, true);
 }
 
 // @TODO: Allow a second boolean to expose names
+/** @hidden */
 export function formatParamType(paramType: ParamType): string {
   return getParamCoder(defaultCoerceFunc, paramType).type;
 }
 
+/** @hidden */
 function parseSignatureFunction(fragment: string): FunctionFragment {
   const abi: FunctionFragment = {
     constant: false,
@@ -439,10 +458,12 @@ function parseSignatureFunction(fragment: string): FunctionFragment {
 }
 
 // @TODO: Allow a second boolean to expose names and modifiers
+/** @hidden */
 export function formatSignature(fragment: EventFragment | FunctionFragment): string {
   return fragment.name + '(' + fragment.inputs.map((i) => formatParamType(i)).join(',') + ')';
 }
 
+/** @hidden */
 export function parseSignature(fragment: string): EventFragment | FunctionFragment {
   if (typeof fragment === 'string') {
     // Make sure the "returns" is surrounded by a space and all whitespace is exactly one space
@@ -468,11 +489,13 @@ export function parseSignature(fragment: string): EventFragment | FunctionFragme
 
 ///////////////////////////////////
 // Coders
-
+/** @hidden */
 interface DecodedResult {
   consumed: number;
   value: any;
 }
+
+/** @hidden */
 abstract class Coder {
   readonly coerceFunc: CoerceFunc;
   readonly name: string;
@@ -499,6 +522,7 @@ abstract class Coder {
 
 // Clones the functionality of an existing Coder, but without a localName
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderAnonymous extends Coder {
   private coder: Coder;
   constructor(coder: Coder) {
@@ -514,6 +538,7 @@ class CoderAnonymous extends Coder {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderNull extends Coder {
   constructor(coerceFunc: CoerceFunc, localName: string) {
     super(coerceFunc, 'null', '', localName, false);
@@ -536,6 +561,7 @@ class CoderNull extends Coder {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderNumber extends Coder {
   readonly size: number;
   readonly signed: boolean;
@@ -606,6 +632,8 @@ class CoderNumber extends Coder {
     };
   }
 }
+
+/** @hidden */
 const uint256Coder = new CoderNumber(
   (type: string, value: any) => {
     return value;
@@ -616,6 +644,7 @@ const uint256Coder = new CoderNumber(
 );
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderBoolean extends Coder {
   constructor(coerceFunc: CoerceFunc, localName: string) {
     super(coerceFunc, 'bool', 'bool', localName, false);
@@ -647,6 +676,7 @@ class CoderBoolean extends Coder {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderFixedBytes extends Coder {
   readonly length: number;
   constructor(coerceFunc: CoerceFunc, length: number, localName: string) {
@@ -699,6 +729,7 @@ class CoderFixedBytes extends Coder {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderAddress extends Coder {
   constructor(coerceFunc: CoerceFunc, localName: string) {
     super(coerceFunc, 'address', 'address', localName, false);
@@ -735,6 +766,7 @@ class CoderAddress extends Coder {
   }
 }
 
+/** @hidden */
 function _encodeDynamicBytes(value: Uint8Array): Uint8Array {
   const dataLength = 32 * Math.ceil(value.length / 32);
   const padding = new Uint8Array(dataLength - value.length);
@@ -742,6 +774,7 @@ function _encodeDynamicBytes(value: Uint8Array): Uint8Array {
   return concat([uint256Coder.encode(new BN(value.length)), value, padding]);
 }
 
+/** @hidden */
 function _decodeDynamicBytes(data: Uint8Array, offset: number, localName: string): DecodedResult {
   if (data.length < offset + 32) {
     throwError('insufficient data for dynamicBytes length', INVALID_ARGUMENT, {
@@ -778,6 +811,7 @@ function _decodeDynamicBytes(data: Uint8Array, offset: number, localName: string
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderDynamicBytes extends Coder {
   constructor(coerceFunc: CoerceFunc, localName: string) {
     super(coerceFunc, 'bytes', 'bytes', localName, true);
@@ -804,6 +838,7 @@ class CoderDynamicBytes extends Coder {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderString extends Coder {
   constructor(coerceFunc: CoerceFunc, localName: string) {
     super(coerceFunc, 'string', 'string', localName, true);
@@ -827,10 +862,12 @@ class CoderString extends Coder {
   }
 }
 
+/** @hidden */
 function alignSize(size: number): number {
   return 32 * Math.ceil(size / 32);
 }
 
+/** @hidden */
 function pack(coders: Coder[], values: any[]): Uint8Array {
   if (Array.isArray(values)) {
     // do nothing
@@ -895,6 +932,7 @@ function pack(coders: Coder[], values: any[]): Uint8Array {
   return data;
 }
 
+/** @hidden */
 function unpack(coders: Coder[], data: Uint8Array, offset: number): DecodedResult {
   const baseOffset = offset;
   let consumed = 0;
@@ -942,6 +980,7 @@ function unpack(coders: Coder[], data: Uint8Array, offset: number): DecodedResul
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderArray extends Coder {
   readonly coder: Coder;
   readonly length: number;
@@ -1031,6 +1070,7 @@ class CoderArray extends Coder {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderTuple extends Coder {
   readonly coders: Coder[];
   constructor(coerceFunc: CoerceFunc, coders: Coder[], localName: string) {
@@ -1060,6 +1100,7 @@ class CoderTuple extends Coder {
   }
 }
 
+/** @hidden */
 function splitNesting(value: string): any[] {
   value = value.trim();
 
@@ -1093,6 +1134,7 @@ function splitNesting(value: string): any[] {
 }
 
 // @TODO: Is there a way to return "class"?
+/** @hidden */
 const paramTypeSimple: { [key: string]: any } = {
   address: CoderAddress,
   bool: CoderBoolean,
@@ -1100,6 +1142,7 @@ const paramTypeSimple: { [key: string]: any } = {
   bytes: CoderDynamicBytes,
 };
 
+/** @hidden */
 function getTupleParamCoder(
   coerceFunc: CoerceFunc,
   components: any[],
@@ -1116,6 +1159,7 @@ function getTupleParamCoder(
   return new CoderTuple(coerceFunc, coders, localName);
 }
 
+/** @hidden */
 function getParamCoder(coerceFunc: CoerceFunc, param: ParamType | any): any {
   const coder = paramTypeSimple[param.type];
   if (coder) {
@@ -1168,6 +1212,7 @@ function getParamCoder(coerceFunc: CoerceFunc, param: ParamType | any): any {
   });
 }
 
+/** @hidden */
 export enum UnicodeNormalizationForm {
   current = '',
   NFC = 'NFC',
@@ -1176,6 +1221,7 @@ export enum UnicodeNormalizationForm {
   NFKD = 'NFKD',
 }
 
+/** @hidden */
 export function toUtf8Bytes(
   str: string,
   form: UnicodeNormalizationForm = UnicodeNormalizationForm.current,
@@ -1219,6 +1265,7 @@ export function toUtf8Bytes(
 }
 
 // http://stackoverflow.com/questions/13356493/decode-utf-8-with-javascript#13691499
+/** @hidden */
 export function toUtf8String(bytes: Arrayish, ignoreErrors?: boolean): string {
   bytes = arrayify(bytes) || new Uint8Array();
 
@@ -1337,6 +1384,7 @@ export function toUtf8String(bytes: Arrayish, ignoreErrors?: boolean): string {
   return result;
 }
 
+/** @hidden */
 export function formatBytes32String(text: string): string {
   // Get the bytes
   const bytes = toUtf8Bytes(text);
@@ -1350,6 +1398,7 @@ export function formatBytes32String(text: string): string {
   return hexlify(concat([bytes, HashZero]).slice(0, 32));
 }
 
+/** @hidden */
 export function parseBytes32String(bytes: Arrayish): string {
   const data = arrayify(bytes) || new Uint8Array();
 
@@ -1371,10 +1420,12 @@ export function parseBytes32String(bytes: Arrayish): string {
   return toUtf8String(data.slice(0, length));
 }
 
+/** @hidden */
 export function isType(object: any, type: string): boolean {
   return object && object._ethersType === type;
 }
 
+/** @hidden */
 export function shallowCopy(object: any): any {
   const result: any = {};
   // tslint:disable-next-line: forin
@@ -1384,12 +1435,14 @@ export function shallowCopy(object: any): any {
   return result;
 }
 
+/** @hidden */
 const opaque: { [key: string]: boolean } = {
   boolean: true,
   number: true,
   string: true,
 };
 
+/** @hidden */
 export function deepCopy(object: any, frozen?: boolean): any {
   // Opaque objects are not mutable, so safe to copy by assignment
   if (object === undefined || object === null || opaque[typeof object]) {
@@ -1443,6 +1496,7 @@ export function deepCopy(object: any, frozen?: boolean): any {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 export class AbiCoder {
   coerceFunc: CoerceFunc;
   constructor(coerceFunc?: CoerceFunc) {
@@ -1504,4 +1558,5 @@ export class AbiCoder {
   }
 }
 
+/** @hidden */
 export const defaultAbiCoder: AbiCoder = new AbiCoder();

@@ -9,6 +9,7 @@ import { composeMiddleware, performRPC, DEFAULT_TIMEOUT, DEFAULT_HEADERS } from 
 
 import { RPCRequestPayload } from '../types';
 
+/** @hidden */
 const defaultOptions = {
   method: 'POST',
   timeout: DEFAULT_TIMEOUT,

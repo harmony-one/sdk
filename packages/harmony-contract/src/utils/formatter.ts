@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-contract
+ * @hidden
  */
 
 import { hexlify, isHexString, keccak256, toChecksumAddress } from '@harmony-js/crypto';

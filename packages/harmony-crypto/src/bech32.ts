@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-crypto
+ * @hidden
  */
 
 import { isAddress } from '@harmony-js/utils';

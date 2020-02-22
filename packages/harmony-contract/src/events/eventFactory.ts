@@ -30,7 +30,7 @@ export class EventFactory {
       const newObject: any = {};
       newObject[key] = (params: any) =>
         new EventMethod(
-          key
+          key,
           // params,
           this.map(this.abiModel, this.contract, params),
           this.abiModel.getEvent(key),
