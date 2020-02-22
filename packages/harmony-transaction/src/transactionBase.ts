@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-transaction
+ * @hidden
  */
 
 import { BN, getAddress, HarmonyAddress } from '@harmony-js/crypto';

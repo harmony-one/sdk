@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-crypto
+ * @hidden
  */
 
 import aes from 'aes-js';

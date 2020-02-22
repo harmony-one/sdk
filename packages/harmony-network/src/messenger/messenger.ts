@@ -12,6 +12,7 @@ import { WSProvider } from '../providers/ws';
 import { RPCMethod } from '../rpcMethod/rpc';
 import { SubscribeReturns, ShardingItem } from '../types';
 
+/** @hidden */
 export interface ShardingProvider {
   current: boolean;
   shardID: number;

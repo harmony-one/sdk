@@ -1,10 +1,11 @@
 /**
  * @packageDocumentation
  * @module harmony-transaction
- * 
  */
 
 import { BN, Signature } from '@harmony-js/crypto';
+
+/** @hidden */
 export interface TxParams {
   id: string;
   from: string;
@@ -23,6 +24,7 @@ export interface TxParams {
   receipt?: TransasctionReceipt;
 }
 
+/** @hidden */
 export const enum TxStatus {
   NONE = 'NONE',
   INTIALIZED = 'INITIALIZED',
@@ -32,6 +34,7 @@ export const enum TxStatus {
   REJECTED = 'REJECTED',
 }
 
+/** @hidden */
 export interface TransasctionReceipt {
   transactionHash: string;
   transactionIndex: string;

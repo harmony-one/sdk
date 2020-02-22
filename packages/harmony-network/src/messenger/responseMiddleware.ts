@@ -1,7 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-network
- * @ignore
+ * @hidden
  */
 
 import { RPCResponseBody } from '../types';

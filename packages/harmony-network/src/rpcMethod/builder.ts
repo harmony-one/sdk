@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-network
+ * @hidden
  */
 
 import { RPCRequestPayload } from '../types';

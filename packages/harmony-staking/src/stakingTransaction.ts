@@ -21,11 +21,13 @@ import { defaultMessenger, TransactionBase, TxStatus } from '@harmony-js/transac
 import { numberToHex, Unit } from '@harmony-js/utils';
 import { TextEncoder } from 'text-encoding';
 
+/** @hidden */
 export class StakingSettings {
   public static PRECISION = 18;
   public static MAX_DECIMAL = 1000000000000000000;
 }
 
+/** @hidden */
 export const enum Directive {
   DirectiveCreateValidator,
   DirectiveEditValidator,
@@ -239,6 +241,7 @@ export class Description {
   }
 }
 
+/** @hidden */
 export class Decimal {
   value: BN;
 

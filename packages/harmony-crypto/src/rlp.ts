@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-crypto
+ * @hidden
  */
 
 // this file is ported from https://github.com/ethers-io/ethers.js/blob/master/src.ts/utils/rlp.ts

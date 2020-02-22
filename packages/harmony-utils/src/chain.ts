@@ -27,6 +27,7 @@ export const enum ChainID {
   HmyPangaea = 3,
 }
 
+/** @hidden */
 export const defaultConfig = {
   Default: {
     Chain_ID: ChainID.HmyLocal,
@@ -42,6 +43,7 @@ export const defaultConfig = {
   },
 };
 
+/** @hidden */
 export abstract class HarmonyCore {
   chainType: ChainType;
   chainId: ChainID;
@@ -73,6 +75,8 @@ export abstract class HarmonyCore {
   }
 }
 
+/** @hidden */
 export const HDPath = `m/44'/1023'/0'/0/`;
 
+/** @hidden */
 export const AddressSuffix = '-';

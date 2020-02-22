@@ -27,6 +27,7 @@ export const enum AssertType {
   optional = 'optional',
 }
 
+/** @hidden */
 export const validatorArray: any = {
   isNumber: [isNumber],
   isString: [isString],

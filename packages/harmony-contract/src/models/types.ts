@@ -1,6 +1,7 @@
 /**
  * @packageDocumentation
  * @module harmony-contract
+ * @hidden
  */
 
 // defined by web3.js

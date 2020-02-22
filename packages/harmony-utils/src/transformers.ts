@@ -21,6 +21,7 @@ export const enum Units {
   Tether = 'Tether',
 }
 
+/** @hidden */
 export const unitMap = new Map([
   [Units.wei, '1'],
   [Units.Kwei, '1000'], // 1e3 wei
@@ -36,6 +37,7 @@ export const unitMap = new Map([
   [Units.Tether, '1000000000000000000000000000000'], // 1e30 wei
 ]);
 
+/** @hidden */
 const DEFAULT_OPTIONS = {
   pad: false,
 };
