@@ -1,48 +1,33 @@
 /** 
-# Contents
-1. [About This Package](#about-this-package)
-2. [Usage of Account](#usage-of-account)
-   1. [Dependencies](#dependencies)
-   2. [Examples](#examples)
-      1. [Create a random account](#create-a-random-account)
-      2. [Import an existing privateKey to create Account](#import-an-existing-privatekey-to-create-account)
-      3. [Encrypt/Export keyStore file, Decrypt/Import keyStore file](#encryptexport-keystore-file-decryptimport-keystore-file)
-      4. [Address format getter](#address-format-getter)
-      5. [Sign a transaction](#sign-a-transaction)
-3. [Usage of Wallet](#usage-of-wallet)
-   1. [Dependencies](#dependencies-1)
-
-# About This Package
+## About This Package
 
 `@harmony-js/account` is dealing with account related features.
 
-Developers can use this packages to:
-* create `Account` instance
-* create `Wallet` instance
-* sign `Transaction`
-* convert address format
-* manage `privateKey` or `mnemonic phrases` and do the `encrypt` and `decrypt` job
+Developers can use this package to:
+- Create `Account` instance
+- Create `Wallet` instance
+- Sign `Transaction`
+- Convert address format
+- Manage `privateKey` or `mnemonic phrases` and do the `encrypt` and `decrypt` job
 
 There are 2 main classes in this package, `Account` and `Wallet`.
 
-The `Account` class is basic instance that contains most features mentioned above.
-The `Wallet` class is class that stores all `Account` instance, you can do CRUD on it.
+- The `Account` class is basic instance that contains most features mentioned above.
+- The `Wallet` class is class that stores all `Account` instance, you can do CRUD on it.
 
 
-# Usage of Account
+## Usage of Account
 
-## Dependencies
-  * "@harmony-js/network",
-  * "@harmony-js/staking",
-  * "@harmony-js/transaction",
-  * "@harmony-js/utils"
+### Dependencies
+  - @harmony-js/network
+  - @harmony-js/staking
+  - @harmony-js/transaction
+  - @harmony-js/utils
 
+### Examples
 
-## Examples
-
-### Create a random account
-```typescript
-
+Create a random account
+```javascript
     // import the Account class
     import {Account} from '@harmony-js/account'
 
@@ -75,7 +60,6 @@ The `Wallet` class is class that stores all `Account` instance, you can do CRUD 
     staticCreatedAccount.setMessenger(customMessenger)
 
     console.log({staticCreatedAccount})
-
 ```
 
 ### Import an existing privateKey to create Account
@@ -239,21 +223,18 @@ The `Wallet` class is class that stores all `Account` instance, you can do CRUD 
 ```
 
 
-# Usage of Wallet
+## Usage of Wallet
 
-## Dependencies
-  * "@harmony-js/crypto",
-  * "@harmony-js/network",
-  * "@harmony-js/staking",
-  * "@harmony-js/transaction",
-  * "@harmony-js/utils"
+### Dependencies
+  - @harmony-js/crypto
+  - @harmony-js/network
+  - @harmony-js/staking
+  - @harmony-js/transaction
+  - @harmony-js/utils
 
 ```typescript
-
-    import {Wallet} from '@harmony-js/account'
-
-    const wallet=new Wallet()
-
+    import { Wallet } from '@harmony-js/account'
+    const wallet = new Wallet()
 ```
  * 
  * @packageDocumentation
