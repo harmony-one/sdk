@@ -53,6 +53,12 @@ export class HarmonyAddress {
     this.basic = this.getBasic(this.raw);
   }
 
+  /**
+   * Check whether the address has an valid address format
+   *
+   * @param addr string, the address
+   *
+   */
   private getBasic(addr: string) {
     const basicBool = isAddress(addr);
     const bech32Bool = isBech32Address(addr);
@@ -76,6 +82,30 @@ export class HarmonyAddress {
   }
 }
 
+/**
+ * Using this function to get Harmony format address
+ *
+ * @param address
+ *
+ * @example
+ * ```javascript
+ * const { Harmony } = require('@harmony-js/core');
+ * const { ChainID, ChainType } = require('@harmony-js/utils');
+ * const { randomBytes } = require('@harmony-js/crypto')
+ *
+ * const hmy = new Harmony(
+ *   'http://localhost:9500',
+ *   {
+ *   chainType: ChainType.Harmony,
+ *   chainId: ChainID.HmyLocal,
+ *   },
+ * );
+ *
+ * const bytes = randomBytes(20);
+ * const hAddress = hmy.crypto.getAddress(bytes);
+ * console.log(hAddress)
+ * ```
+ */
 export function getAddress(address: string) {
   try {
     return new HarmonyAddress(address);

@@ -22,6 +22,7 @@ import {
   isBlockNumber,
 } from './validators';
 
+/** @hidden */
 export const enum AssertType {
   required = 'required',
   optional = 'optional',

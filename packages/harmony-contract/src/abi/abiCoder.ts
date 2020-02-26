@@ -1,4 +1,11 @@
 /**
+ * ## Harmony Smart Contract
+ * Create an Contract instance
+ * ```javascript
+ * import { waitForInjected, getExtAccount } from '../util/hmy-util'
+ * import { Harmony, HarmonyExtension } from '@harmony-js/core'
+ * import { ChainID, ChainType } from '@harmony-js/utils'
+ * ```
  * @packageDocumentation
  * @module harmony-contract
  */

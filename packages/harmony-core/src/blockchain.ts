@@ -1,7 +1,28 @@
 /**
- * ## Initialize the Harmony instance
+ * ## About this package
+ *
+ * `@harmony-js/core` is collection of modules to guide user to interacte with harmony blockchian.
+ *
+ * Develops can use this package to:
+ * - Create a `harmony` instance
+ * - Create a `harmonyExtension` instance, which support fo `MathWallet`
+ * - Get block and transaction by hash or blocknumber
+ * - Send transaction
+ * - Get balance of address
+ *
+ * ## How to use `@harmony-core`
+ * ### Dependencies
+ * - @harmony-js/core
+ * - @harmony-js/utils
+ *
+ * ### Step 1: Initialize the Harmony instance
  * Before using harmony-core package, you should initialize the Harmony instance
  * ```javascript
+ * // import or require Harmony class
+ * const { Harmony } = require('@harmony-js/core');
+ * // import or require settings
+ * const { ChainID, ChainType } = require('@harmony-js/utils');
+ *
  * // initialize the Harmony instance
  * const hmy = new Harmony(
  *   // rpc url
@@ -14,6 +35,50 @@
  *   },
  * );
  * ```
+ *
+ * ### Step 2: Use the instance to call specific functions
+ * Example 1: get balance
+ * ```javascript
+ * // get balance
+ * hmy.blockchain.getBalance({
+ *   address: 'one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7',
+ *   blockNumber: 'latest'
+ * }).then((value) => {
+ *   console.log(value.result);
+ * });
+ * ```
+ *
+ * Example 2: send transaction
+ * ```
+ * // add privateKey to wallet
+ * const privateKey = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+ * hmy.wallet.addByPrivateKey(privateKey);
+ *
+ * async function transfer() {
+ *   const txn = hmy.transactions.newTx({
+ *     //  token send to
+ *     to: 'one166axnkjmghkf3df7xfvd0hn4dft8kemrza4cd2',
+ *     // amount to send
+ *     value: '10000',
+ *     // gas limit, you can use string
+ *     gasLimit: '210000',
+ *     // send token from shardID
+ *     shardID: 0,
+ *     // send token to toShardID
+ *     toShardID: 0,
+ *     // gas Price, you can use Unit class, and use Gwei, then remember to use toWei(), which will be transformed to BN
+ *     gasPrice: new hmy.utils.Unit('100').asGwei().toWei(),
+ *   });
+ *
+ *   // sign the transaction use wallet;
+ *   const signedTxn = await hmy.wallet.signTransaction(txn);
+ *   const txnHash = await hmy.blockchain.sendTransaction(signedTxn);
+ *   console.log(txnHash.result);
+ * }
+ *
+ * transfer();
+ * ```
+ *
  * @packageDocumentation
  * @module harmony-core
  */
