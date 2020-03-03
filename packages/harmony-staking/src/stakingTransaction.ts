@@ -36,6 +36,7 @@ export const enum Directive {
   DirectiveCollectRewards,
 }
 
+/** @hidden */
 export class StakingTransaction extends TransactionBase {
   private directive: Directive;
   private stakeMsg: CreateValidator | EditValidator | Delegate | Undelegate | CollectRewards;
@@ -208,6 +209,7 @@ export class StakingTransaction extends TransactionBase {
   }
 }
 
+/** @hidden */
 export class Description {
   name: string;
   identity: string;
@@ -300,6 +302,7 @@ export class Decimal {
   }
 }
 
+/** @hidden */
 export class CommissionRate {
   rate: Decimal;
   maxRate: Decimal;
@@ -319,6 +322,7 @@ export class CommissionRate {
   }
 }
 
+/** @hidden */
 export class CreateValidator {
   validatorAddress: string;
   description: Description;
@@ -366,6 +370,7 @@ export class CreateValidator {
   }
 }
 
+/** @hidden */
 export class EditValidator {
   validatorAddress: string;
   description: Description;
@@ -404,6 +409,7 @@ export class EditValidator {
   }
 }
 
+/** @hidden */
 export class Delegate {
   delegatorAddress: string;
   validatorAddress: string;
@@ -422,6 +428,7 @@ export class Delegate {
   }
 }
 
+/** @hidden */
 export class Undelegate {
   delegatorAddress: string;
   validatorAddress: string;
@@ -440,6 +447,7 @@ export class Undelegate {
   }
 }
 
+/** @hidden */
 export class CollectRewards {
   delegatorAddress: string;
   constructor(delegatorAddress: string) {

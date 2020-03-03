@@ -8,25 +8,67 @@ import { isAddress, isBech32Address, isBech32TestNetAddress } from '@harmony-js/
 import { toChecksumAddress } from './keyTool';
 import { fromBech32, toBech32, HRP, tHRP } from './bech32';
 
+/**
+ * ### How to use it?
+ *
+ * ```
+ * // Step 1: import the class
+ * const { HarmonyAddress } = require('@harmony-js/crypto');
+ *
+ * // Step 2: call functions
+ * const addr = 'one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7'
+ * const res = HarmonyAddress.isValidBech32(addr);
+ * console.log(res);
+ * ```
+ */
 export class HarmonyAddress {
-  // static validator
+  /**
+   * @example
+   * ```
+   * const addr = 'one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7'
+   * const res = HarmonyAddress.isValidBech32(addr);
+   * console.log(res);
+   * ```
+   */
   static isValidBasic(str: string) {
     const toTest = new HarmonyAddress(str);
     return toTest.raw === toTest.basic;
   }
 
-  // static validator
+  /**
+   * @example
+   * ```
+   * const addr = 'one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7'
+   * const res = HarmonyAddress.isValidChecksum(addr);
+   * console.log(res);
+   * ```
+   */
   static isValidChecksum(str: string) {
     const toTest = new HarmonyAddress(str);
     return toTest.raw === toTest.checksum;
   }
 
-  // static validator
+  /**
+   * @example
+   * ```
+   * const addr = 'one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7'
+   * const res = HarmonyAddress.isValidBech32(addr);
+   * console.log(res);
+   * ```
+   */
   static isValidBech32(str: string) {
     const toTest = new HarmonyAddress(str);
     return toTest.raw === toTest.bech32;
   }
-  // static validator
+
+  /**
+   * @example
+   * ```
+   * const addr = 'one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7'
+   * const res = HarmonyAddress.isValidBech32TestNet(addr);
+   * console.log(res);
+   * ```
+   */
   static isValidBech32TestNet(str: string) {
     const toTest = new HarmonyAddress(str);
     return toTest.raw === toTest.bech32TestNet;
@@ -34,16 +76,53 @@ export class HarmonyAddress {
 
   raw: string;
   basic: string;
+
+  /**
+   * get basicHex of the address
+   *
+   * @example
+   * ```
+   * const addr = 'one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7'
+   * const instance = new HarmonyAddress(addr);
+   * console.log(instance.basicHex);
+   * ```
+   */
   get basicHex() {
     return `0x${this.basic}`;
   }
+
+  /**
+   * @example
+   * ```
+   * const addr = 'one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7'
+   * const instance = new HarmonyAddress(addr);
+   * console.log(instance.checksum);
+   * ```
+   */
   get checksum() {
     return toChecksumAddress(`0x${this.basic}`);
   }
 
+  /**
+   * @example
+   * ```
+   * const addr = 'one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7'
+   * const instance = new HarmonyAddress(addr);
+   * console.log(instance.bech32);
+   * ```
+   */
   get bech32() {
     return toBech32(this.basic, HRP);
   }
+
+  /**
+   * @example
+   * ```
+   * const addr = 'one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7'
+   * const instance = new HarmonyAddress(addr);
+   * console.log(instance.bech32TestNet);
+   * ```
+   */
   get bech32TestNet() {
     return toBech32(this.basic, tHRP);
   }
@@ -58,6 +137,13 @@ export class HarmonyAddress {
    *
    * @param addr string, the address
    *
+   * @example
+   * ```
+   * const addr = 'one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7'
+   * const instance = new HarmonyAddress(addr);
+   * const res = instance.getBasic(addr);
+   * console.log(res)
+   * ```
    */
   private getBasic(addr: string) {
     const basicBool = isAddress(addr);

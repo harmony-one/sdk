@@ -1,7 +1,6 @@
 /**
  * @packageDocumentation
  * @module harmony-crypto
- * @hidden
  */
 
 import aes from 'aes-js';
@@ -16,6 +15,7 @@ import { concat, hexToIntArray } from './bytes';
 import { keccak256 } from './keccak256';
 import { KDF, KDFParams, EncryptOptions, PBKDF2Params, ScryptParams, Keystore } from './types';
 
+/** @hidden */
 const DEFAULT_ALGORITHM = 'aes-128-ctr';
 
 /**
@@ -140,6 +140,9 @@ export const decrypt = async (keystore: Keystore, password: string): Promise<str
   return decrypted;
 };
 
+/**
+ * encrypt Phrase
+ */
 export const encryptPhrase = async (
   phrase: string,
   password: string,
@@ -189,6 +192,9 @@ export const encryptPhrase = async (
   });
 };
 
+/**
+ * decrypt phrase
+ */
 export const decryptPhrase = async (keystore: Keystore, password: string): Promise<string> => {
   const result = await decrypt(keystore, password);
   return Buffer.from(result.replace('0x', ''), 'hex').toString();

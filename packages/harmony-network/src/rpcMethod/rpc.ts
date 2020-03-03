@@ -1,9 +1,33 @@
 /**
+ * ## About this package
+ *
+ * `@harmony-js/network` provides functions to handle messenger, providers and subscriptions...
+ *
+ * Develop can use this package to:
+ * - messenger
+ * - providers
+ * - subscription
+ *
+ * ## How to use this package
+ *
+ * ### 1. Create a Message
+ * ```javascript
+ * const { HttpProvider, Messenger } = require('@harmony-js/network');
+ * const { ChainType, ChainID } = require('@harmony-js/utils');
+ *
+ * // create a custom messenger
+ * const customMessenger = new Messenger(
+ *   new HttpProvider('http://localhost:9500'),
+ *   ChainType.Harmony, // if you are connected to Harmony's blockchain
+ *   ChainID.HmyLocal, // check if the chainId is correct
+ * )
+ * ```
+ *
  * @packageDocumentation
  * @module harmony-network
  */
 
- /**@ignore */
+/**@ignore */
 export const enum RPCMethod {
   // 1. hmy_getBlockByHash
   GetBlockByHash = 'hmy_getBlockByHash',

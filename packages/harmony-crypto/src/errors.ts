@@ -1,4 +1,66 @@
 /**
+ * ## About this package
+ *
+ * `@harmony-js/crypot` provides a series of functions to deal with keys
+ *
+ * ## How to use this package
+ *
+ * ### Create a Harmony Instance
+ * ```javascript
+ * const { Harmony } = require('@harmony-js/core');
+ * const { ChainID, ChainType } = require('@harmony-js/utils');
+ *
+ * const hmy = new Harmony(
+ *   'http://localhost:9500',
+ *   {
+ *     chainType: ChainType.Harmony,
+ *     chainId: ChainID.HmyLocal,
+ *   },
+ * );
+ * ```
+ *
+ * ### Some examples
+ *
+ * ```javascript
+ * // randomBytes
+ * const bytes = hmy.crypto.randomBytes(20);
+ * console.log(bytes)
+ *
+ * // encryptPhrase
+ * const myPhrase = hmy.wallet.newMnemonic();
+ * const pwd = '1234';
+ * hmy.crypto.encryptPhrase(myPhrase, pwd).then((value) => {
+ *   console.log(value);
+ * })
+ *
+ * // decryptThePhrase
+ * hmy.crypto.encryptPhrase(myPhrase, pwd).then((keystore) => {
+ *   hmy.crypto.decryptPhrase(JSON.parse(keystore), pwd).then((value) => {
+ *     console.log(value);
+ *   })
+ * })
+ *
+ * // generatePrivateKey
+ * const privateKey = hmy.crypto.generatePrivateKey();
+ * console.log(privateKey)
+ *
+ * // getPubkeyFromPrivateKey
+ * const publicKey = hmy.crypto.getPubkeyFromPrivateKey(privateKey);
+ * console.log(publicKey);
+ *
+ * // getAddressFromPrivateKey
+ * const address = hmy.crypto.getAddressFromPrivateKey(privateKey);
+ * console.log(address);
+ *
+ * // getAddressFromPublicKey
+ * const address = hmy.crypto.getAddressFromPublicKey(publicKey);
+ * console.log(address);
+ *
+ * // toChecksumAddress
+ * const checksumAddr = hmy.crypto.toChecksumAddress(address);
+ * console.log(checksumAddr);
+ * ```
+ *
  * @packageDocumentation
  * @module harmony-crypto
  */
