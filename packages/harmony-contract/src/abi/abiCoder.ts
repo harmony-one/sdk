@@ -1,4 +1,13 @@
 /**
+ * ## About this package
+ *
+ * `@harmony-js/contract` makes it easy to interact with smart contract on the Harmony Blockchain. This allows you to interact with smart contracts as if they were JavaScript objects.
+ *
+ * Develop can use this package to:
+ * - Interact with Smart Contracts
+ *
+ * ## How to use this package
+ *
  * ## Harmony Smart Contract
  * Create an Contract instance
  * ```javascript

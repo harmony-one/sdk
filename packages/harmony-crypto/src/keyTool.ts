@@ -1,7 +1,6 @@
 /**
  * @packageDocumentation
  * @module harmony-crypto
- * @hidden
  */
 
 import elliptic from 'elliptic';

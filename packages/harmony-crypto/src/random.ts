@@ -1,12 +1,12 @@
 /**
  * @packageDocumentation
- * @ignore
+ * @module harmony-crypto
  */
 
 /**
- * @function randomBytes
- * @description Uses JS-native CSPRNG to generate a specified number of bytes.
- * NOTE: this method throws if no PRNG is available.
+ * Uses JS-native CSPRNG to generate a specified number of bytes.
+ * @NOTE
+ * this method throws if no PRNG is available.
  * @param {Number} bytes bytes number to generate
  * @return {String} ramdom hex string
  */

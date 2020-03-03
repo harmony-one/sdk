@@ -32,32 +32,13 @@ $ npm install --global typedoc
 
 ### Generate HTML
 ```
-cd docs
-
-typedoc --out ./account ../packages/harmony-account/ --ignoreCompilerErrors
-typedoc --out ./contract ../packages/harmony-contract/ --ignoreCompilerErrors
-typedoc --out ./core ../packages/harmony-core/ --ignoreCompilerErrors
-typedoc --out ./crypto ../packages/harmony-crypto/ --ignoreCompilerErrors
-typedoc --out ./network ../packages/harmony-network/ --ignoreCompilerErrors
-typedoc --out ./staking ../packages/harmony-staking/ --ignoreCompilerErrors
-typedoc --out ./transaction ../packages/harmony-transaction/ --ignoreCompilerErrors
-typedoc --out ./utils ../packages/harmony-utils/ --ignoreCompilerErrors
+$ cd docs
+$ typedoc --out ./build ../packages/ --ignoreCompilerErrors --theme default --name Harmony_SDK_Doc --readme ../README.md
 ```
 
-### Run a simpleHTTPServer to test it
-```
-$ python3 -m http.server 8000
-```
-Then View the documentation generated at http://localhost:8000
->http://localhost:8000/core/index.html  
-http://localhost:8000/account/index.html  
-http://localhost:8000/contract/index.html  
-http://localhost:8000/crypto/index.html  
-http://localhost:8000/network/index.html  
-http://localhost:8000/staking/index.html  
-http://localhost:8000/transaction/index.html  
-http://localhost:8000/utils/index.html  
+### See the generated doc at local
 
+>open the `index.html` under the path `sdk/docs/build/index.html`
 
 ## Step 2: Deploy on AWS (harmony core only!)
 
