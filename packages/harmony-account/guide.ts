@@ -233,8 +233,37 @@ Create a random account
   - @harmony-js/utils
 
 ```typescript
-    import { Wallet } from '@harmony-js/account'
-    const wallet = new Wallet()
+    // constructor
+    const { Wallet } = require('@harmony-js/account');
+    const wallet = new Wallet(customMessenger);
+
+    // get signer
+    const wallet = new Wallet(customMessenger);
+    const key_1 = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+    console.log(wallet.addByPrivateKey(key_1));
+    console.log(wallet.signer)
+
+    // createAccount
+    console.log(wallet.accounts);
+    wallet.createAccount();
+    wallet.createAccount();
+    console.log(wallet.accounts);
+
+    // encryptAccount
+    const key_1 = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+    wallet.addByPrivateKey(key_1);
+    wallet.encryptAccount('one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7', '12345').then((value) => {
+      console.log(value);
+    })
+
+    // decrptAccount
+    const key_1 = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+    wallet.addByPrivateKey(key_1);
+    wallet.encryptAccount('one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7', '12345').then(() => {
+      wallet.decryptAccount('one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7', '12345').then((value) => {
+        console.log(value);
+      })
+    });
 ```
  * 
  * @packageDocumentation

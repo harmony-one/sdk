@@ -3,18 +3,109 @@
  *
  * `@harmony-js/contract` makes it easy to interact with smart contract on the Harmony Blockchain. This allows you to interact with smart contracts as if they were JavaScript objects.
  *
- * Develop can use this package to:
- * - Interact with Smart Contracts
- *
  * ## How to use this package
  *
- * ## Harmony Smart Contract
- * Create an Contract instance
+ * ### Deploy a contract to blockchain
  * ```javascript
- * import { waitForInjected, getExtAccount } from '../util/hmy-util'
- * import { Harmony, HarmonyExtension } from '@harmony-js/core'
- * import { ChainID, ChainType } from '@harmony-js/utils'
+ * // Step 1: Use Solidity to build a sample contract instance
+ * contract Inbox {
+ *   string public message;
+ *   constructor() public {
+ *     message = "hello";
+ *   }
+ *   function setMessage(string memory newMessage) public {
+ *     message = newMessage;
+ *   }
+ * }
+ *
+ * // Step 2: Use truffle to compile the contract
+ * $ truffle compile
+ *
+ * // Step 3: Use truffle to deploy the contract (by truffle)
+ * $ truffle migrate --network local --reset
+ * $ truffle migrate --network testnet --reset
  * ```
+ * [Tutorial: using truffle to compile and deploy smart-contract](https://github.com/harmony-one/HRC/tree/master/examples/dapp_Lottery)
+ *
+ * ### Interact with the contract
+ * ```javascript
+ * // Step 1: create a harmony instance
+ * const { Harmony } = require('@harmony-js/core');
+ * const { ChainID, ChainType } = require('@harmony-js/utils');
+ * const hmy = new Harmony(
+ *   // let's assume we deploy smart contract to this end-point URL
+ *   'https://api.s0.b.hmny.io'
+ *   {
+ *     chainType: ChainType.Harmony,
+ *     chainId: ChainID.HmyLocal,
+ *   }
+ * )
+ *
+ * // Step 2: get a contract instance
+ * const getContractInstance = (hmy, artifact) => {
+ *   return hmy.contracts.createContract(artifact.abi, address);
+ * }
+ * const inbox = getContractInstance(hmy, inboxJson)
+ *
+ * // Step 3: interact with the instance
+ * // Example 1: methods.myMethod.call()
+ * const message = await inbox.methods.message().call();
+ * console.log(message);
+ *
+ * // Example 2: methods.myMethod.send()
+ * inbox.methods.setMessage('666').send({
+ *   gasLimit: '1000001',
+ *   gasPrice: new hmy.utils.Unit('10').asGwei().toWei(),
+ * });
+ * ```
+ *
+ * ### Integrate MathWallet
+ * Using MathWallet to sign Transaction
+ * ```javascript
+ * // Step 0: set up MathWallet extension on Chrome
+ *
+ * // Step 1: Create a harmonyExtension instance
+ * const { Harmony, HarmonyExtension } = require('@harmony-js/core');
+ * let hmyEx, ExContract;
+ * export const initExtension = async() => {
+ *   hmyEx = await new HarmonyExtension(window.harmony);
+ *
+ *   exContract = hmyEx.contracts.createContract(abi, address);
+ *   return exContract;
+ * };
+ *
+ * // Step 2: interact with hmyEx instance
+ * // wait for hmy inject into window
+ * async componentDidMount() {
+ *   ...
+ *   await waitForInjected()
+ *   ...
+ * }
+ * // Example: methods.myMethod.send()
+ * onSubmit = async event => {
+ *   const exContract = await initExtension()
+ *   await exContract.methods.Mymethod().send({
+ *     value: new hmy.utils.Unit('1').asOne().toWei(),
+ *   })
+ * }
+ *
+ * // wait for injected
+ * export const waitForInjected = () => new Promise((resolve) => {
+ *   const check = () => {
+ *     if (!window.harmony) setTimeout(check, 250);
+ *     else resolve(window.harmony);
+ *   }
+ *   check();
+ * });
+ * ```
+ *
+ * ## [More Examples: HRC repo](https://github.com/harmony-one/HRC/tree/master/examples)
+ * - Lottery
+ * - HRC 20
+ * - HRC 721
+ * - Node-dao
+ * - Node-faucet
+ *
  * @packageDocumentation
  * @module harmony-contract
  */

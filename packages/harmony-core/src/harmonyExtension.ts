@@ -84,7 +84,7 @@ export class HarmonyExtension {
    * ```javascript
    * // Using Mathwallet instance
    * export const initEx = async() => {
-   *   hmyEx = await new HarmonyExtension(window.harmony);
+   *   hmyEx = new HarmonyExtension(window.harmony);
    * }
    * ```
    */
