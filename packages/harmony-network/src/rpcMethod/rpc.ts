@@ -3,11 +3,6 @@
  *
  * `@harmony-js/network` provides functions to handle messenger, providers and subscriptions...
  *
- * Develop can use this package to:
- * - messenger
- * - providers
- * - subscription
- *
  * ## How to use this package
  *
  * ### 1. Create a Message
