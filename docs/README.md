@@ -94,4 +94,21 @@ Here is some explanations
 `Object URL`, then make it public!
 
 
-  
+## How to continue my work?
+
+Step 0: clone the repo
+```
+$ npm install
+```
+
+Step 1: Generate a new Doc
+```
+$ cd docs
+$ typedoc --out ./build ../packages/ --ignoreCompilerErrors --theme default --name Harmony_SDK_Doc --readme ../README.md
+```
+
+Step 2: Upload to S3 bucket
+```
+$ cd build
+$ aws s3 cp ./ s3://your-bucket-name --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive
+```
