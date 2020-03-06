@@ -30,10 +30,15 @@ Golbal CLI installation
 $ npm install --global typedoc
 ```
 
+### Install Environemnt
+```
+$ npm install
+```
+
 ### Generate HTML
 ```
 $ cd docs
-$ typedoc --out ./build ../packages/ --ignoreCompilerErrors --theme default --name Harmony_SDK_Doc --readme ../README.md
+$ npx typedoc --out ./build ../packages/ --ignoreCompilerErrors --theme default --name Harmony_SDK_Doc --readme ../README.md
 ```
 
 ### See the generated doc at local
@@ -75,7 +80,8 @@ aws s3 ls
 
 3. Uploade the files into bucket
 ```
-aws s3 cp ./account s3://harmony-js-sdk-doc --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive
+$ cd build
+$ aws s3 cp ./ s3://your-bucket-name --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive
 ```
 Here is some explanations
 > **./account**  
@@ -90,25 +96,5 @@ Here is some explanations
 > **--recursive**  
 > Command is performed on all files or objects under the specified directory or prefix.
 
-1. Open the folder in S3 bucket and find `index.html`, get the 
+4. Open the folder in S3 bucket and find `index.html`, get the 
 `Object URL`, then make it public!
-
-
-## How to continue my work?
-
-Step 0: clone the repo
-```
-$ npm install
-```
-
-Step 1: Generate a new Doc
-```
-$ cd docs
-$ typedoc --out ./build ../packages/ --ignoreCompilerErrors --theme default --name Harmony_SDK_Doc --readme ../README.md
-```
-
-Step 2: Upload to S3 bucket
-```
-$ cd build
-$ aws s3 cp ./ s3://your-bucket-name --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --recursive
-```
