@@ -8,7 +8,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap && yarn build",
     "watch": "yarn build:ts -w",
-    "build": "yarn packages:clean && lerna clean -y && yarn build:ts",
+    "build": "yarn packages:clean && lerna clean -y && lerna link && yarn build:ts",
     "build:ts": "tsc -b tsconfig.json",
     "build:test": "tsc -b tsconfig.test.json",
     "build:e2e": "tsc -b tsconfig.e2e.json",
