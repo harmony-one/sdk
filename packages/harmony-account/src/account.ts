@@ -107,7 +107,7 @@ class Account {
       if (!password) {
         throw new Error('you must provide password');
       }
-      const file: Keystore = JSON.parse(keyStore);
+      const file: Keystore = JSON.parse(keyStore.toLowerCase());
       const decyptedPrivateKey = await decrypt(file, password);
       if (isPrivateKey(decyptedPrivateKey)) {
         return this._import(decyptedPrivateKey);
