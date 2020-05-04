@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@harmony-js/core": "^0.1.32"
+    "@harmony-js/core": "^0.1.41"
   }
 }
