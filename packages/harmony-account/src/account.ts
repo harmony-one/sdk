@@ -104,7 +104,7 @@ class Account {
 
   async fromFile(keyStore: string, password: string): Promise<Account> {
     try {
-      if (!password) {
+      if (typeof password !== 'string') {
         throw new Error('you must provide password');
       }
       const file: Keystore = JSON.parse(keyStore.toLowerCase());

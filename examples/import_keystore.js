@@ -25,12 +25,11 @@ async function encryptAndDecrypt(password) {
   );
 }
 
-// encryptAndDecrypt(myStrongPassword)
+encryptAndDecrypt(myStrongPassword);
 
 // suppose we have keyStorefile, in this example, we just use same password and keystore string encrypted above
 const someKeyStoreFile =
-  '{"address":"1cc87010760602a576455d6d2f03a3bf92d2c2ca","crypto":{"cipher":"aes-128-ctr","ciphertext":"8bc4575478cae488a0f6d1b33ac72e61e0a04ce650aa7d03de26cfe6f6b0dce1","cipherparams":{"iv":"3bf838a3c67a4cbd6e02158f1ccd49d7"},"kdf":"scrypt","kdfparams":{"dklen":32,"n":262144,"p":1,"r":8,"salt":"c8c5374b1ce08b25b7d5733f8d072396af6f93f4bf65c06efd29a7155c62883c"},"mac":"a9ad452817814e71a2af5571add57ee0d944d7ab63bf3a5cfaf66af53bb8b9b6"},"id":"ab8e578b-9431-47f6-9937-6f1f18e8f34f","version":3}';
-//'{"version":3,"id":"62326332-3139-4839-b534-656134623066","address":"1fe3da351d9fc0c4f02de5412ad7def8aee956c5","crypto":{"ciphertext":"b86ab81682c9f5a35738ad9bd38cd9b46c1b852ef33f16dd83068f79e20d5531","cipherparams":{"iv":"44efb5a514f34968e92cafad80566487"},"cipher":"aes-128-ctr","kdf":"scrypt","kdfparams":{"salt":"d70ae1f311601562113f98c8ebe382f52a332dca1588886e5ea91e2f8a647134","n":8192,"r":8,"p":1,"dklen":32},"mac":"7b63e4e31a75a22b7091291bb58302655b738539ef3e30b30a7a7f170f6163ef"}}'
+  '{"version":3,"id":"38326265-6165-4961-a338-353063643962","address":"1cc87010760602a576455d6d2f03a3bf92d2c2ca","crypto":{"ciphertext":"a4ee9120b27ba66fb9d3fabd6372fa3a11060cf439a6a1777ced1e6253de8c29","cipherparams":{"iv":"c18772a882ac461fffd1971e9ec57861"},"cipher":"aes-128-ctr","kdf":"scrypt","kdfparams":{"salt":"da4efedeca407279be65e02fc94b7c4b7c74c3396447c71e659c74a73a5d9131","n":8192,"r":8,"p":1,"dklen":32},"mac":"547ee6616dcdf424273c113ceb00728ccdda17ff6449f2cb84a1a8352c87b4e6"}}';
 
 async function importKeyStoreFileAndDecrypt(keyStoreFile, password) {
   // import keyStore string and provide the password, remember to make a new Account first
