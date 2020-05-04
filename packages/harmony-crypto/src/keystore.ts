@@ -58,9 +58,7 @@ export const encrypt = async (
   if (!isPrivateKey(privateKey)) {
     throw new Error('privateKey is not correct');
   }
-  // TODO: should use isString() to implement this
-
-  if (!password) {
+  if (typeof password !== 'string') {
     throw new Error('password is not found');
   }
   const address = getAddressFromPrivateKey(privateKey);
@@ -96,7 +94,7 @@ export const encrypt = async (
     version: 3,
     id: uuid.v4({ random: uuidRandom || hexToIntArray(randomBytes(16)) }),
     address: address.toLowerCase().replace('0x', ''),
-    Crypto: {
+    crypto: {
       ciphertext: ciphertext.toString('hex'),
       cipherparams: {
         iv: iv.toString('hex'),
@@ -116,15 +114,15 @@ export const encrypt = async (
  * @return {string} privateKey
  */
 export const decrypt = async (keystore: Keystore, password: string): Promise<string> => {
-  const ciphertext = Buffer.from(keystore.Crypto.ciphertext, 'hex');
-  const iv = Buffer.from(keystore.Crypto.cipherparams.iv, 'hex');
-  const { kdfparams } = keystore.Crypto;
+  const ciphertext = Buffer.from(keystore.crypto.ciphertext, 'hex');
+  const iv = Buffer.from(keystore.crypto.cipherparams.iv, 'hex');
+  const { kdfparams } = keystore.crypto;
 
-  const derivedKey = await getDerivedKey(Buffer.from(password), keystore.Crypto.kdf, kdfparams);
+  const derivedKey = await getDerivedKey(Buffer.from(password), keystore.crypto.kdf, kdfparams);
 
   const mac = keccak256(concat([derivedKey.slice(16, 32), ciphertext])).replace('0x', '');
 
-  if (mac.toUpperCase() !== keystore.Crypto.mac.toUpperCase()) {
+  if (mac.toUpperCase() !== keystore.crypto.mac.toUpperCase()) {
     return Promise.reject(new Error('Failed to decrypt.'));
   }
 
@@ -141,7 +139,7 @@ export const encryptPhrase = async (
   password: string,
   options?: EncryptOptions,
 ): Promise<string> => {
-  if (!password) {
+  if (typeof password !== 'string') {
     throw new Error('password is not found');
   }
   const salt = randomBytes(32);
@@ -172,7 +170,7 @@ export const encryptPhrase = async (
   return JSON.stringify({
     version: 3,
     id: uuid.v4({ random: uuidRandom || hexToIntArray(randomBytes(16)) }),
-    Crypto: {
+    crypto: {
       ciphertext: ciphertext.toString('hex'),
       cipherparams: {
         iv: iv.toString('hex'),

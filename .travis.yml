@@ -7,6 +7,7 @@ branches:
   except:
     - /^v[0-9]/
 install:
+  - yarn
   - yarn bootstrap
 script:
   - yarn test:src
@@ -21,3 +22,4 @@ deploy:
   keep-history: true
   on:
     branch: master
+

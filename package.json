@@ -100,7 +100,7 @@
     "jest-json-schema": "^2.0.1",
     "jest-watch-typeahead": "^0.2.0",
     "jsdoc": "^3.6.3",
-    "lerna": "^3.2.1",
+    "lerna": "^3.20.2",
     "mkdirp": "^0.5.1",
     "prettier": "^1.18.2",
     "prettier-plugin-solidity": "^1.0.0-alpha.22",
@@ -126,7 +126,7 @@
     "tslint-config-prettier": "^1.15.0",
     "typedoc": "^0.15.0",
     "typedoc-plugin-markdown": "^2.1.0",
-    "typescript": "^3.2",
+    "typescript": "^3.8.3",
     "typescript-json-schema": "^0.36.0",
     "webpack": "^4.20.2",
     "webpack-command": "^0.4.1",
@@ -138,5 +138,8 @@
       "pre-commit": "pretty-quick --staged"
     }
   },
-  "name": "harmony-sdk-core"
+  "name": "harmony-sdk-core",
+  "dependencies": {
+    "tslib": "^1.11.1"
+  }
 }
