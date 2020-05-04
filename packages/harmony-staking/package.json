@@ -1,6 +1,6 @@
 {
   "name": "@harmony-js/staking",
-  "version": "0.1.36",
+  "version": "0.1.37",
   "description": "staking transaction package for harmony",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -18,9 +18,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@harmony-js/crypto": "0.1.35",
-    "@harmony-js/network": "0.1.35",
-    "@harmony-js/transaction": "0.1.35",
+    "@harmony-js/crypto": "0.1.37",
+    "@harmony-js/network": "0.1.37",
+    "@harmony-js/transaction": "0.1.37",
     "@harmony-js/utils": "0.1.35",
     "text-encoding": "^0.7.0"
   },
