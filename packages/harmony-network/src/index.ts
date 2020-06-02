@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
 import mitt from 'mitt';
 export { mitt };
 // provider related

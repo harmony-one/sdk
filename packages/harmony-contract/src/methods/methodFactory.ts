@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ */
+
 import { AbiCoderClass } from '../abi/api';
 import { AbiModel } from '../models/types';
 import { Contract } from '../contract';
@@ -21,12 +26,7 @@ export class MethodFactory {
     this.methodKeys.forEach((key: string) => {
       const newObject: any = {};
       newObject[key] = (...params: any[]) =>
-        new ContractMethod(
-          key,
-          params,
-          this.abiModel.getMethod(key),
-          this.contract,
-        );
+        new ContractMethod(key, params, this.abiModel.getMethod(key), this.contract);
 
       Object.assign(this.contract.methods, newObject);
     });

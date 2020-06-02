@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @ignore
+ */
+
 import * as bytes from '../src/bytes';
 
 describe('Bytes', () => {

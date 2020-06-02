@@ -125,8 +125,8 @@
     "tslib": "^1.11.1",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
-    "typedoc": "^0.15.0",
-    "typedoc-plugin-markdown": "^2.1.0",
+    "typedoc": "^0.16.9",
+    "typedoc-plugin-external-module-name": "^3.0.0",
     "typescript": "^3.8.3",
     "typescript-json-schema": "^0.36.0",
     "webpack": "^4.20.2",
@@ -140,5 +140,9 @@
     }
   },
   "name": "harmony-sdk-core",
-  "dependencies": {}
+  "dependencies": {
+    "@harmony-js/core": "^0.1.36",
+    "tslib": "^1.10.0",
+    "typedoc-plugin-internal-external": "^2.1.1"
+  }
 }

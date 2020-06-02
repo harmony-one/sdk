@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
 // TODO: implement Websocket Provider
 import { w3cwebsocket as W3CWebsocket } from 'websocket';
 import {

@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ */
+
 export interface ContractOptions {
   data?: string;
   shardID?: number;

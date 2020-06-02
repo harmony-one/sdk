@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
 import { HarmonyCore, ChainType, isString, ChainID, defaultConfig } from '@harmony-js/utils';
 import { JsonRpc } from '../rpcMethod/builder';
 import { ResponseMiddleware } from './responseMiddleware';

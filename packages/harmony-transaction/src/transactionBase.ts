@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-transaction
+ */
+
 import { BN, getAddress, HarmonyAddress } from '@harmony-js/crypto';
 import { hexToNumber } from '@harmony-js/utils';
 import { Messenger, RPCMethod, Emitter, HttpProvider, NewHeaders } from '@harmony-js/network';

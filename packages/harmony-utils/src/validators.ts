@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-utils
+ */
+
 export const isKeyString = (keyString: string, lengh: number): boolean => {
   return !!keyString.replace('0x', '').match(`^[0-9a-fA-F]{${lengh}}$`);
 };
@@ -174,11 +179,7 @@ export const isValidAddress = (address: string): boolean => {
   if (!isString(address)) {
     throw new Error(`${address} is not string`);
   }
-  if (
-    isAddress(address) ||
-    isBech32Address(address) ||
-    isBech32TestNetAddress(address)
-  ) {
+  if (isAddress(address) || isBech32Address(address) || isBech32TestNetAddress(address)) {
     return true;
   } else {
     return false;

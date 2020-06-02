@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-transaction
+ */
+
 import { Messenger } from '@harmony-js/network';
 import { AddressSuffix } from '@harmony-js/utils';
 import { Transaction } from './transaction';

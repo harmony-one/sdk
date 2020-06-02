@@ -9,5 +9,6 @@
     { "path": "packages/harmony-account" },
     { "path": "packages/harmony-contract" },
     { "path": "packages/harmony-core" }
-  ]
+  ],
+  "toc": ["harmony-account", "harmony-core"]
 }

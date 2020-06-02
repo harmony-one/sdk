@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-utils
+ * @ignore
+ */
+
 import { BN } from '@harmony-js/crypto';
 import * as transformers from '../src/transformers';
 

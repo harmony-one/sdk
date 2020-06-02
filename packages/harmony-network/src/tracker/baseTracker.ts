@@ -1,10 +1,14 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
 import { isHex, hexToNumber } from '@harmony-js/utils';
 import { Emitter } from '../providers/emitter';
 
 const sec = 1000;
 
-const calculateSum = (accumulator: number, currentValue: number) =>
-  accumulator + currentValue;
+const calculateSum = (accumulator: number, currentValue: number) => accumulator + currentValue;
 const blockTrackerEvents = ['sync', 'latest'];
 
 export class BaseBlockTracker extends Emitter {
@@ -55,9 +59,7 @@ export class BaseBlockTracker extends Emitter {
       return this._currentBlock;
     }
     // wait for a new latest block
-    const latestBlock = await new Promise((resolve) =>
-      this.once('latest', resolve),
-    );
+    const latestBlock = await new Promise((resolve) => this.once('latest', resolve));
     // return newly set current block
     return latestBlock;
   }
@@ -169,10 +171,7 @@ export class BaseBlockTracker extends Emitter {
     // clear any existing timeout
     this._cancelBlockResetTimeout();
     // clear latest block when stale
-    this._blockResetTimeout = setTimeout(
-      this._resetCurrentBlock,
-      this._blockResetDuration,
-    );
+    this._blockResetTimeout = setTimeout(this._resetCurrentBlock, this._blockResetDuration);
     // nodejs - dont hold process open
     if (this._blockResetTimeout.unref) {
       this._blockResetTimeout.unref();

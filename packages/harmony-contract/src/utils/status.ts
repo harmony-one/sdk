@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ */
+
 export enum ContractStatus {
   INITIALISED = 'initialised',
   TESTED = 'tested',

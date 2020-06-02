@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
 import { BaseBlockTracker } from './baseTracker';
 import { Messenger } from '../messenger/messenger';
 import { RPCMethod } from '../rpcMethod/rpc';
@@ -83,9 +88,7 @@ export class PollingBlockTracker extends BaseBlockTracker {
         await timeout(this._pollingInterval, !this._keepEventLoopActive);
       } catch (err) {
         const newErr = new Error(
-          `PollingBlockTracker - encountered an error while attempting to update latest block:\n${
-            err.stack
-          }`,
+          `PollingBlockTracker - encountered an error while attempting to update latest block:\n${err.stack}`,
         );
         try {
           this.emit('error', newErr);

@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
 import { Messenger } from '../messenger/messenger';
 import { SubscriptionMethod } from './Subscription';
 import { RPCMethod } from '../rpcMethod/rpc';
@@ -11,7 +16,8 @@ export class LogSub extends SubscriptionMethod {
   async subscribe() {
     if (
       (this.options.fromBlock && this.options.fromBlock !== 'latest') ||
-      (this.options.fromBlock === 0 || this.options.fromBlock === '0x')
+      this.options.fromBlock === 0 ||
+      this.options.fromBlock === '0x'
     ) {
       try {
         const getPastLogs = await this.messenger.send(

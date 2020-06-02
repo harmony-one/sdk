@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-crypto
+ */
+
 import { isAddress, isBech32Address, isBech32TestNetAddress } from '@harmony-js/utils';
 
 import { toChecksumAddress } from './keyTool';

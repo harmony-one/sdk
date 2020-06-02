@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-core
+ */
+
 import {
   HttpProvider,
   WSProvider,
