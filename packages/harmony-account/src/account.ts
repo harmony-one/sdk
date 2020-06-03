@@ -30,6 +30,12 @@ import { Messenger, RPCMethod } from '@harmony-js/network';
 import { Shards } from './types';
 import { defaultMessenger } from './utils';
 
+export interface Balance {
+  balance?: string;
+  nonce?: number;
+  shardID?: number;
+}
+
 class Account {
   /**
    * static method create account
@@ -218,7 +224,7 @@ class Account {
    * });
    * ```
    */
-  async getBalance(blockNumber: string = 'latest'): Promise<object> {
+  async getBalance(blockNumber: string = 'latest'): Promise<Balance> {
     try {
       if (this.messenger) {
         const balance = await this.messenger.send(
