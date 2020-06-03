@@ -1,6 +1,6 @@
 /**
  * @packageDocumentation
- * @module harmony-transaction
+ * @module harmony-account
  * @ignore
  */
 
