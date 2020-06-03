@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @ignore
+ */
+
 import * as keys from '../src/keyTool';
 import { isPrivateKey, isAddress, isPublicKey } from '@harmony-js/utils';
 

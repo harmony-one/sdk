@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-utils
+ */
+
 import BN from 'bn.js';
 import { isString, isNumber, isHex } from './validators';
 
@@ -16,6 +21,7 @@ export const enum Units {
   Tether = 'Tether',
 }
 
+/** @hidden */
 export const unitMap = new Map([
   [Units.wei, '1'],
   [Units.Kwei, '1000'], // 1e3 wei
@@ -31,10 +37,14 @@ export const unitMap = new Map([
   [Units.Tether, '1000000000000000000000000000000'], // 1e30 wei
 ]);
 
+/** @hidden */
 const DEFAULT_OPTIONS = {
   pad: false,
 };
 
+/**
+ * Convert Number to String
+ */
 export const numberToString = (obj: BN | number | string, radix: number = 10): string => {
   if (BN.isBN(obj)) {
     return obj.toString(radix);
@@ -47,6 +57,9 @@ export const numberToString = (obj: BN | number | string, radix: number = 10): s
   }
 };
 
+/**
+ * Convert Number to String
+ */
 export const numToStr = (input: any) => {
   if (typeof input === 'string') {
     if (!input.match(/^-?[0-9.]+$/)) {
@@ -80,6 +93,9 @@ export const strip0x = (obj: string): string => {
   return obj.toLowerCase().replace('0x', '');
 };
 
+/**
+ * Convert number to hex
+ */
 export const numberToHex = (obj: any): string => {
   try {
     return add0xToString(numberToString(obj, 16));
@@ -88,6 +104,9 @@ export const numberToHex = (obj: any): string => {
   }
 };
 
+/**
+ * Convert hex to Decimal number
+ */
 export const hexToNumber = (hex: string): string => {
   if (isHex(hex) && hex[0] !== '-') {
     return new BN(strip0x(hex), 'hex').toString();
@@ -99,6 +118,9 @@ export const hexToNumber = (hex: string): string => {
   }
 };
 
+/**
+ * Convert hex to Big Number
+ */
 export const hexToBN = (hex: string): BN => {
   if (isHex(hex) && hex[0] !== '-') {
     return new BN(strip0x(hex), 'hex');
@@ -110,6 +132,9 @@ export const hexToBN = (hex: string): BN => {
   }
 };
 
+/**
+ * Converts any ONE value into wei
+ */
 export const toWei = (input: BN | string, unit: Units): BN => {
   try {
     let inputStr = numToStr(input);
@@ -168,6 +193,9 @@ export const toWei = (input: BN | string, unit: Units): BN => {
   }
 };
 
+/**
+ * Converts any wei value into a ONE value.
+ */
 export const fromWei = (wei: BN | string, unit: Units, options: any = DEFAULT_OPTIONS): string => {
   try {
     const weiBN: BN = !BN.isBN(wei) ? new BN(wei) : wei;

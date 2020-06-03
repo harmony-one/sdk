@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-account
+ * @hidden
+ */
+
 import { HttpProvider, Messenger } from '@harmony-js/network';
 import { ChainType, ChainID } from '@harmony-js/utils';
 

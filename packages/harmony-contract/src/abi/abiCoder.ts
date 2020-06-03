@@ -1,3 +1,115 @@
+/**
+ * ## About this package
+ *
+ * `@harmony-js/contract` makes it easy to interact with smart contract on the Harmony Blockchain. This allows you to interact with smart contracts as if they were JavaScript objects.
+ *
+ * ## How to use this package
+ *
+ * ### Deploy a contract to blockchain
+ * ```javascript
+ * // Step 1: Use Solidity to build a sample contract instance
+ * contract Inbox {
+ *   string public message;
+ *   constructor() public {
+ *     message = "hello";
+ *   }
+ *   function setMessage(string memory newMessage) public {
+ *     message = newMessage;
+ *   }
+ * }
+ *
+ * // Step 2: Use truffle to compile the contract
+ * $ truffle compile
+ *
+ * // Step 3: Use truffle to deploy the contract (by truffle)
+ * $ truffle migrate --network local --reset
+ * $ truffle migrate --network testnet --reset
+ * ```
+ * [Tutorial: using truffle to compile and deploy smart-contract](https://github.com/harmony-one/HRC/tree/master/examples/dapp_Lottery)
+ *
+ * ### Interact with the contract
+ * ```javascript
+ * // Step 1: create a harmony instance
+ * const { Harmony } = require('@harmony-js/core');
+ * const { ChainID, ChainType } = require('@harmony-js/utils');
+ * const hmy = new Harmony(
+ *   // let's assume we deploy smart contract to this end-point URL
+ *   'https://api.s0.b.hmny.io'
+ *   {
+ *     chainType: ChainType.Harmony,
+ *     chainId: ChainID.HmyLocal,
+ *   }
+ * )
+ *
+ * // Step 2: get a contract instance
+ * const getContractInstance = (hmy, artifact) => {
+ *   return hmy.contracts.createContract(artifact.abi, address);
+ * }
+ * const inbox = getContractInstance(hmy, inboxJson)
+ *
+ * // Step 3: interact with the instance
+ * // Example 1: methods.myMethod.call()
+ * const message = await inbox.methods.message().call();
+ * console.log(message);
+ *
+ * // Example 2: methods.myMethod.send()
+ * inbox.methods.setMessage('666').send({
+ *   gasLimit: '1000001',
+ *   gasPrice: new hmy.utils.Unit('10').asGwei().toWei(),
+ * });
+ * ```
+ *
+ * ### Integrate MathWallet
+ * Using MathWallet to sign Transaction
+ * ```javascript
+ * // Step 0: set up MathWallet extension on Chrome
+ *
+ * // Step 1: Create a harmonyExtension instance
+ * const { Harmony, HarmonyExtension } = require('@harmony-js/core');
+ * let hmyEx, ExContract;
+ * export const initExtension = async() => {
+ *   hmyEx = await new HarmonyExtension(window.harmony);
+ *
+ *   exContract = hmyEx.contracts.createContract(abi, address);
+ *   return exContract;
+ * };
+ *
+ * // Step 2: interact with hmyEx instance
+ * // wait for hmy inject into window
+ * async componentDidMount() {
+ *   ...
+ *   await waitForInjected()
+ *   ...
+ * }
+ * // Example: methods.myMethod.send()
+ * onSubmit = async event => {
+ *   const exContract = await initExtension()
+ *   await exContract.methods.Mymethod().send({
+ *     value: new hmy.utils.Unit('1').asOne().toWei(),
+ *   })
+ * }
+ *
+ * // wait for injected
+ * export const waitForInjected = () => new Promise((resolve) => {
+ *   const check = () => {
+ *     if (!window.harmony) setTimeout(check, 250);
+ *     else resolve(window.harmony);
+ *   }
+ *   check();
+ * });
+ * ```
+ *
+ * ## [More Examples: HRC repo](https://github.com/harmony-one/HRC/tree/master/examples)
+ * - Lottery
+ * - HRC 20
+ * - HRC 721
+ * - Node-dao
+ * - Node-faucet
+ *
+ * @packageDocumentation
+ * @module harmony-contract
+ */
+
 // this file is mainly ported from `ethers.js`, but done some fixes
 // 1. added bytesPadRight support
 // 2. ts-lint
@@ -21,19 +133,23 @@ import {
 } from '@harmony-js/crypto';
 import { hexToBN, defineReadOnly } from '@harmony-js/utils';
 
+/** @hidden */
 const NegativeOne: BN = new BN(-1);
+/** @hidden */
 const One: BN = new BN(1);
-// const Two: BN = new BN(2);
+/** @hidden */
 const Zero: BN = new BN(0);
-const HashZero =
-  '0x0000000000000000000000000000000000000000000000000000000000000000';
-
+/** @hidden */
+const HashZero = '0x0000000000000000000000000000000000000000000000000000000000000000';
+/** @hidden */
 const MaxUint256: BN = hexToBN(
   '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
 );
 
+/** @hidden */
 export type CoerceFunc = (type: string, value: any) => any;
 
+/** @hidden */
 export interface ParamType {
   name?: string;
   type: string;
@@ -43,6 +159,7 @@ export interface ParamType {
 
 // @TODO: should this just be a combined Fragment?
 
+/** @hidden */
 export interface EventFragment {
   type: string;
   name: string;
@@ -52,6 +169,7 @@ export interface EventFragment {
   inputs: ParamType[];
 }
 
+/** @hidden */
 export interface FunctionFragment {
   type: string;
   name: string;
@@ -68,15 +186,15 @@ export interface FunctionFragment {
 }
 
 ///////////////////////////////
-
+/** @hidden */
 const paramTypeBytes = new RegExp(/^bytes([0-9]*)$/);
+/** @hidden */
 const paramTypeNumber = new RegExp(/^(u?int)([0-9]*)$/);
+/** @hidden */
 const paramTypeArray = new RegExp(/^(.*)\[([0-9]*)\]$/);
 
-export const defaultCoerceFunc: CoerceFunc = (
-  type: string,
-  value: any,
-): any => {
+/** @hidden */
+export const defaultCoerceFunc: CoerceFunc = (type: string, value: any): any => {
   const match = type.match(paramTypeNumber);
   if (match && parseInt(match[2], 10) <= 48) {
     // return value.toNumber();
@@ -91,9 +209,12 @@ export const defaultCoerceFunc: CoerceFunc = (
 ///////////////////////////////////
 // Parsing for Solidity Signatures
 
+/** @hidden */
 const regexParen = new RegExp('^([^)(]*)\\((.*)\\)([^)(]*)$');
+/** @hidden */
 const regexIdentifier = new RegExp('^[A-Za-z_][A-Za-z0-9_]*$');
 
+/** @hidden */
 function verifyType(type: string): string {
   // These need to be transformed to their full description
   if (type.match(/^uint($|[^1-9])/)) {
@@ -105,6 +226,7 @@ function verifyType(type: string): string {
   return type;
 }
 
+/** @hidden */
 interface ParseState {
   allowArray?: boolean;
   allowName?: boolean;
@@ -113,6 +235,7 @@ interface ParseState {
   readArray?: boolean;
 }
 
+/** @hidden */
 interface ParseNode {
   parent?: any;
   type?: string;
@@ -122,6 +245,7 @@ interface ParseNode {
   components?: any[];
 }
 
+/** @hidden */
 function parseParam(param: string, allowIndexed?: boolean): ParamType {
   const originalParam = param;
   // tslint:disable-next-line: no-shadowed-variable
@@ -155,9 +279,7 @@ function parseParam(param: string, allowIndexed?: boolean): ParamType {
           node.type = verifyType(node.type);
         }
 
-        node.components = [
-          { type: '', name: '', parent: node, state: { allowType: true } },
-        ];
+        node.components = [{ type: '', name: '', parent: node, state: { allowType: true } }];
         node = node.components[0];
         break;
 
@@ -298,6 +420,7 @@ function parseParam(param: string, allowIndexed?: boolean): ParamType {
 }
 
 // @TODO: Better return type
+/** @hidden */
 function parseSignatureEvent(fragment: string): EventFragment {
   const abi: EventFragment = {
     anonymous: false,
@@ -338,15 +461,18 @@ function parseSignatureEvent(fragment: string): EventFragment {
   return abi;
 }
 
+/** @hidden */
 export function parseParamType(type: string): ParamType {
   return parseParam(type, true);
 }
 
 // @TODO: Allow a second boolean to expose names
+/** @hidden */
 export function formatParamType(paramType: ParamType): string {
   return getParamCoder(defaultCoerceFunc, paramType).type;
 }
 
+/** @hidden */
 function parseSignatureFunction(fragment: string): FunctionFragment {
   const abi: FunctionFragment = {
     constant: false,
@@ -415,7 +541,7 @@ function parseSignatureFunction(fragment: string): FunctionFragment {
   // We have outputs
   if (comps.length > 1) {
     const right = comps[1].match(regexParen);
-    if (right === null || (right[1].trim() !== '' || right[3].trim() !== '')) {
+    if (right === null || right[1].trim() !== '' || right[3].trim() !== '') {
       throw new Error('unexpected tokens');
     }
 
@@ -439,20 +565,13 @@ function parseSignatureFunction(fragment: string): FunctionFragment {
 }
 
 // @TODO: Allow a second boolean to expose names and modifiers
-export function formatSignature(
-  fragment: EventFragment | FunctionFragment,
-): string {
-  return (
-    fragment.name +
-    '(' +
-    fragment.inputs.map((i) => formatParamType(i)).join(',') +
-    ')'
-  );
+/** @hidden */
+export function formatSignature(fragment: EventFragment | FunctionFragment): string {
+  return fragment.name + '(' + fragment.inputs.map((i) => formatParamType(i)).join(',') + ')';
 }
 
-export function parseSignature(
-  fragment: string,
-): EventFragment | FunctionFragment {
+/** @hidden */
+export function parseSignature(fragment: string): EventFragment | FunctionFragment {
   if (typeof fragment === 'string') {
     // Make sure the "returns" is surrounded by a space and all whitespace is exactly one space
     fragment = fragment.replace(/\s/g, ' ');
@@ -477,11 +596,13 @@ export function parseSignature(
 
 ///////////////////////////////////
 // Coders
-
+/** @hidden */
 interface DecodedResult {
   consumed: number;
   value: any;
 }
+
+/** @hidden */
 abstract class Coder {
   readonly coerceFunc: CoerceFunc;
   readonly name: string;
@@ -508,6 +629,7 @@ abstract class Coder {
 
 // Clones the functionality of an existing Coder, but without a localName
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderAnonymous extends Coder {
   private coder: Coder;
   constructor(coder: Coder) {
@@ -523,6 +645,7 @@ class CoderAnonymous extends Coder {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderNull extends Coder {
   constructor(coerceFunc: CoerceFunc, localName: string) {
     super(coerceFunc, 'null', '', localName, false);
@@ -545,15 +668,11 @@ class CoderNull extends Coder {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderNumber extends Coder {
   readonly size: number;
   readonly signed: boolean;
-  constructor(
-    coerceFunc: CoerceFunc,
-    size: number,
-    signed: boolean,
-    localName: string,
-  ) {
+  constructor(coerceFunc: CoerceFunc, size: number, signed: boolean, localName: string) {
     const name = (signed ? 'int' : 'uint') + size * 8;
     super(coerceFunc, name, name, localName, false);
 
@@ -597,15 +716,11 @@ class CoderNumber extends Coder {
 
   decode(data: Uint8Array, offset: number): DecodedResult {
     if (data.length < offset + 32) {
-      throwError(
-        'insufficient data for ' + this.name + ' type',
-        INVALID_ARGUMENT,
-        {
-          arg: this.localName,
-          coderType: this.name,
-          value: hexlify(data.slice(offset, offset + 32)),
-        },
-      );
+      throwError('insufficient data for ' + this.name + ' type', INVALID_ARGUMENT, {
+        arg: this.localName,
+        coderType: this.name,
+        value: hexlify(data.slice(offset, offset + 32)),
+      });
     }
     const junkLength = 32 - this.size;
     const dataValue = hexlify(data.slice(offset + junkLength, offset + 32));
@@ -624,6 +739,8 @@ class CoderNumber extends Coder {
     };
   }
 }
+
+/** @hidden */
 const uint256Coder = new CoderNumber(
   (type: string, value: any) => {
     return value;
@@ -634,6 +751,7 @@ const uint256Coder = new CoderNumber(
 );
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderBoolean extends Coder {
   constructor(coerceFunc: CoerceFunc, localName: string) {
     super(coerceFunc, 'bool', 'bool', localName, false);
@@ -665,6 +783,7 @@ class CoderBoolean extends Coder {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderFixedBytes extends Coder {
   readonly length: number;
   constructor(coerceFunc: CoerceFunc, length: number, localName: string) {
@@ -711,15 +830,13 @@ class CoderFixedBytes extends Coder {
 
     return {
       consumed: 32,
-      value: this.coerceFunc(
-        this.name,
-        hexlify(data.slice(offset, offset + this.length)),
-      ),
+      value: this.coerceFunc(this.name, hexlify(data.slice(offset, offset + this.length))),
     };
   }
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderAddress extends Coder {
   constructor(coerceFunc: CoerceFunc, localName: string) {
     super(coerceFunc, 'address', 'address', localName, false);
@@ -756,6 +873,7 @@ class CoderAddress extends Coder {
   }
 }
 
+/** @hidden */
 function _encodeDynamicBytes(value: Uint8Array): Uint8Array {
   const dataLength = 32 * Math.ceil(value.length / 32);
   const padding = new Uint8Array(dataLength - value.length);
@@ -763,11 +881,8 @@ function _encodeDynamicBytes(value: Uint8Array): Uint8Array {
   return concat([uint256Coder.encode(new BN(value.length)), value, padding]);
 }
 
-function _decodeDynamicBytes(
-  data: Uint8Array,
-  offset: number,
-  localName: string,
-): DecodedResult {
+/** @hidden */
+function _decodeDynamicBytes(data: Uint8Array, offset: number, localName: string): DecodedResult {
   if (data.length < offset + 32) {
     throwError('insufficient data for dynamicBytes length', INVALID_ARGUMENT, {
       arg: localName,
@@ -803,6 +918,7 @@ function _decodeDynamicBytes(
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderDynamicBytes extends Coder {
   constructor(coerceFunc: CoerceFunc, localName: string) {
     super(coerceFunc, 'bytes', 'bytes', localName, true);
@@ -829,6 +945,7 @@ class CoderDynamicBytes extends Coder {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderString extends Coder {
   constructor(coerceFunc: CoerceFunc, localName: string) {
     super(coerceFunc, 'string', 'string', localName, true);
@@ -852,10 +969,12 @@ class CoderString extends Coder {
   }
 }
 
+/** @hidden */
 function alignSize(size: number): number {
   return 32 * Math.ceil(size / 32);
 }
 
+/** @hidden */
 function pack(coders: Coder[], values: any[]): Uint8Array {
   if (Array.isArray(values)) {
     // do nothing
@@ -920,11 +1039,8 @@ function pack(coders: Coder[], values: any[]): Uint8Array {
   return data;
 }
 
-function unpack(
-  coders: Coder[],
-  data: Uint8Array,
-  offset: number,
-): DecodedResult {
+/** @hidden */
+function unpack(coders: Coder[], data: Uint8Array, offset: number): DecodedResult {
   const baseOffset = offset;
   let consumed = 0;
   const value: any = [];
@@ -971,15 +1087,11 @@ function unpack(
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderArray extends Coder {
   readonly coder: Coder;
   readonly length: number;
-  constructor(
-    coerceFunc: CoerceFunc,
-    coder: Coder,
-    length: number,
-    localName: string,
-  ) {
+  constructor(coerceFunc: CoerceFunc, coder: Coder, length: number, localName: string) {
     const type = coder.type + '[' + (length >= 0 ? length : '') + ']';
     const dynamic = length === -1 || coder.dynamic;
     super(coerceFunc, 'array', type, localName, dynamic);
@@ -1033,15 +1145,11 @@ class CoderArray extends Coder {
       try {
         decodedLength = uint256Coder.decode(data, offset);
       } catch (error) {
-        throwError(
-          'insufficient data for dynamic array length',
-          INVALID_ARGUMENT,
-          {
-            arg: this.localName,
-            coderType: 'array',
-            value: error.value,
-          },
-        );
+        throwError('insufficient data for dynamic array length', INVALID_ARGUMENT, {
+          arg: this.localName,
+          coderType: 'array',
+          value: error.value,
+        });
       }
       try {
         count = decodedLength.value.toNumber();
@@ -1069,6 +1177,7 @@ class CoderArray extends Coder {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 class CoderTuple extends Coder {
   readonly coders: Coder[];
   constructor(coerceFunc: CoerceFunc, coders: Coder[], localName: string) {
@@ -1098,6 +1207,7 @@ class CoderTuple extends Coder {
   }
 }
 
+/** @hidden */
 function splitNesting(value: string): any[] {
   value = value.trim();
 
@@ -1131,6 +1241,7 @@ function splitNesting(value: string): any[] {
 }
 
 // @TODO: Is there a way to return "class"?
+/** @hidden */
 const paramTypeSimple: { [key: string]: any } = {
   address: CoderAddress,
   bool: CoderBoolean,
@@ -1138,6 +1249,7 @@ const paramTypeSimple: { [key: string]: any } = {
   bytes: CoderDynamicBytes,
 };
 
+/** @hidden */
 function getTupleParamCoder(
   coerceFunc: CoerceFunc,
   components: any[],
@@ -1154,6 +1266,7 @@ function getTupleParamCoder(
   return new CoderTuple(coerceFunc, coders, localName);
 }
 
+/** @hidden */
 function getParamCoder(coerceFunc: CoerceFunc, param: ParamType | any): any {
   const coder = paramTypeSimple[param.type];
   if (coder) {
@@ -1168,12 +1281,7 @@ function getParamCoder(coerceFunc: CoerceFunc, param: ParamType | any): any {
         value: param,
       });
     }
-    return new CoderNumber(
-      coerceFunc,
-      size / 8,
-      matcher[1] === 'int',
-      param.name || '',
-    );
+    return new CoderNumber(coerceFunc, size / 8, matcher[1] === 'int', param.name || '');
   }
 
   const matcher2 = param.type.match(paramTypeBytes);
@@ -1194,20 +1302,11 @@ function getParamCoder(coerceFunc: CoerceFunc, param: ParamType | any): any {
     param = shallowCopy(param);
     param.type = matcher3[1];
     param = deepCopy(param);
-    return new CoderArray(
-      coerceFunc,
-      getParamCoder(coerceFunc, param),
-      size,
-      param.name || '',
-    );
+    return new CoderArray(coerceFunc, getParamCoder(coerceFunc, param), size, param.name || '');
   }
 
   if (param.type.substring(0, 5) === 'tuple') {
-    return getTupleParamCoder(
-      coerceFunc,
-      param.components || [],
-      param.name || '',
-    );
+    return getTupleParamCoder(coerceFunc, param.components || [], param.name || '');
   }
 
   if (param.type === '') {
@@ -1220,6 +1319,7 @@ function getParamCoder(coerceFunc: CoerceFunc, param: ParamType | any): any {
   });
 }
 
+/** @hidden */
 export enum UnicodeNormalizationForm {
   current = '',
   NFC = 'NFC',
@@ -1228,6 +1328,7 @@ export enum UnicodeNormalizationForm {
   NFKD = 'NFKD',
 }
 
+/** @hidden */
 export function toUtf8Bytes(
   str: string,
   form: UnicodeNormalizationForm = UnicodeNormalizationForm.current,
@@ -1271,6 +1372,7 @@ export function toUtf8Bytes(
 }
 
 // http://stackoverflow.com/questions/13356493/decode-utf-8-with-javascript#13691499
+/** @hidden */
 export function toUtf8String(bytes: Arrayish, ignoreErrors?: boolean): string {
   bytes = arrayify(bytes) || new Uint8Array();
 
@@ -1307,9 +1409,7 @@ export function toUtf8String(bytes: Arrayish, ignoreErrors?: boolean): string {
     } else {
       if (!ignoreErrors) {
         if ((c & 0xc0) === 0x80) {
-          throw new Error(
-            'invalid utf8 byte sequence; unexpected continuation byte',
-          );
+          throw new Error('invalid utf8 byte sequence; unexpected continuation byte');
         }
         throw new Error('invalid utf8 byte sequence; invalid prefix');
       }
@@ -1350,9 +1450,7 @@ export function toUtf8String(bytes: Arrayish, ignoreErrors?: boolean): string {
 
     if (res === null) {
       if (!ignoreErrors) {
-        throw new Error(
-          'invalid utf8 byte sequence; invalid continuation byte',
-        );
+        throw new Error('invalid utf8 byte sequence; invalid continuation byte');
       }
       continue;
     }
@@ -1387,15 +1485,13 @@ export function toUtf8String(bytes: Arrayish, ignoreErrors?: boolean): string {
     }
 
     res -= 0x10000;
-    result += String.fromCharCode(
-      ((res >> 10) & 0x3ff) + 0xd800,
-      (res & 0x3ff) + 0xdc00,
-    );
+    result += String.fromCharCode(((res >> 10) & 0x3ff) + 0xd800, (res & 0x3ff) + 0xdc00);
   }
 
   return result;
 }
 
+/** @hidden */
 export function formatBytes32String(text: string): string {
   // Get the bytes
   const bytes = toUtf8Bytes(text);
@@ -1409,6 +1505,7 @@ export function formatBytes32String(text: string): string {
   return hexlify(concat([bytes, HashZero]).slice(0, 32));
 }
 
+/** @hidden */
 export function parseBytes32String(bytes: Arrayish): string {
   const data = arrayify(bytes) || new Uint8Array();
 
@@ -1430,10 +1527,12 @@ export function parseBytes32String(bytes: Arrayish): string {
   return toUtf8String(data.slice(0, length));
 }
 
+/** @hidden */
 export function isType(object: any, type: string): boolean {
   return object && object._ethersType === type;
 }
 
+/** @hidden */
 export function shallowCopy(object: any): any {
   const result: any = {};
   // tslint:disable-next-line: forin
@@ -1443,12 +1542,14 @@ export function shallowCopy(object: any): any {
   return result;
 }
 
+/** @hidden */
 const opaque: { [key: string]: boolean } = {
   boolean: true,
   number: true,
   string: true,
 };
 
+/** @hidden */
 export function deepCopy(object: any, frozen?: boolean): any {
   // Opaque objects are not mutable, so safe to copy by assignment
   if (object === undefined || object === null || opaque[typeof object]) {
@@ -1502,6 +1603,7 @@ export function deepCopy(object: any, frozen?: boolean): any {
 }
 
 // tslint:disable-next-line: max-classes-per-file
+/** @hidden */
 export class AbiCoder {
   coerceFunc: CoerceFunc;
   constructor(coerceFunc?: CoerceFunc) {
@@ -1537,9 +1639,7 @@ export class AbiCoder {
 
       coders.push(getParamCoder(this.coerceFunc, typeObject));
     }, this);
-    const encodedArray = new CoderTuple(this.coerceFunc, coders, '_').encode(
-      values,
-    );
+    const encodedArray = new CoderTuple(this.coerceFunc, coders, '_').encode(values);
     return hexlify(encodedArray);
   }
 
@@ -1565,4 +1665,5 @@ export class AbiCoder {
   }
 }
 
+/** @hidden */
 export const defaultAbiCoder: AbiCoder = new AbiCoder();

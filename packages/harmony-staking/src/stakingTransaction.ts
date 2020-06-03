@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-staking
+ */
+
 // tslint:disable: max-classes-per-file
 
 import {
@@ -16,11 +21,13 @@ import { defaultMessenger, TransactionBase, TxStatus } from '@harmony-js/transac
 import { numberToHex, Unit } from '@harmony-js/utils';
 import { TextEncoder } from 'text-encoding';
 
+/** @hidden */
 export class StakingSettings {
   public static PRECISION = 18;
   public static MAX_DECIMAL = 1000000000000000000;
 }
 
+/** @hidden */
 export const enum Directive {
   DirectiveCreateValidator,
   DirectiveEditValidator,
@@ -201,6 +208,7 @@ export class StakingTransaction extends TransactionBase {
   }
 }
 
+/** @hidden */
 export class Description {
   name: string;
   identity: string;
@@ -234,6 +242,7 @@ export class Description {
   }
 }
 
+/** @hidden */
 export class Decimal {
   value: BN;
 
@@ -292,6 +301,7 @@ export class Decimal {
   }
 }
 
+/** @hidden */
 export class CommissionRate {
   rate: Decimal;
   maxRate: Decimal;

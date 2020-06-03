@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-transaction
+ */
+
 import {
   BN,
   encode,
@@ -21,21 +26,53 @@ import {
 import { TransactionBase } from './transactionBase';
 
 class Transaction extends TransactionBase {
+  /** @hidden */
   private from: string;
+  /** @hidden */
   private nonce: number | string;
+  /** @hidden */
   private to: string;
   // private shardID: number | string;
+  /** @hidden */
   private toShardID: number | string;
+  /** @hidden */
   private gasLimit: BN;
+  /** @hidden */
   private gasPrice: BN;
+  /** @hidden */
   private data: string;
+  /** @hidden */
   private value: BN;
+  /** @hidden */
   private chainId: number;
+  /** @hidden */
   private rawTransaction: string;
+  /** @hidden */
   private unsignedRawTransaction: string;
+  /** @hidden */
   private signature: Signature;
 
-  // constructor
+  /**
+   * 
+   * @Params
+   * ```javascript
+   * id:               string;
+    from:             string;
+    to:               string;
+    nonce:            number | string;
+    gasLimit:         number | string | BN;
+    gasPrice:         number | string | BN;
+    shardID:          number | string;
+    toShardID:        number | string;
+    data:             string;
+    value:            number | string | BN;
+    chainId:          number;
+    rawTransaction:   string;
+    unsignedRawTransaction: string;
+    signature:        Signature;
+    receipt?:         TransasctionReceipt;
+   * ```
+   */
   constructor(
     params?: TxParams | any,
     messenger: Messenger = defaultMessenger,
@@ -82,6 +119,14 @@ class Transaction extends TransactionBase {
     this.cxStatus = this.isCrossShard() ? TxStatus.INTIALIZED : TxStatus.NONE;
   }
 
+  /**
+   *
+   * @example
+   * ```javascript
+   * const unsigned = txn.getRLPUnsigned(txn);
+   * console.log(unsigned);
+   * ```
+   */
   getRLPUnsigned(): [string, any[]] {
     const raw: Array<string | Uint8Array> = [];
 
@@ -138,10 +183,17 @@ class Transaction extends TransactionBase {
     return encode(raw);
   }
 
+  /**
+   * @example
+   * ```javascript
+   * console.log(txn.getRawTransaction());
+   * ```
+   */
   getRawTransaction(): string {
     return this.rawTransaction;
   }
 
+  /** @hidden */
   recover(rawTransaction: string): Transaction {
     // temp setting to be compatible with eth
     const recovered =
@@ -152,7 +204,16 @@ class Transaction extends TransactionBase {
     this.setParams(recovered);
     return this;
   }
-  // use when using eth_sendTransaction
+
+  /**
+   * get the payload of transaction
+   *
+   * @example
+   * ```
+   * const payload = txn.txPayload;
+   * console.log(payload);
+   * ```
+   */
   get txPayload() {
     return {
       from: this.txParams.from || '0x',
@@ -167,6 +228,15 @@ class Transaction extends TransactionBase {
     };
   }
 
+  /**
+   * get transaction params
+   *
+   * @example
+   * ```
+   * const txParams = txn.txParams;
+   * console.log(txParams)
+   * ```
+   */
   get txParams(): TxParams {
     return {
       id: this.id || '0x',
@@ -185,6 +255,28 @@ class Transaction extends TransactionBase {
       signature: this.signature || '0x',
     };
   }
+
+  /**
+   * set the params to the txn
+   *
+   * @example
+   * ```
+   * txn.setParams({
+   *   to: 'one1ew56rqrucu6p6n598fmjmnfh8dd4xpg6atne9c',
+   *   value: '1200',
+   *   gasLimit: '230000',
+   *   shardID: 1,
+   *   toShardID: 0,
+   *   gasPrice: new hmy.utils.Unit('101').asGwei().toWei(),
+   *   signature: {
+   *     r: '0xd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c042',
+   *     s: '0x24e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354',
+   *     v: 0
+   *   },
+   * });
+   * console.log(txn);
+   * ```
+   */
   setParams(params: TxParams) {
     this.id = params && params.id ? params.id : '0x';
     this.from = params && params.from ? params.from : '0x';
@@ -225,6 +317,7 @@ class Transaction extends TransactionBase {
     }
   }
 
+  /** @hidden */
   map(fn: any) {
     const newParams = fn(this.txParams);
     this.setParams(newParams);
@@ -232,9 +325,27 @@ class Transaction extends TransactionBase {
     return this;
   }
 
+  /**
+   * Check whether the transaction is cross shard
+   *
+   * @example
+   * ```javascript
+   * console.log(txn.isCrossShard());
+   * ```
+   */
   isCrossShard(): boolean {
     return new BN(this.txParams.shardID).toString() !== new BN(this.txParams.toShardID).toString();
   }
+
+  /**
+   *
+   * @example
+   * ```
+   * txn.sendTransaction().then((value) => {
+   *   console.log(value);
+   * });
+   * ```
+   */
 
   async sendTransaction(): Promise<[Transaction, string]> {
     if (this.rawTransaction === 'tx' || this.rawTransaction === undefined) {

@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @ignore
+ */
+
 import * as hash from '../src/keccak256';
 
 import hashes from './fixtures/hashes.json';

@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-utils
+ */
+
 import {
   isNumber,
   isString,
@@ -17,11 +22,13 @@ import {
   isBlockNumber,
 } from './validators';
 
+/** @hidden */
 export const enum AssertType {
   required = 'required',
   optional = 'optional',
 }
 
+/** @hidden */
 export const validatorArray: any = {
   isNumber: [isNumber],
   isString: [isString],
@@ -41,11 +48,7 @@ export const validatorArray: any = {
   isValidAddress: [isValidAddress],
 };
 
-export function validateArgs(
-  args: any,
-  requiredArgs: any,
-  optionalArgs: any,
-): boolean {
+export function validateArgs(args: any, requiredArgs: any, optionalArgs: any): boolean {
   for (const key in requiredArgs) {
     if (args[key] !== undefined) {
       // tslint:disable-next-line: prefer-for-of
@@ -56,9 +59,7 @@ export function validateArgs(
 
         if (!requiredArgs[key][i](args[key])) {
           throw new Error(
-            `Validation failed for ${key},should be validated by ${
-              requiredArgs[key][i].validator
-            }`,
+            `Validation failed for ${key},should be validated by ${requiredArgs[key][i].validator}`,
           );
         }
       }
@@ -77,9 +78,7 @@ export function validateArgs(
 
         if (!optionalArgs[key][i](args[key])) {
           throw new Error(
-            `Validation failed for ${key},should be validated by ${
-              optionalArgs[key][i].validator
-            }`,
+            `Validation failed for ${key},should be validated by ${optionalArgs[key][i].validator}`,
           );
         }
       }
@@ -88,9 +87,7 @@ export function validateArgs(
   return true;
 }
 
-export function generateValidateObjects(validatorObject: {
-  [x: string]: any[];
-}) {
+export function generateValidateObjects(validatorObject: { [x: string]: any[] }) {
   const requiredArgs: any = {};
   const optionalArgs: any = {};
   for (const index in validatorObject) {
@@ -108,11 +105,7 @@ export function generateValidateObjects(validatorObject: {
   return { requiredArgs, optionalArgs };
 }
 
-const assertObject = (input: any) => (
-  target: any,
-  key: any,
-  descriptor: PropertyDescriptor,
-) => {
+const assertObject = (input: any) => (target: any, key: any, descriptor: PropertyDescriptor) => {
   const { requiredArgs, optionalArgs } = generateValidateObjects(input);
   const original = descriptor.value;
   function interceptor(this: any, ...args: any[]) {

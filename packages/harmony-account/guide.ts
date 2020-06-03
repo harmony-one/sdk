@@ -1,47 +1,33 @@
-
-- [About This Package](#about-this-package)
-- [Usage of Account](#usage-of-account)
-  - [Dependencies](#dependencies)
-  - [Examples](#examples)
-    - [Create a random account](#create-a-random-account)
-    - [Import an existing privateKey to create Account](#import-an-existing-privatekey-to-create-account)
-    - [Encrypt/Export keyStore file, Decrypt/Import keyStore file](#encryptexport-keystore-file-decryptimport-keystore-file)
-    - [Address format getter](#address-format-getter)
-    - [Sign a transaction](#sign-a-transaction)
-- [Usage of Wallet](#usage-of-wallet)
-  - [Dependencies](#dependencies-1)
-
-# About This Package
+/** 
+## About This Package
 
 `@harmony-js/account` is dealing with account related features.
 
-Developers can use this packages to:
-* create `Account` instance
-* create `Wallet` instance
-* sign `Transaction`
-* convert address format
-* manage `privateKey` or `mnemonic phrases` and do the `encrypt` and `decrypt` job
+Developers can use this package to:
+- Create `Account` instance
+- Create `Wallet` instance
+- Sign `Transaction`
+- Convert address format
+- Manage `privateKey` or `mnemonic phrases` and do the `encrypt` and `decrypt` job
 
 There are 2 main classes in this package, `Account` and `Wallet`.
 
-The `Account` class is basic instance that contains most features mentioned above.
-The `Wallet` class is class that stores all `Account` instance, you can do CRUD on it.
+- The `Account` class is basic instance that contains most features mentioned above.
+- The `Wallet` class is class that stores all `Account` instance, you can do CRUD on it.
 
 
-# Usage of Account
+## Usage of Account
 
-## Dependencies
-  * "@harmony-js/network",
-  * "@harmony-js/staking",
-  * "@harmony-js/transaction",
-  * "@harmony-js/utils"
+### Dependencies
+  - @harmony-js/network
+  - @harmony-js/staking
+  - @harmony-js/transaction
+  - @harmony-js/utils
 
+### Examples
 
-## Examples
-
-### Create a random account
-```typescript
-
+Create a random account
+```javascript
     // import the Account class
     import {Account} from '@harmony-js/account'
 
@@ -74,7 +60,6 @@ The `Wallet` class is class that stores all `Account` instance, you can do CRUD 
     staticCreatedAccount.setMessenger(customMessenger)
 
     console.log({staticCreatedAccount})
-
 ```
 
 ### Import an existing privateKey to create Account
@@ -238,22 +223,52 @@ The `Wallet` class is class that stores all `Account` instance, you can do CRUD 
 ```
 
 
-# Usage of Wallet
+## Usage of Wallet
 
-## Dependencies
-  * "@harmony-js/crypto",
-  * "@harmony-js/network",
-  * "@harmony-js/staking",
-  * "@harmony-js/transaction",
-  * "@harmony-js/utils"
+### Dependencies
+  - @harmony-js/crypto
+  - @harmony-js/network
+  - @harmony-js/staking
+  - @harmony-js/transaction
+  - @harmony-js/utils
 
 ```typescript
+    // constructor
+    const { Wallet } = require('@harmony-js/account');
+    const wallet = new Wallet(customMessenger);
 
-    import {Wallet} from '@harmony-js/account'
+    // get signer
+    const wallet = new Wallet(customMessenger);
+    const key_1 = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+    console.log(wallet.addByPrivateKey(key_1));
+    console.log(wallet.signer)
 
-    const wallet=new Wallet()
+    // createAccount
+    console.log(wallet.accounts);
+    wallet.createAccount();
+    wallet.createAccount();
+    console.log(wallet.accounts);
 
+    // encryptAccount
+    const key_1 = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+    wallet.addByPrivateKey(key_1);
+    wallet.encryptAccount('one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7', '12345').then((value) => {
+      console.log(value);
+    })
+
+    // decrptAccount
+    const key_1 = '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e';
+    wallet.addByPrivateKey(key_1);
+    wallet.encryptAccount('one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7', '12345').then(() => {
+      wallet.decryptAccount('one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7', '12345').then((value) => {
+        console.log(value);
+      })
+    });
 ```
+ * 
+ * @packageDocumentation
+ * @module harmony-account
+ */
 
-
-
+/**@ignore */
+export interface README {}

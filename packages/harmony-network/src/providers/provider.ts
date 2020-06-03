@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
 import { HttpProvider } from './http';
 import { WSProvider } from './ws';
 import { defaultConfig, isHttp, isWs } from '@harmony-js/utils';

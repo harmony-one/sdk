@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-staking
+ */
+
 import { Messenger } from '@harmony-js/network';
 import { Signature } from '@harmony-js/crypto';
 
@@ -16,6 +21,7 @@ import {
 import { Unit } from '@harmony-js/utils';
 import { TxStatus } from '@harmony-js/transaction';
 
+/** @hidden */
 export interface DescriptionInterface {
   name: string;
   identity: string;
@@ -24,6 +30,7 @@ export interface DescriptionInterface {
   details: string;
 }
 
+/** @hidden */
 export interface CommissionRateInterface {
   rate: string;
   maxRate: string;

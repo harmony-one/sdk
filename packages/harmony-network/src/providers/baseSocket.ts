@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ * @hidden
+ */
+
 import { isWs } from '@harmony-js/utils';
 import mitt from 'mitt';
 import { BaseProvider } from './baseProvider';

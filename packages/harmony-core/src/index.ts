@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-core
+ * @hidden
+ */
+
 export * from './harmony';
 export * from './blockchain';
 export * from './truffleProvider';

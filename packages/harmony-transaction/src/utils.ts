@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-transaction
+ * @hidden
+ */
+
 import { hexToNumber, isHex, isAddress, strip0x, ChainType } from '@harmony-js/utils';
 import {
   decode,

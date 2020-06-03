@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ */
+
 import { Wallet } from '@harmony-js/account';
 import { Contract } from './contract';
 import { ContractOptions } from './utils/options';

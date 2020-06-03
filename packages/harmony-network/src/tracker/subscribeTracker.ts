@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ * @hidden
+ */
+
 import { Messenger } from '../messenger/messenger';
 import { WSProvider } from '../providers/ws';
 import { BaseBlockTracker } from './baseTracker';
@@ -35,9 +41,7 @@ export class SubscribeBlockTracker extends BaseBlockTracker {
       if (blockNumber.isError()) {
         throw blockNumber.message;
       } else if (blockNumber.isResult()) {
-        const subs = await this.messenger.subscribe(RPCMethod.Subscribe, [
-          'newHeads',
-        ]);
+        const subs = await this.messenger.subscribe(RPCMethod.Subscribe, ['newHeads']);
         this.subscriptionId = subs;
         subs[0].onData(this._handleSubData);
 

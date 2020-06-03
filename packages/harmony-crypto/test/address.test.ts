@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @ignore
+ */
+
 import { getAddress, HarmonyAddress } from '../src/address';
 import { randomBytes } from '../src/random';
 import { toBech32, fromBech32, HRP, tHRP } from '../src/bech32';

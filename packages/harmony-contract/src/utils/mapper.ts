@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ * @hidden
+ */
+
 import { isArray } from '@harmony-js/utils';
 import { AbiItem } from '../models/AbiItemModel';
 import { AbiModel } from '../models/AbiModel';
@@ -86,9 +92,7 @@ export const abiMapper = (abi: any[], abiCoder: AbiCoderClass): AbiModel => {
 
 export const isConstant = (abiItem: AbiItemModel) => {
   return (
-    abiItem.stateMutability === 'view' ||
-    abiItem.stateMutability === 'pure' ||
-    abiItem.constant
+    abiItem.stateMutability === 'view' || abiItem.stateMutability === 'pure' || abiItem.constant
   );
 };
 

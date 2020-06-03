@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
 import { HarmonyCore, ChainType, isString, ChainID, defaultConfig } from '@harmony-js/utils';
 import { JsonRpc } from '../rpcMethod/builder';
 import { ResponseMiddleware } from './responseMiddleware';
@@ -7,6 +12,7 @@ import { WSProvider } from '../providers/ws';
 import { RPCMethod } from '../rpcMethod/rpc';
 import { SubscribeReturns, ShardingItem } from '../types';
 
+/** @hidden */
 export interface ShardingProvider {
   current: boolean;
   shardID: number;
@@ -15,11 +21,19 @@ export interface ShardingProvider {
 }
 
 /**
- * @class Messenger
- * @description Messenger instance
- * @param  {HttpProvider} provider HttpProvider
- * @param  {Object}  config config object
- * @return {Messenger} Messenger instance
+ * ## How to Create a Massage
+ * @example
+ * ```
+ * const { HttpProvider, Messenger } = require('@harmony-js/network');
+ * const { ChainType, ChainID } = require('@harmony-js/utils');
+ *
+ * // create a custom messenger
+ * const customMessenger = new Messenger(
+ *   new HttpProvider('http://localhost:9500'),
+ *   ChainType.Harmony, // if you are connected to Harmony's blockchain
+ *   ChainID.HmyLocal, // check if the chainId is correct
+ * )
+ * ```
  */
 class Messenger extends HarmonyCore {
   provider: HttpProvider | WSProvider;
@@ -73,13 +87,27 @@ class Messenger extends HarmonyCore {
     this.shardProviders = new Map();
     // this.setShardingProviders();
   }
+
+  /**
+   * @example
+   * ```
+   * customMessenger.currentShard
+   * ```
+   */
   get currentShard(): number {
     return this.getCurrentShardID() || this.defaultShardID || 0;
   }
 
+  /**
+   * @example
+   * ```
+   * customMessenger.shardCount
+   * ```
+   */
   get shardCount(): number {
     return this.shardProviders.size;
   }
+
   /**
    * @function send
    * @memberof Messenger.prototype
@@ -151,6 +179,7 @@ class Messenger extends HarmonyCore {
    * @memberof Messenger
    * @param  {any} middleware - middle ware for req
    * @param  {String} method  - method name
+   * @hidden
    */
   setReqMiddleware(middleware: any, method = '*', provider: HttpProvider | WSProvider) {
     provider.middlewares.request.use(middleware, method);
@@ -162,6 +191,7 @@ class Messenger extends HarmonyCore {
    * @memberof Messenger
    * @param  {any} middleware - middle ware for req
    * @param  {String} method  - method name
+   * @hidden
    */
   setResMiddleware(middleware: any, method = '*', provider: HttpProvider | WSProvider) {
     provider.middlewares.response.use(middleware, method);
@@ -284,6 +314,13 @@ class Messenger extends HarmonyCore {
       return;
     }
   }
+
+  /**
+   * @example
+   * ```
+   * hmy.messenger.getShardProvider()
+   * ```
+   */
   getShardProvider(shardID: number): HttpProvider | WSProvider {
     const provider = this.shardProviders.get(shardID);
     if (provider) {
@@ -293,6 +330,14 @@ class Messenger extends HarmonyCore {
     }
     return this.provider;
   }
+
+  /**
+   * @example
+   * ```
+   * hmy.messenger.getCurrentShardID()
+   * ```
+   */
+
   getCurrentShardID() {
     for (const shard of this.shardProviders) {
       if (

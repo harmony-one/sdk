@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @ignore
+ */
+
 import * as rlp from '../src/rlp';
 import cases from './fixtures/rlpcoder.json';
 

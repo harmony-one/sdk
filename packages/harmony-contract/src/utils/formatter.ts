@@ -1,9 +1,10 @@
-import {
-  hexlify,
-  isHexString,
-  keccak256,
-  toChecksumAddress,
-} from '@harmony-js/crypto';
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ * @hidden
+ */
+
+import { hexlify, isHexString, keccak256, toChecksumAddress } from '@harmony-js/crypto';
 import {
   numberToHex,
   isArray,
@@ -92,11 +93,7 @@ export const outputLogFormatter = (log: any) => {
 };
 
 export const inputBlockNumberFormatter = (blockNumber: any) => {
-  if (
-    blockNumber === undefined ||
-    blockNumber === null ||
-    isPredefinedBlockNumber(blockNumber)
-  ) {
+  if (blockNumber === undefined || blockNumber === null || isPredefinedBlockNumber(blockNumber)) {
     return blockNumber;
   }
 
@@ -112,11 +109,7 @@ export const inputBlockNumberFormatter = (blockNumber: any) => {
 };
 
 export const isPredefinedBlockNumber = (blockNumber: string) => {
-  return (
-    blockNumber === 'latest' ||
-    blockNumber === 'pending' ||
-    blockNumber === 'earliest'
-  );
+  return blockNumber === 'latest' || blockNumber === 'pending' || blockNumber === 'earliest';
 };
 
 export const inputAddressFormatter = (address: string) => {

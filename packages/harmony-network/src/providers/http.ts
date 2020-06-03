@@ -1,9 +1,15 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ */
+
 import { BaseProvider } from './baseProvider';
 import { fetchRPC } from './defaultFetcher';
 import { composeMiddleware, performRPC, DEFAULT_TIMEOUT, DEFAULT_HEADERS } from '../rpcMethod/net';
 
 import { RPCRequestPayload } from '../types';
 
+/** @hidden */
 const defaultOptions = {
   method: 'POST',
   timeout: DEFAULT_TIMEOUT,

@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-core
+ * @hidden
+ */
+
 import { ChainType, ChainID, defaultConfig } from '@harmony-js/utils';
 import { Harmony } from './harmony';
 

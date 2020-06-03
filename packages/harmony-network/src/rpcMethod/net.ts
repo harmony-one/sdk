@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ * @ignore
+ */
+
 export const DEFAULT_TIMEOUT: number = 120000;
 
 export const DEFAULT_HEADERS: object = { 'Content-Type': 'application/json' };
@@ -21,9 +27,7 @@ export const performRPC = async (request: any, handler: any, fetcher: any) => {
   try {
     const response = await _fetch(
       fetcher.requestHandler(request, DEFAULT_HEADERS),
-      request.options && request.options.timeout
-        ? request.options.timeout
-        : DEFAULT_TIMEOUT,
+      request.options && request.options.timeout ? request.options.timeout : DEFAULT_TIMEOUT,
     );
     return fetcher.responseHandler(response, request, handler);
   } catch (err) {

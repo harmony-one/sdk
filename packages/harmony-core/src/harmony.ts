@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-core
+ */
+
 import * as crypto from '@harmony-js/crypto';
 import * as utils from '@harmony-js/utils';
 
@@ -10,6 +15,7 @@ import { Blockchain } from './blockchain';
 import { HarmonyConfig } from './util';
 
 export class Harmony extends utils.HarmonyCore {
+  /**@ignore*/
   Modules = {
     HttpProvider,
     WSProvider,
@@ -23,17 +29,57 @@ export class Harmony extends utils.HarmonyCore {
     Account,
     Contract,
   };
+  /**@ignore*/
   messenger: Messenger;
+  /**@ignore*/
   transactions: TransactionFactory;
+  /**@ignore*/
   stakings: StakingFactory;
+  /**@ignore*/
   wallet: Wallet;
+  /**@ignore*/
   blockchain: Blockchain;
+  /**@ignore*/
   contracts: ContractFactory;
+  /**@ignore*/
   crypto: any;
+  /**@ignore*/
   utils: any;
+  /**@ignore*/
   defaultShardID?: number;
+  /**@ignore*/
   private provider: HttpProvider | WSProvider;
 
+  /**
+   * Create a harmony instance
+   *
+   * @param url The end-points of the hmy blockchain
+   * @param config set up `ChainID` and `ChainType`, typically we can use the default values
+   *
+   * @example
+   * ```
+   * // import or require Harmony class
+   * const { Harmony } = require('@harmony-js/core');
+   *
+   * // import or require settings
+   * const { ChainID, ChainType } = require('@harmony-js/utils');
+   *
+   * // Initialize the Harmony instance
+   * const hmy = new Harmony(
+   *   // rpc url:
+   *   // local: http://localhost:9500
+   *   // testnet: https://api.s0.b.hmny.io/
+   *   // mainnet: https://api.s0.t.hmny.io/
+   *   'http://localhost:9500',
+   *   {
+   *     // chainType set to Harmony
+   *     chainType: ChainType.Harmony,
+   *     // chainType set to HmyLocal
+   *     chainId: ChainID.HmyLocal,
+   *   },
+   * );
+   * ```
+   */
   constructor(
     url: string,
     config: HarmonyConfig = {
@@ -59,28 +105,106 @@ export class Harmony extends utils.HarmonyCore {
       this.setShardID(this.defaultShardID);
     }
   }
+
+  /**
+   * Will change the provider for its module.
+   *
+   * @param provider a valid provider, you can replace it with your own working node
+   *
+   * @example
+   * ```javascript
+   * const tmp = hmy.setProvider('http://localhost:9500');
+   * ```
+   */
   public setProvider(provider: string | HttpProvider | WSProvider): void {
     this.provider = new Provider(provider).provider;
     this.messenger.setProvider(this.provider);
     this.setMessenger(this.messenger);
   }
 
+  /**
+   * set the chainID
+   * 
+   * @hint
+   * ```
+   * Default = 0,
+   * EthMainnet = 1,
+    Morden = 2,
+    Ropsten = 3,
+    Rinkeby = 4,
+    RootstockMainnet = 30,
+    RootstockTestnet = 31,
+    Kovan = 42,
+    EtcMainnet = 61,
+    EtcTestnet = 62,
+    Geth = 1337,
+    Ganache = 0,
+    HmyMainnet = 1,
+    HmyTestnet = 2,
+    HmyLocal = 2,
+    HmyPangaea = 3
+   * ```
+   * @param chainId 
+   * 
+   * @example
+   * ```
+   * hmy.setChainId(2);
+   * ```
+   */
   public setChainId(chainId: utils.ChainID) {
     this.chainId = chainId;
     this.messenger.setChainId(this.chainId);
     this.setMessenger(this.messenger);
   }
+
+  /**
+   * Change the Shard ID
+   *
+   * @example
+   * ```
+   * hmy.setShardID(2);
+   * ```
+   */
   public setShardID(shardID: number) {
     this.defaultShardID = shardID;
     this.messenger.setDefaultShardID(this.defaultShardID);
     this.setMessenger(this.messenger);
   }
+
+  /**
+   * set the chainType
+   *
+   * @param chainType `hmy` or `eth`
+   *
+   * @example
+   * ```
+   * // set chainType to hmy
+   * hmy.setChainType('hmy');
+   * // set chainType to eth
+   * hmy.setChainType('eth');
+   * ```
+   */
   public setChainType(chainType: utils.ChainType) {
     this.chainType = chainType;
     this.messenger.setChainType(this.chainType);
     this.setMessenger(this.messenger);
   }
 
+  /**
+   * Set the sharding Structure
+   *
+   * @param shardingStructures The array of information of sharding structures
+   *
+   * @example
+   * ```javascript
+   * hmy.shardingStructures([
+   *   {"current":true,"http":"http://127.0.0.1:9500",
+   *    "shardID":0,"ws":"ws://127.0.0.1:9800"},
+   *   {"current":false,"http":"http://127.0.0.1:9501",
+   *    "shardID":1,"ws":"ws://127.0.0.1:9801"}
+   * ]);
+   * ```
+   */
   public shardingStructures(shardingStructures: ShardingItem[]) {
     for (const shard of shardingStructures) {
       const shardID =
@@ -94,6 +218,8 @@ export class Harmony extends utils.HarmonyCore {
     }
     this.setMessenger(this.messenger);
   }
+
+  /**@ignore*/
   private setMessenger(messenger: Messenger) {
     this.blockchain.setMessenger(messenger);
     this.wallet.setMessenger(messenger);

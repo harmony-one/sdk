@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-crypto
+ * @hidden
+ */
+
 // this file is ported from https://github.com/ethers-io/ethers.js/blob/master/src.ts/utils/rlp.ts
 // and done some fixes
 import { arrayify, hexlify, Arrayish } from './bytes';
@@ -11,11 +17,7 @@ function arrayifyInteger(value: number): number[] {
   return result;
 }
 
-function unarrayifyInteger(
-  data: Uint8Array,
-  offset: number,
-  length: number,
-): number {
+function unarrayifyInteger(data: Uint8Array, offset: number, length: number): number {
   let result = 0;
   for (let i = 0; i < length; i++) {
     result = result * 256 + data[offset + i];
@@ -89,10 +91,7 @@ function _decodeChildren(
 }
 
 // returns { consumed: number, result: Object }
-function _decode(
-  data: Uint8Array,
-  offset: number,
-): { consumed: number; result: any } {
+function _decode(data: Uint8Array, offset: number): { consumed: number; result: any } {
   if (data.length === 0) {
     throw new Error('invalid rlp data');
   }
@@ -109,12 +108,7 @@ function _decode(
       throw new Error('to short');
     }
 
-    return _decodeChildren(
-      data,
-      offset,
-      offset + 1 + lengthLength,
-      lengthLength + length,
-    );
+    return _decodeChildren(data, offset, offset + 1 + lengthLength, lengthLength + length);
   } else if (data[offset] >= 0xc0) {
     const length = data[offset] - 0xc0;
     if (offset + 1 + length > data.length) {

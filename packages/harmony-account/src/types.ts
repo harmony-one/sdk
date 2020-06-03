@@ -1,4 +1,10 @@
 /**
+ * @packageDocumentation
+ * @module harmony-account
+ * @hidden
+ */
+
+/**
  * test type docs
  */
 export type ShardID = string | number;

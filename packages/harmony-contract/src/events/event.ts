@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ */
+
 import { LogSub } from '@harmony-js/network';
 import { AbiItemModel } from '../models/types';
 import { Contract } from '../contract';

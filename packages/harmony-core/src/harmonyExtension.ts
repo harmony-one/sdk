@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module harmony-core
+ */
+
 import {
   HttpProvider,
   WSProvider,
@@ -15,20 +20,24 @@ import { Blockchain } from './blockchain';
 import { ContractFactory } from '@harmony-js/contract';
 import { HarmonyConfig } from './util';
 
+/** @hidden */
 export enum ExtensionType {
   MathWallet = 'MathWallet',
 }
 
+/** @hidden */
 export interface ExtensionAccount {
   address: 'string';
   name: 'string';
 }
 
+/** @hidden */
 export interface ExtensionNetwork {
   chain_url: string;
   net_version: number;
 }
 
+/** @hidden */
 export interface ExtensionInterface {
   signTransaction: (
     transaction: Transaction,
@@ -44,17 +53,41 @@ export interface ExtensionInterface {
 }
 
 export class HarmonyExtension {
+  /**@ignore*/
   extensionType: ExtensionType | null;
+  /**@ignore*/
   wallet: ExtensionInterface;
+  /**@ignore*/
   provider: HttpProvider | WSProvider;
+  /**@ignore*/
   messenger: Messenger;
+  /**@ignore*/
   blockchain: Blockchain;
+  /**@ignore*/
   transactions: TransactionFactory;
+  /**@ignore*/
   contracts: ContractFactory;
+  /**@ignore*/
   crypto: any;
+  /**@ignore*/
   utils: any;
+  /**@ignore*/
   defaultShardID?: number;
 
+  /**
+   * Create an blockchain instance support wallet injection
+   *
+   * @param wallet could be MathWallet instance
+   * @param config (optional), using default `Chain_Id` and `Chain_Type`
+   *
+   * @example
+   * ```javascript
+   * // Using Mathwallet instance
+   * export const initEx = async() => {
+   *   hmyEx = new HarmonyExtension(window.harmony);
+   * }
+   * ```
+   */
   constructor(
     wallet: ExtensionInterface,
     config: HarmonyConfig = {
@@ -81,12 +114,31 @@ export class HarmonyExtension {
     this.crypto = crypto;
     this.utils = utils;
   }
+
+  /**
+   * Will change the provider for its module.
+   *
+   * @param provider a valid provider, you can replace it with your own working node
+   *
+   * @example
+   * ```javascript
+   * const tmp = hmyEx.setProvider('http://localhost:9500');
+   * ```
+   */
   public setProvider(provider: string | HttpProvider | WSProvider): void {
     this.provider = new Provider(provider).provider;
     this.messenger.setProvider(this.provider);
     this.setMessenger(this.messenger);
   }
 
+  /**
+   * Change the Shard ID
+   *
+   * @example
+   * ```
+   * hmyEx.setShardID(2);
+   * ```
+   */
   public setShardID(shardID: number) {
     this.defaultShardID = shardID;
     this.messenger.setDefaultShardID(this.defaultShardID);
@@ -139,12 +191,37 @@ export class HarmonyExtension {
     }
     return;
   }
+
+  /**
+   * Get the wallet account
+   *
+   * @example
+   * ```javascript
+   * const account = hmyEx.login();
+   * console.log(account);
+   * ```
+   */
   public async login() {
     const account = await this.wallet.getAccount();
     // Use address
     return account;
   }
 
+  /**
+   * Set the sharding Structure
+   *
+   * @param shardingStructures The array of information of sharding structures
+   *
+   * @example
+   * ```javascript
+   * hmyEx.shardingStructures([
+   *   {"current":true,"http":"http://127.0.0.1:9500",
+   *    "shardID":0,"ws":"ws://127.0.0.1:9800"},
+   *   {"current":false,"http":"http://127.0.0.1:9501",
+   *    "shardID":1,"ws":"ws://127.0.0.1:9801"}
+   * ]);
+   * ```
+   */
   public shardingStructures(shardingStructures: ShardingItem[]) {
     for (const shard of shardingStructures) {
       const shardID =
@@ -158,6 +235,8 @@ export class HarmonyExtension {
     }
     this.setMessenger(this.messenger);
   }
+
+  /**@ignore*/
   private setMessenger(messenger: Messenger) {
     this.blockchain.setMessenger(messenger);
     this.wallet.messenger = messenger;

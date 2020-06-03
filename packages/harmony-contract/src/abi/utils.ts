@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-contract
+ * @hidden
+ */
+
 import { isObject, isArray } from '@harmony-js/utils';
 import { BN } from '@harmony-js/crypto';
 
@@ -16,9 +22,7 @@ export const flattenTypes = (includeTuple: any, puts: any[]) => {
   puts.forEach((param: any) => {
     if (typeof param.components === 'object') {
       if (param.type.substring(0, 5) !== 'tuple') {
-        throw new Error(
-          'components found but type is not tuple; report on GitHub',
-        );
+        throw new Error('components found but type is not tuple; report on GitHub');
       }
       let suffix = '';
       const arrayBracket = param.type.indexOf('[');

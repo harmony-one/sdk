@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-core
+ * @hidden
+ */
+
 import {
   HttpProvider,
   WSProvider,
@@ -21,11 +27,13 @@ export interface HDOptions {
   index: number;
   addressCount: number;
 }
+
 export interface ChainOptions {
   shardID: number;
   chainType: ChainType;
   chainId: ChainID;
 }
+
 export interface TransactionOptions {
   gasLimit: string;
   gasPrice: string;

@@ -1,3 +1,9 @@
+/**
+ * @packageDocumentation
+ * @module harmony-network
+ * @hidden
+ */
+
 import { Messenger } from '../messenger/messenger';
 import { SubscriptionMethod } from './Subscription';
 
