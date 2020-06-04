@@ -37,22 +37,39 @@ export class ContractMethod {
   }
   send(params: any): Emitter {
     try {
-      this.transaction = this.transaction.map((tx: any) => {
-        return { ...tx, ...params };
-      });
+      const signTxs = () => {
+        params = { ...this.contract.options, ...params };
+        this.transaction = this.transaction.map((tx: any) => {
+          return { ...tx, ...params, gasLimit };
+        });
 
-      const updateNonce: boolean = params.nonce !== undefined ? false : true;
+        const updateNonce: boolean = params.nonce !== undefined ? false : true;
 
-      this.signTransaction(updateNonce).then((signed) => {
-        this.sendTransaction(signed).then((sent) => {
-          const [txn, id] = sent;
-          this.transaction = txn;
-          this.contract.transaction = this.transaction;
-          this.confirm(id).then(() => {
-            this.transaction.emitter.resolve(this.contract);
+        this.signTransaction(updateNonce).then((signed) => {
+          this.sendTransaction(signed).then((sent) => {
+            const [txn, id] = sent;
+            this.transaction = txn;
+            this.contract.transaction = this.transaction;
+            this.confirm(id).then(() => {
+              this.transaction.emitter.resolve(this.contract);
+            });
           });
         });
-      });
+      };
+
+      let gasLimit: any;
+      // tslint:disable-next-line: prefer-conditional-expression
+      if (params !== undefined) {
+        gasLimit = params.gas || params.gasLimit;
+      }
+      if (gasLimit === undefined) {
+        this.estimateGas().then((gas) => {
+          gasLimit = hexToBN(gas);
+          signTxs();
+        });
+      } else {
+        signTxs();
+      }
       return this.transaction.emitter;
     } catch (error) {
       throw error;
@@ -60,27 +77,19 @@ export class ContractMethod {
   }
   async call(options: any, blockNumber: any = 'latest') {
     try {
+      options = { ...this.contract.options, ...options };
       const shardID =
         options !== undefined && options.shardID !== undefined
           ? options.shardID
           : this.contract.shardID;
-      const nonce =
-        this.wallet.signer || (options !== undefined && options.from)
-          ? getResultForData(
-              await this.wallet.messenger.send(
-                RPCMethod.GetTransactionCount,
-                [this.wallet.signer ? this.wallet.signer.address : options.from, blockNumber],
-                shardID,
-              ),
-            )
-          : '0x0';
+      const nonce = '0x0';
 
       let gasLimit: any;
       // tslint:disable-next-line: prefer-conditional-expression
       if (options !== undefined) {
         gasLimit = options.gas || options.gasLimit;
       } else {
-        gasLimit = hexToBN(await this.estimateGas());
+        gasLimit = '21000000';
       }
       let from: string;
       // tslint:disable-next-line: prefer-conditional-expression
