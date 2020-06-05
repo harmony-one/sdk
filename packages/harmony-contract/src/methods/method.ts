@@ -37,13 +37,13 @@ export class ContractMethod {
   }
   send(params: any): Emitter {
     try {
+      let gasLimit: any;
       const signTxs = () => {
-        params = { ...this.contract.options, ...params };
         this.transaction = this.transaction.map((tx: any) => {
           return { ...tx, ...params, gasLimit };
         });
 
-        const updateNonce: boolean = params.nonce !== undefined ? false : true;
+        const updateNonce: boolean = params && params.nonce !== undefined ? false : true;
 
         this.signTransaction(updateNonce).then((signed) => {
           this.sendTransaction(signed).then((sent) => {
@@ -57,7 +57,6 @@ export class ContractMethod {
         });
       };
 
-      let gasLimit: any;
       // tslint:disable-next-line: prefer-conditional-expression
       if (params !== undefined) {
         gasLimit = params.gas || params.gasLimit;
@@ -169,16 +168,38 @@ export class ContractMethod {
       throw error;
     }
   }
-  async estimateGas() {
+
+  async estimateGas(
+    params: {
+      from?: string;
+      to?: string;
+      gas?: string;
+      gasPrice?: string;
+      value?: string;
+      data?: string;
+    } = {},
+  ) {
     try {
+      if (params.from === undefined && this.contract.options.from !== undefined) {
+        params.from = this.contract.options.from;
+      }
+      if (params.to === undefined && this.transaction.txParams.to !== undefined) {
+        params.to = this.transaction.txParams.to;
+      }
+      if (params.data === undefined) {
+        params.data = this.transaction.txParams.data;
+      }
+      if (params.gasPrice === undefined && this.contract.options.gasPrice !== undefined) {
+        params.gasPrice = this.contract.options.gasPrice;
+      }
+
+      const isDeploy = this.transaction.txParams.to === '0x';
+      if (isDeploy) {
+        delete params.to;
+      }
       const result = getResultForData(
         // tslint:disable-line
-        await (<Wallet>this.wallet).messenger.send(RPCMethod.EstimateGas, [
-          {
-            to: this.transaction.txParams.to,
-            data: this.transaction.txParams.data,
-          },
-        ]),
+        await (<Wallet>this.wallet).messenger.send(RPCMethod.EstimateGas, [params]),
       );
 
       if (result.responseType === 'error') {
@@ -274,6 +295,7 @@ export class ContractMethod {
         this.abiItem.contractMethodParameters = this.params || [];
       }
       const txObject = {
+        ...this.contract.options,
         ...this.params[0],
         to: this.contract.address === '0x' ? '0x' : getAddress(this.contract.address).checksum,
         data: this.encodeABI(),
