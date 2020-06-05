@@ -14,6 +14,8 @@ import {
 import { ChainID, ChainType, Unit } from '@harmony-js/utils';
 import { HDNode } from '@harmony-js/account';
 
+const packageInfo = { version: '1.0.0' };
+
 export interface ArgsResolver {
   newArgs: any;
   id: number;
@@ -141,6 +143,18 @@ export class TruffleProvider extends HDNode {
           jsonrpc: '2.0',
         };
       }
+      case 'hmy_clientVersion': {
+        callback(null, {
+          result: `Harmony/${packageInfo.version}/@harmony-js`,
+          id,
+          jsonrpc: '2.0',
+        });
+        return {
+          result: `Harmony/${packageInfo.version}/@harmony-js`,
+          id,
+          jsonrpc: '2.0',
+        };
+      }
       case 'hmy_getBlockByNumber': {
         const result = await this.provider.send(newArgs, (err: any, res: any) => {
           try {
@@ -192,6 +206,8 @@ export class TruffleProvider extends HDNode {
     let newMethod: string = method;
     if (method.startsWith('eth')) {
       newMethod = method.replace('eth', 'hmy');
+    } else if (method.startsWith('web3')) {
+      newMethod = method.replace('web3', 'hmy');
     }
     args[0].method = newMethod;
 
