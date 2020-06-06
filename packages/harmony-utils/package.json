@@ -1,6 +1,6 @@
 {
   "name": "@harmony-js/utils",
-  "version": "0.1.44",
+  "version": "0.1.45",
   "description": "utils for harmony",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -21,5 +21,5 @@
     "@types/bn.js": "^4.11.3",
     "bn.js": "^4.11.8"
   },
-  "gitHead": "775e2ba36924fcffd8d2c0b73587b549ed90bb81"
+  "gitHead": "56606e9365721729a490c27d6a294e0daf90fbdf"
 }

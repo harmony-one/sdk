@@ -1,6 +1,6 @@
 {
   "name": "@harmony-js/crypto",
-  "version": "0.1.44",
+  "version": "0.1.45",
   "description": "crypto libraries for harmony",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -18,7 +18,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@harmony-js/utils": "0.1.44",
+    "@harmony-js/utils": "^0.1.45",
     "aes-js": "^3.1.2",
     "bip39": "^2.5.0",
     "bn.js": "^4.11.8",
@@ -30,5 +30,5 @@
     "scrypt-shim": "github:web3-js/scrypt-shim",
     "uuid": "^3.3.2"
   },
-  "gitHead": "27bce049c8d99498f464ce2db4fc39e4000a5420"
+  "gitHead": "56606e9365721729a490c27d6a294e0daf90fbdf"
 }
