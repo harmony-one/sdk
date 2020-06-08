@@ -44,7 +44,6 @@ export class ContractMethod {
         });
 
         const updateNonce: boolean = params && params.nonce !== undefined ? false : true;
-
         this.signTransaction(updateNonce).then((signed) => {
           this.sendTransaction(signed).then((sent) => {
             const [txn, id] = sent;
@@ -193,8 +192,7 @@ export class ContractMethod {
         params.gasPrice = this.contract.options.gasPrice;
       }
 
-      const isDeploy = this.transaction.txParams.to === '0x';
-      if (isDeploy) {
+      if (this.methodKey === 'contractConstructor') {
         delete params.to;
       }
       const result = getResultForData(
@@ -243,7 +241,9 @@ export class ContractMethod {
             'rlp',
             'latest', // 'pending',
           );
-      this.contract.address = TransactionFactory.getContractAddress(signed);
+      if (this.methodKey === 'contractConstructor') {
+        this.contract.address = TransactionFactory.getContractAddress(signed);
+      }
       this.contract.setStatus(ContractStatus.SIGNED);
       return signed;
     } catch (error) {
@@ -297,7 +297,10 @@ export class ContractMethod {
       const txObject = {
         ...this.contract.options,
         ...this.params[0],
-        to: this.contract.address === '0x' ? '0x' : getAddress(this.contract.address).checksum,
+        to:
+          this.methodKey === 'contractConstructor'
+            ? '0x'
+            : getAddress(this.contract.address).checksum,
         data: this.encodeABI(),
       };
 
