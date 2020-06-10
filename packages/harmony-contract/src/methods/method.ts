@@ -37,22 +37,37 @@ export class ContractMethod {
   }
   send(params: any): Emitter {
     try {
-      this.transaction = this.transaction.map((tx: any) => {
-        return { ...tx, ...params };
-      });
+      let gasLimit: any;
+      const signTxs = () => {
+        this.transaction = this.transaction.map((tx: any) => {
+          return { ...tx, ...params, gasLimit };
+        });
 
-      const updateNonce: boolean = params.nonce !== undefined ? false : true;
-
-      this.signTransaction(updateNonce).then((signed) => {
-        this.sendTransaction(signed).then((sent) => {
-          const [txn, id] = sent;
-          this.transaction = txn;
-          this.contract.transaction = this.transaction;
-          this.confirm(id).then(() => {
-            this.transaction.emitter.resolve(this.contract);
+        const updateNonce: boolean = params && params.nonce !== undefined ? false : true;
+        this.signTransaction(updateNonce).then((signed) => {
+          this.sendTransaction(signed).then((sent) => {
+            const [txn, id] = sent;
+            this.transaction = txn;
+            this.contract.transaction = this.transaction;
+            this.confirm(id).then(() => {
+              this.transaction.emitter.resolve(this.contract);
+            });
           });
         });
-      });
+      };
+
+      // tslint:disable-next-line: prefer-conditional-expression
+      if (params !== undefined) {
+        gasLimit = params.gas || params.gasLimit;
+      }
+      if (gasLimit === undefined) {
+        this.estimateGas().then((gas) => {
+          gasLimit = hexToBN(gas);
+          signTxs();
+        });
+      } else {
+        signTxs();
+      }
       return this.transaction.emitter;
     } catch (error) {
       throw error;
@@ -60,27 +75,19 @@ export class ContractMethod {
   }
   async call(options: any, blockNumber: any = 'latest') {
     try {
+      options = { ...this.contract.options, ...options };
       const shardID =
         options !== undefined && options.shardID !== undefined
           ? options.shardID
           : this.contract.shardID;
-      const nonce =
-        this.wallet.signer || (options !== undefined && options.from)
-          ? getResultForData(
-              await this.wallet.messenger.send(
-                RPCMethod.GetTransactionCount,
-                [this.wallet.signer ? this.wallet.signer.address : options.from, blockNumber],
-                shardID,
-              ),
-            )
-          : '0x0';
+      const nonce = '0x0';
 
       let gasLimit: any;
       // tslint:disable-next-line: prefer-conditional-expression
       if (options !== undefined) {
         gasLimit = options.gas || options.gasLimit;
       } else {
-        gasLimit = hexToBN(await this.estimateGas());
+        gasLimit = '21000000';
       }
       let from: string;
       // tslint:disable-next-line: prefer-conditional-expression
@@ -160,16 +167,37 @@ export class ContractMethod {
       throw error;
     }
   }
-  async estimateGas() {
+
+  async estimateGas(
+    params: {
+      from?: string;
+      to?: string;
+      gas?: string;
+      gasPrice?: string;
+      value?: string;
+      data?: string;
+    } = {},
+  ) {
     try {
+      if (params.from === undefined && this.contract.options.from !== undefined) {
+        params.from = this.contract.options.from;
+      }
+      if (params.to === undefined && this.transaction.txParams.to !== undefined) {
+        params.to = this.transaction.txParams.to;
+      }
+      if (params.data === undefined) {
+        params.data = this.transaction.txParams.data;
+      }
+      if (params.gasPrice === undefined && this.contract.options.gasPrice !== undefined) {
+        params.gasPrice = this.contract.options.gasPrice;
+      }
+
+      if (this.methodKey === 'contractConstructor') {
+        delete params.to;
+      }
       const result = getResultForData(
         // tslint:disable-line
-        await (<Wallet>this.wallet).messenger.send(RPCMethod.EstimateGas, [
-          {
-            to: this.transaction.txParams.to,
-            data: this.transaction.txParams.data,
-          },
-        ]),
+        await (<Wallet>this.wallet).messenger.send(RPCMethod.EstimateGas, [params]),
       );
 
       if (result.responseType === 'error') {
@@ -213,7 +241,9 @@ export class ContractMethod {
             'rlp',
             'latest', // 'pending',
           );
-      this.contract.address = TransactionFactory.getContractAddress(signed);
+      if (this.methodKey === 'contractConstructor') {
+        this.contract.address = TransactionFactory.getContractAddress(signed);
+      }
       this.contract.setStatus(ContractStatus.SIGNED);
       return signed;
     } catch (error) {
@@ -265,8 +295,12 @@ export class ContractMethod {
         this.abiItem.contractMethodParameters = this.params || [];
       }
       const txObject = {
+        ...this.contract.options,
         ...this.params[0],
-        to: this.contract.address === '0x' ? '0x' : getAddress(this.contract.address).checksum,
+        to:
+          this.methodKey === 'contractConstructor'
+            ? '0x'
+            : getAddress(this.contract.address).checksum,
         data: this.encodeABI(),
       };
 
