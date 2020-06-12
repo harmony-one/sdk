@@ -143,7 +143,7 @@ export class TruffleProvider extends HDNode {
           jsonrpc: '2.0',
         };
       }
-      case 'hmy_clientVersion': {
+      case 'web3_clientVersion': {
         callback(null, {
           result: `Harmony/${packageInfo.version}/@harmony-js`,
           id,
@@ -206,8 +206,6 @@ export class TruffleProvider extends HDNode {
     let newMethod: string = method;
     if (method.startsWith('eth')) {
       newMethod = method.replace('eth', 'hmy');
-    } else if (method.startsWith('web3')) {
-      newMethod = method.replace('web3', 'hmy');
     }
     args[0].method = newMethod;
 
