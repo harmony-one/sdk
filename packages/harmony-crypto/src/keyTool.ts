@@ -9,7 +9,8 @@ import * as errors from './errors';
 
 import { keccak256 } from './keccak256';
 import { randomBytes } from './random';
-import { isPrivateKey, strip0x, isAddress } from '@harmony-js/utils';
+import { isPrivateKey, strip0x, isAddress, isBech32Address } from '@harmony-js/utils';
+import { fromBech32 } from './bech32';
 import { encode } from './rlp';
 
 const secp256k1 = elliptic.ec('secp256k1');
@@ -81,6 +82,9 @@ export const getAddressFromPublicKey = (publicKey: string): string => {
  * @return {string} checksumed address
  */
 export const toChecksumAddress = (address: string): string => {
+  if (typeof address === 'string' && isBech32Address(address)) {
+    address = fromBech32(address);
+  }
   if (typeof address !== 'string' || !address.match(/^0x[0-9A-Fa-f]{40}$/)) {
     errors.throwError('invalid address', errors.INVALID_ARGUMENT, {
       arg: 'address',

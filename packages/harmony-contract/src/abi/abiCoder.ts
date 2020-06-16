@@ -197,8 +197,8 @@ const paramTypeArray = new RegExp(/^(.*)\[([0-9]*)\]$/);
 export const defaultCoerceFunc: CoerceFunc = (type: string, value: any): any => {
   const match = type.match(paramTypeNumber);
   if (match && parseInt(match[2], 10) <= 48) {
-    // return value.toNumber();
-    return value.toString('hex');
+    return value.toNumber();
+    //return value.toString('hex');
   }
   return value;
 };

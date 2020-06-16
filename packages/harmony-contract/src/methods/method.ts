@@ -75,7 +75,7 @@ export class ContractMethod {
   }
   async call(options: any, blockNumber: any = 'latest') {
     try {
-      options = { ...this.contract.options, ...options };
+      options = { ...this.contract.options, data: this.encodeABI(), ...options };
       const shardID =
         options !== undefined && options.shardID !== undefined
           ? options.shardID
