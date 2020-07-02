@@ -23,6 +23,7 @@ import { HarmonyConfig } from './util';
 /** @hidden */
 export enum ExtensionType {
   MathWallet = 'MathWallet',
+  OneWallet = 'OneWallet',
 }
 
 /** @hidden */
@@ -49,6 +50,7 @@ export interface ExtensionInterface {
   messenger?: Messenger;
   version: string;
   isMathWallet?: boolean;
+  isOneWallet?: boolean;
   network: ExtensionNetwork;
 }
 
@@ -77,7 +79,7 @@ export class HarmonyExtension {
   /**
    * Create an blockchain instance support wallet injection
    *
-   * @param wallet could be MathWallet instance
+   * @param wallet could be MathWallet or OneWallet instance
    * @param config (optional), using default `Chain_Id` and `Chain_Type`
    *
    * @example
@@ -85,6 +87,10 @@ export class HarmonyExtension {
    * // Using Mathwallet instance
    * export const initEx = async() => {
    *   hmyEx = new HarmonyExtension(window.harmony);
+   * }
+   * // Using OneWallet instance
+   * export const initEx = async() => {
+   *   hmyEx = new HarmonyExtension(window.onewallet);
    * }
    * ```
    */
@@ -97,7 +103,7 @@ export class HarmonyExtension {
   ) {
     this.extensionType = null;
     this.wallet = wallet;
-    // check if it is mathwallet
+    // check if it is mathwallet or onewallet
     this.isExtension(this.wallet);
 
     if (wallet.messenger) {
@@ -148,11 +154,12 @@ export class HarmonyExtension {
   public isExtension(wallet: ExtensionInterface) {
     let isExtension = false;
     this.extensionType = null;
-    if (wallet.isMathWallet) {
+    if (wallet.isMathWallet || wallet.isOneWallet) {
       isExtension = true;
-      this.extensionType = ExtensionType.MathWallet;
+      if (wallet.isMathWallet) this.extensionType = ExtensionType.MathWallet;
+      else this.extensionType = ExtensionType.OneWallet;
 
-      // remake signTransaction of MathWallet
+      // remake signTransaction of MathWallet or OneWallet
       const { signTransaction } = this.wallet;
       this.wallet.signTransaction = async (
         transaction: Transaction,
