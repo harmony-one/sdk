@@ -1,259 +1,210 @@
+# @harmony-js/account
 
-- [About This Package](#about-this-package)
-- [Usage of Account](#usage-of-account)
-  - [Dependencies](#dependencies)
-  - [Examples](#examples)
-    - [Create a random account](#create-a-random-account)
-    - [Import an existing privateKey to create Account](#import-an-existing-privatekey-to-create-account)
-    - [Encrypt/Export keyStore file, Decrypt/Import keyStore file](#encryptexport-keystore-file-decryptimport-keystore-file)
-    - [Address format getter](#address-format-getter)
-    - [Sign a transaction](#sign-a-transaction)
-- [Usage of Wallet](#usage-of-wallet)
-  - [Dependencies](#dependencies-1)
+This package provides a collection of apis to create accounts and wallets and sign using them. A wallet can hold multiple accounts and account is associated with a unique `one` address. This package also provides facilies to manage account keys.
 
-# About This Package
-
-`@harmony-js/account` is dealing with account related features.
-
-Developers can use this packages to:
-* create `Account` instance
-* create `Wallet` instance
-* sign `Transaction`
-* convert address format
-* manage `privateKey` or `mnemonic phrases` and do the `encrypt` and `decrypt` job
-
-There are 2 main classes in this package, `Account` and `Wallet`.
-
-The `Account` class is basic instance that contains most features mentioned above.
-The `Wallet` class is class that stores all `Account` instance, you can do CRUD on it.
-
-
-# Usage of Account
-
-## Dependencies
-  * "@harmony-js/network",
-  * "@harmony-js/staking",
-  * "@harmony-js/transaction",
-  * "@harmony-js/utils"
-
-
-## Examples
-
-### Create a random account
-```typescript
-
-    // import the Account class
-    import {Account} from '@harmony-js/account'
-
-    // Messenger is optional, by default, we have a defaultMessenger 
-    // If you like to change, you will import related package here.
-    import { HttpProvider, Messenger } from '@harmony-js/network';
-    import { ChainType, ChainID } from '@harmony-js/utils';
-
-    // create a custom messenger
-    const customMessenger = new Messenger(
-        new HttpProvider('http://localhost:9500'),
-        ChainType.Harmony, // if you are connected to Harmony's blockchain
-        ChainID.HmyLocal, // check if the chainId is correct
-    )
-
-    // to create an Account with random privateKey
-    // and you can setMessenger later
-    const randomAccount = new Account()
-    randomAccount.setMessenger(customMessenger)
-
-    // or you can set messenger on `new`
-    const randomAccountWithCustomMessenger = new Account(undefined, customMessenger)
-
-    // you can display the account
-    console.log({randomAccount,randomAccountWithCustomMessenger})
-
-    // or you can use static method to create an Account
-    const staticCreatedAccount = Account.new()
-    // but you have to set messenger manually after
-    staticCreatedAccount.setMessenger(customMessenger)
-
-    console.log({staticCreatedAccount})
+## Installation
 
 ```
-
-### Import an existing privateKey to create Account
-
-```typescript
-
-    // import the Account class
-    import {Account} from '@harmony-js/account'
-
-    // NOTED: Key with or without `0x` are accepted, makes no different
-    // NOTED: DO NOT import `mnemonic phrase` using `Account` class, use `Wallet` instead
-    const myPrivateKey = '0xe19d05c5452598e24caad4a0d85a49146f7be089515c905ae6a19e8a578a6930'
-
-    const myAccountWithMyPrivateKey = new Account(myPrivateKey)
-
-    // you can also import privateKey use static method
-    const myAccountWithMyPrivateKeyUsingStatic = Account.add(myPrivateKey)
-
-    console.log({ myAccountWithMyPrivateKey, myAccountWithMyPrivateKeyUsingStatic })
-
+npm install @harmony-js/account
 ```
 
-### Encrypt/Export keyStore file, Decrypt/Import keyStore file 
+## Usage
 
-```typescript
-
-    // import the Account class
-    import {Account} from '@harmony-js/account'
-    
-    // suppose we have an account
-    const myPrivateKey = '0xe19d05c5452598e24caad4a0d85a49146f7be089515c905ae6a19e8a578a6930'
-    const myAccountWithMyPrivateKey = new Account(myPrivateKey)
-
-    // suppose we have a password, and we want to encrypt the account above
-    const myStrongPassword = '123'
-
-    async function encryptAndDecrypt(password) {
-        // we get the privateKey before encrypted as comparison
-        const unencryptedPrivateKey = myAccountWithMyPrivateKey.privateKey
-
-        // export the account to keyStore string, which will make the privateKey encrpyted
-        const keyStoreFile = await myAccountWithMyPrivateKey.toFile(password)
-        // exported keyStoreFile
-        console.log({ keyStoreFile })
-        // see if the account is encrypted
-        console.log(`Is this account encrypted? \n ${myAccountWithMyPrivateKey.encrypted}`)
-        // keystore file should be equal to encrypted privateKey
-        console.log(
-            `Is privateKey equal to keyStore string? \n ${keyStoreFile ===
-            myAccountWithMyPrivateKey.privateKey}`,
-        )
-    }
-
-    encryptAndDecrypt(myStrongPassword)
-
-
-    // suppose we have keyStorefile, in this example, we just use same password and keystore string encrypted above
-    const someKeyStoreFile =
-    '{"version":3,"id":"62326332-3139-4839-b534-656134623066","address":"1fe3da351d9fc0c4f02de5412ad7def8aee956c5","Crypto":{"ciphertext":"b86ab81682c9f5a35738ad9bd38cd9b46c1b852ef33f16dd83068f79e20d5531","cipherparams":{"iv":"44efb5a514f34968e92cafad80566487"},"cipher":"aes-128-ctr","kdf":"scrypt","kdfparams":{"salt":"d70ae1f311601562113f98c8ebe382f52a332dca1588886e5ea91e2f8a647134","n":8192,"r":8,"p":1,"dklen":32},"mac":"7b63e4e31a75a22b7091291bb58302655b738539ef3e30b30a7a7f170f6163ef"}}'
-
-    async function importKeyStoreFileAndDecrypt(keyStoreFile, password) {
-        // import keyStore string and provide the password, remember to make a new Account first
-        const importedAccount = await Account.new().fromFile(keyStoreFile, password)
-        // the account should decypted which `Account.encrypted` is false
-        console.log(`Is this account encrypted? \n ${importedAccount.encrypted}`)
-        // see if the privatekey is equal to unencrypted one?
-        console.log(
-            `Is the account recovered from keystore? \n ${importedAccount.privateKey === myPrivateKey}`,
-        )
-    }
-
-    importKeyStoreFileAndDecrypt(someKeyStoreFile, myStrongPassword)
-    
-
+Creating new account and display hex and bech32 (one) addresses 
+```javascript
+const account = new Account(); // or const account = Account.new()
+console.log(account.checksumAddress);
+console.log(account.bech32Address);
 ```
 
-
-### Address format getter
-
-```typescript
-
-    // import the Account class
-    import {Account} from '@harmony-js/account'
-    
-    // suppose we have an account
-    const myPrivateKey = '0xe19d05c5452598e24caad4a0d85a49146f7be089515c905ae6a19e8a578a6930'
-    const myAccountWithMyPrivateKey = new Account(myPrivateKey)
-
-    // Account.address is bytes20/base16 address
-    console.log(myAccountWithMyPrivateKey.address)
-    // Account.bech32Address is bech32 format address, in Harmony, it's `one1` prefixed
-    console.log(myAccountWithMyPrivateKey.bech32Address)
-    // Account.bech32TestNetAddress is bech32 format address, in Harmony, it's `tone1` prefixed, used in testnet
-    console.log(myAccountWithMyPrivateKey.bech32TestNetAddress)
-    // Account.checksumAddress is checksumed address from base16
-    console.log(myAccountWithMyPrivateKey.checksumAddress)
-
+Creating new account using private key
+```javascript
+const account = Account.add('45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e');
 ```
 
-
-### Sign a transaction
-
-```typescript
-
-    // import the Account class
-    import {Account} from '@harmony-js/account'
-
-    // import Transaction class from '@harmony-js/transaction'
-    import {Transaction} from '@harmony-js/transaction'
-    
-     // Messenger is optional, by default, we have a defaultMessenger 
-    // If you like to change, you will import related package here.
-    import { HttpProvider, Messenger } from '@harmony-js/network';
-    import { ChainType, ChainID, Unit } from '@harmony-js/utils';
-
-    // create a custom messenger
-    const customMessenger = new Messenger(
-        new HttpProvider('http://localhost:9500'),
-        ChainType.Harmony, // if you are connected to Harmony's blockchain
-        ChainID.HmyLocal, // check if the chainId is correct
-    )
-    // suppose we have an account
-    const myPrivateKey = '0xe19d05c5452598e24caad4a0d85a49146f7be089515c905ae6a19e8a578a6930'
-    const myAccountWithMyPrivateKey = new Account(myPrivateKey)
-
-    
-    const txnObject = {
-        //  token send to
-        to: 'one166axnkjmghkf3df7xfvd0hn4dft8kemrza4cd2',
-        // amount to send
-        value: '1000000000000000000000',
-        // gas limit, you can use string or use BN value
-        gasLimit: '210000',
-        // send token from shardID
-        shardID: 0,
-        // send token to toShardID
-        toShardID: 0,
-        // gas Price, you can use Unit class, and use Gwei, then remember to use toWei(), which will be transformed to BN
-        gasPrice: new Unit('100').asGwei().toWei(),
-        // if you set nonce manually here, and remember, the `updateNonce` of `Account.signTransaction` should be set to false
-        nonce: 0,
-    };
-
-    const txn = new Transaction(txnObject, customMessenger);
-
-    async function signTheTxn() {
-        // Account.signTransaction(transaction: Transaction, updateNonce?: boolean, encodeMode?: string, blockNumber?: string): Promise<Transaction>
-        // If the 2nd parameter `updateNonce` is set to true, it will query and update account's nonce before it signs
-        const signedTxn = await myAccountWithMyPrivateKey.signTransaction(txn, false, 'rlp', 'latest');
-
-        // see if the transaction is signed
-        console.log(`\n see if transaction is signed: \n ${signedTxn.isSigned()} \n`);
-
-        // get the tranaction bytes
-        console.log(`\n the signed bytes is: \n ${signedTxn.getRawTransaction()} \n`);
-
-        return signTheTxn;
-    }
-
-    signTheTxn();
+Creating account using private key and custom messenger
+```javascript
+const account = new Account(
+  '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e',
+  new Messenger(
+    new HttpProvider('https://api.s0.b.hmny.io'),
+    ChainType.Harmony,
+    ChainID.HmyTestnet,
+  ),
+);
 ```
 
+Creating account and setting custom messenger
+```javascript
+// uses by default http://localhost:9500 as messenger
+const account = new Account();
+const customMessenger = new Messenger(
+    new HttpProvider('https://api.s0.b.hmny.io'),
+    ChainType.Harmony,
+    ChainID.HmyTestnet,
+  );
 
-# Usage of Wallet
-
-## Dependencies
-  * "@harmony-js/crypto",
-  * "@harmony-js/network",
-  * "@harmony-js/staking",
-  * "@harmony-js/transaction",
-  * "@harmony-js/utils"
-
-```typescript
-
-    import {Wallet} from '@harmony-js/account'
-
-    const wallet=new Wallet()
-
+account.setMessenger(customMessenger);
 ```
 
+Storing the account data to keystore file
+```javascript
+const passphrase = '';
+const account = new Account('45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e');
+account.toFile(passphrase).then(keystore => {
+    console.log(keystore);
+});
+```
 
+Fetching account from keystore file
+```javascript
+const passphrase = '';
+const keystore = '{"version":3,"id":"33363566-3564-4264-a638-363531666335","address":"7c41e0668b551f4f902cfaec05b5bdca68b124ce","crypto":{"ciphertext":"9b09380afb742838b32d9afc0ec1a3df35dbd7a41e3a160d08c07a4d0e79b855","cipherparams":{"iv":"1cd0e0522260eef055b9170f4825f4a0"},"cipher":"aes-128-ctr","kdf":"scrypt","kdfparams":{"salt":"bf35e36c45cccefcef73a4c900f41c682c94c28630d94d2d1f764760d245f30b","n":8192,"r":8,"p":1,"dklen":32},"mac":"25b4442972356bea02af57eba3b87803086d90b5e7657a57b528b89b1aa25f2f"}}';
+const account = new Account();
+account.fromFile(keystore, passphrase).then(account => {
+    console.log(account.bech32Address);
+});
+```
 
+Get the account balance
+```javascript
+const account = new Account(
+  '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e',
+  new Messenger(
+    new HttpProvider('https://api.s0.b.hmny.io'),
+    ChainType.Harmony,
+    ChainID.HmyTestnet,
+  ),
+);
+account.getBalance().then(response => {
+    console.log(response);
+});
+```
+outputs `{ balance: '9126943763247054940484', nonce: 45, shardID: 0 }`
+
+Create a transaction and account, and sign it
+```javascript
+const account = new Account(
+  '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e',
+  new Messenger(
+    new HttpProvider('https://api.s0.b.hmny.io'),
+    ChainType.Harmony,
+    ChainID.HmyTestnet,
+  ),
+);
+const { TransactionFactory } = require('@harmony-js/transaction');
+const { Unit } = require('@harmony-js/utils');
+const factory = new TransactionFactory();
+
+const txn = factory.newTx({
+  to: 'one166axnkjmghkf3df7xfvd0hn4dft8kemrza4cd2',
+  value: new Unit(1).asOne().toWei(),
+  // gas limit, you can use string
+  gasLimit: '21000',
+  // send token from shardID
+  shardID: 0,
+  // send token to toShardID
+  toShardID: 0,
+  // gas Price, you can use Unit class, and use Gwei, then remember to use toWei(), which will be transformed to BN
+  gasPrice: new Unit('1').asGwei().toWei(),
+});
+
+account.signTransaction(txn).then((signedTxn) => {
+  console.log(signedTxn);
+});
+```
+
+Similarily staking transactions can be created and signed using account.
+
+A wallet represents user wallet that can hold one or more user accounts.
+
+Creating an empty wallet
+```javascript
+const { Wallet } = require('@harmony-js/account')
+const wallet = new Wallet();
+```
+
+Setting a messenger to be used to send wallet transactions
+```javascript
+wallet.setMessenger(
+  new Messenger(
+    new HttpProvider('https://api.s0.b.hmny.io'),
+    ChainType.Harmony,
+    ChainID.HmyTestnet,
+  ),
+);
+```
+
+Create an empty wallet with messenger
+```javascript
+const wallet = new Wallet(
+  new Messenger(
+    new HttpProvider('https://api.s0.b.hmny.io'),
+    ChainType.Harmony,
+    ChainID.HmyTestnet,
+  ),
+);
+```
+
+An account could be added to a wallet using different ways. Adding account using mnemonics
+```javascript
+const mnemonics = 'horse distance dry brother pretty manual chicken mushroom town swim prize clutch';
+const account = wallet.addByMnemonic(mnemonics);
+```
+
+Adding account using private key
+```javascript
+const account = wallet.addByPrivateKey('0x676cd9773dd23a4c1d7f22767c61c7b6723cc6be37b078545f6e0e91433a23dd')
+```
+
+Adding account using keystore file
+```javascript
+const keystore = '{"version":3,"id":"33363566-3564-4264-a638-363531666335","address":"7c41e0668b551f4f902cfaec05b5bdca68b124ce","crypto":{"ciphertext":"9b09380afb742838b32d9afc0ec1a3df35dbd7a41e3a160d08c07a4d0e79b855","cipherparams":{"iv":"1cd0e0522260eef055b9170f4825f4a0"},"cipher":"aes-128-ctr","kdf":"scrypt","kdfparams":{"salt":"bf35e36c45cccefcef73a4c900f41c682c94c28630d94d2d1f764760d245f30b","n":8192,"r":8,"p":1,"dklen":32},"mac":"25b4442972356bea02af57eba3b87803086d90b5e7657a57b528b89b1aa25f2f"}}';
+const passphrase = '';
+wallet.addByKeyStore(keystore, passphrase).then(account => {
+    console.log(account.bech32Address);
+});
+```
+
+Creating a new account using passphrase
+```javascript
+const passphrase = 'harmony-one';
+wallet.createAccount(passphrase).then(account => {
+    console.log(account.bech32Address);
+});
+```
+
+Get all accounts in the wallet
+```javascript
+wallet.accounts.forEach(addr => {
+    const account = wallet.getAccount(addr);
+    console.log(account.bech32Address);
+});
+```
+
+Set wallet signer when multiple accounts exists in the wallet
+```javascript
+wallet.setSigner(signerAddr);
+```
+
+Sign transaction using wallet, will sign the transaction using the wallet signer
+```javascript
+const txn = factory.newTx({
+  to: 'one166axnkjmghkf3df7xfvd0hn4dft8kemrza4cd2',
+  value: new Unit(1).asOne().toWei(),
+  // gas limit, you can use string
+  gasLimit: '21000',
+  // send token from shardID
+  shardID: 0,
+  // send token to toShardID
+  toShardID: 0,
+  // gas Price, you can use Unit class, and use Gwei, then remember to use toWei(), which will be transformed to BN
+  gasPrice: new Unit('1').asGwei().toWei(),
+});
+
+wallet.signTransaction(txn).then((signedTxn) => {
+  console.log(signedTxn);
+});
+```
+
+Similarily staking transactions can be signed using `signStaking` api.
