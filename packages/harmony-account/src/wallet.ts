@@ -334,7 +334,7 @@ class Wallet {
    * @param address one of the address in the accounts
    */
   setSigner(address: string): void {
-    if (!isAddress(address) || !this.getAccount(address)) {
+    if (!isAddress(address) && !this.getAccount(address)) {
       throw new Error('could not set signer');
     }
     this.defaultSigner = address;
