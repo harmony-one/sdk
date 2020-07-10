@@ -14,6 +14,8 @@ import {
 import { ChainID, ChainType, Unit } from '@harmony-js/utils';
 import { HDNode } from '@harmony-js/account';
 
+const packageInfo = { version: '1.0.0' };
+
 export interface ArgsResolver {
   newArgs: any;
   id: number;
@@ -137,6 +139,18 @@ export class TruffleProvider extends HDNode {
         });
         return {
           result: String(this.messenger.chainId),
+          id,
+          jsonrpc: '2.0',
+        };
+      }
+      case 'web3_clientVersion': {
+        callback(null, {
+          result: `Harmony/${packageInfo.version}/@harmony-js`,
+          id,
+          jsonrpc: '2.0',
+        });
+        return {
+          result: `Harmony/${packageInfo.version}/@harmony-js`,
           id,
           jsonrpc: '2.0',
         };
