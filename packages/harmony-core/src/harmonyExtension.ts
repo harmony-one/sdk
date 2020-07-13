@@ -47,6 +47,7 @@ export interface ExtensionInterface {
     blockNumber: string,
   ) => Promise<Transaction>;
   getAccount: () => Promise<ExtensionAccount>;
+  forgetIdentity: () => Promise<void>;
   messenger?: Messenger;
   version: string;
   isMathWallet?: boolean;
@@ -212,6 +213,18 @@ export class HarmonyExtension {
     const account = await this.wallet.getAccount();
     // Use address
     return account;
+  }
+
+  /**
+   * Log out the wallet account
+   *
+   * @example
+   * ```javascript
+   * hmyEx.logout();
+   * ```
+   */
+  public async logout() {
+    await this.wallet.forgetIdentity();
   }
 
   /**
