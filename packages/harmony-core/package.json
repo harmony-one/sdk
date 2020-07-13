@@ -1,6 +1,6 @@
 {
   "name": "@harmony-js/core",
-  "version": "0.1.47",
+  "version": "0.1.48",
   "description": "harmony core package",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -18,13 +18,13 @@
   "author": "neeboo@firestack.one",
   "license": "MIT",
   "dependencies": {
-    "@harmony-js/account": "0.1.47",
-    "@harmony-js/contract": "0.1.46",
-    "@harmony-js/crypto": "^0.1.45",
-    "@harmony-js/network": "^0.1.45",
-    "@harmony-js/staking": "^0.1.45",
-    "@harmony-js/transaction": "^0.1.45",
-    "@harmony-js/utils": "^0.1.45"
+    "@harmony-js/account": "0.1.48",
+    "@harmony-js/contract": "0.1.48",
+    "@harmony-js/crypto": "0.1.48",
+    "@harmony-js/network": "0.1.48",
+    "@harmony-js/staking": "0.1.48",
+    "@harmony-js/transaction": "0.1.48",
+    "@harmony-js/utils": "0.1.48"
   },
   "gitHead": "56606e9365721729a490c27d6a294e0daf90fbdf"
 }
