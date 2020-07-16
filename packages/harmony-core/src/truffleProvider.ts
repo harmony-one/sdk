@@ -11,8 +11,9 @@ import {
   ResponseMiddleware,
 } from '@harmony-js/network';
 
-import { ChainID, ChainType, Unit } from '@harmony-js/utils';
+import { ChainID, ChainType, Unit, isBech32Address } from '@harmony-js/utils';
 import { HDNode } from '@harmony-js/account';
+import { fromBech32, HRP } from '@harmony-js/crypto';
 
 const packageInfo = { version: '1.0.0' };
 
@@ -173,6 +174,9 @@ export class TruffleProvider extends HDNode {
                 .asWei()
                 .toWei()
                 .toString('hex')}`;
+            }
+            if (isBech32Address(response.result.miner)) {
+              response.result.miner = fromBech32(response.result.miner, HRP);
             }
             callback(null, response);
           } catch (error) {
