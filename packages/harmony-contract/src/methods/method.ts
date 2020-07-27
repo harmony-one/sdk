@@ -49,9 +49,13 @@ export class ContractMethod {
             const [txn, id] = sent;
             this.transaction = txn;
             this.contract.transaction = this.transaction;
-            this.confirm(id).then(() => {
+            if (params.waitConfirm) {
+              this.confirm(id).then(() => {
+                this.transaction.emitter.resolve(this.contract);
+              });
+            } else {
               this.transaction.emitter.resolve(this.contract);
-            });
+            }
           });
         });
       };
