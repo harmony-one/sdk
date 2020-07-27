@@ -43,13 +43,14 @@ export class ContractMethod {
           return { ...tx, ...params, gasLimit };
         });
 
+        const waitConfirm: boolean = params && params.waitConfirm === false ? false : true;
         const updateNonce: boolean = params && params.nonce !== undefined ? false : true;
         this.signTransaction(updateNonce).then((signed) => {
           this.sendTransaction(signed).then((sent) => {
             const [txn, id] = sent;
             this.transaction = txn;
             this.contract.transaction = this.transaction;
-            if (params.waitConfirm) {
+            if (waitConfirm) {
               this.confirm(id).then(() => {
                 this.transaction.emitter.resolve(this.contract);
               });
