@@ -33,7 +33,7 @@ export class EventFactory {
         new EventMethod(
           key,
           // params,
-          this.map(this.abiModel, this.contract, params),
+          this.map(this.abiModel.getEvent(key), this.contract, params),
           this.abiModel.getEvent(key),
           this.contract,
         );
