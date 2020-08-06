@@ -111,7 +111,7 @@ class WSProvider extends BaseSocket {
     return new Promise((resolve, reject) => {
       // TODO: test on Error
 
-      if (!this.isConnecting()) {
+      if (this.connected) {
         try {
           this.connection.send(reqMiddleware(JSON.stringify(payload)));
         } catch (error) {
@@ -119,17 +119,21 @@ class WSProvider extends BaseSocket {
           this.removeEventListener(SocketConnection.ERROR);
           throw error;
         }
-        this.emitter.on(`${payload.id}`, (data) => {
-          resolve(resMiddleware(data));
-          this.removeEventListener(`${payload.id}`);
-        });
-        this.emitter.on(SocketConnection.ERROR, reject);
       }
       this.emitter.on(SocketConnection.CONNECT, () => {
-        this.send(payload)
-          .then(resolve)
-          .catch(reject);
+        try {
+          this.connection.send(reqMiddleware(JSON.stringify(payload)));
+        } catch (error) {
+          // TODO !isConnecting then reconnect?
+          this.removeEventListener(SocketConnection.ERROR);
+          throw error;
+        }
       });
+      this.emitter.on(`${payload.id}`, (data) => {
+        resolve(resMiddleware(data));
+        this.removeEventListener(`${payload.id}`);
+      });
+      this.emitter.on(SocketConnection.ERROR, reject);
     });
   }
 

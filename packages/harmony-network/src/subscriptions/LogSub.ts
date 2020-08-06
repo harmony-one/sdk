@@ -10,10 +10,10 @@ import { RPCMethod } from '../rpcMethod/rpc';
 export class LogSub extends SubscriptionMethod {
   constructor(options: any, messenger: Messenger, shardID: number = 0) {
     super('logs', options, messenger, shardID);
-    this.subscribe();
+    this.preprocess();
   }
 
-  async subscribe() {
+  async preprocess() {
     if (
       (this.options.fromBlock && this.options.fromBlock !== 'latest') ||
       this.options.fromBlock === 0 ||
