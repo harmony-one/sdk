@@ -1,6 +1,6 @@
 {
   "name": "@harmony-js/network",
-  "version": "0.1.48",
+  "version": "0.1.51",
   "description": "network suites for harmony",
   "main": "dist/index.js",
   "node": "dist/index.js",
