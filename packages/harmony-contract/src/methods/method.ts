@@ -58,6 +58,8 @@ export class ContractMethod {
               this.transaction.emitter.resolve(this.contract);
             }
           });
+        }).catch((error) => {
+          this.transaction.emitter.reject(error);
         });
       };
 
