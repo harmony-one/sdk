@@ -50,7 +50,7 @@ export class ContractMethod {
             const [txn, id] = sent;
             this.transaction = txn;
             this.contract.transaction = this.transaction;
-            if (waitConfirm) {
+            if (waitConfirm && id.startsWith("0x")) {
               this.confirm(id).then(() => {
                 this.transaction.emitter.resolve(this.contract);
               });
