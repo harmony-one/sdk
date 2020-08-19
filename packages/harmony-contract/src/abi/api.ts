@@ -90,7 +90,7 @@ export class AbiCoderClass {
 
   decodeLog(inputs: any, data = '', topics: any) {
     const returnValues: any = {};
-    let topicCount = 1;
+    let topicCount = 0;
     let value;
     const nonIndexedInputKeys: any[] = [];
     const nonIndexedInputItems: any[] = [];
