@@ -50,7 +50,9 @@ export class ContractMethod {
             const [txn, id] = sent;
             this.transaction = txn;
             this.contract.transaction = this.transaction;
-            if (waitConfirm) {
+            if (this.transaction.isRejected()) {
+              this.transaction.emitter.reject(id); // in this case, id is error message
+            } else if (waitConfirm) {
               this.confirm(id).then(() => {
                 this.transaction.emitter.resolve(this.contract);
               });
@@ -87,22 +89,16 @@ export class ContractMethod {
           : this.contract.shardID;
       const nonce = '0x0';
 
-      let gasLimit: any;
-      // tslint:disable-next-line: prefer-conditional-expression
-      if (options !== undefined) {
+      let gasLimit: any = '21000000';
+      if (options !== undefined && (options.gas || options.gasLimit)) {
         gasLimit = options.gas || options.gasLimit;
-      } else {
-        gasLimit = '21000000';
       }
-      let from: string;
-      // tslint:disable-next-line: prefer-conditional-expression
-      if (this.wallet.signer) {
-        from = options && options.from ? options.from : this.wallet.signer.address;
-      } else {
-        from =
-          options && options.from ? options.from : '0x0000000000000000000000000000000000000000';
+      let from: string = this.wallet.signer
+        ? this.wallet.signer.address
+        : '0x0000000000000000000000000000000000000000';
+      if (options && options.from) {
+        from = options.from;
       }
-
       this.transaction = this.transaction.map((tx: any) => {
         return {
           ...tx,
@@ -320,7 +316,19 @@ export class ContractMethod {
 
   protected afterCall(response: any) {
     if (!response || response === '0x') {
-      return null;
+      throw { revert: response };
+    }
+    // length of `0x${methodSig}` is 2+4*2=10
+    if (response.length % 32 === 10 && response.startsWith(this.contract.errorFuncSig)) {
+      const errmsg = this.contract.abiCoder.decodeParameters(
+        [{ type: 'string' }],
+        '0x' + response.slice(10),
+      );
+      throw { revert: errmsg[0] };
+    }
+
+    if (this.methodKey === 'contractConstructor') {
+      return response;
     }
 
     const outputs = this.abiItem.getOutputs();
