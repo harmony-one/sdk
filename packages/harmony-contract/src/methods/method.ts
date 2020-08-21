@@ -315,9 +315,6 @@ export class ContractMethod {
   }
 
   protected afterCall(response: any) {
-    if (!response || response === '0x') {
-      throw { revert: response };
-    }
     // length of `0x${methodSig}` is 2+4*2=10
     if (response.length % 32 === 10 && response.startsWith(this.contract.errorFuncSig)) {
       const errmsg = this.contract.abiCoder.decodeParameters(
@@ -332,6 +329,14 @@ export class ContractMethod {
     }
 
     const outputs = this.abiItem.getOutputs();
+    if (outputs.length === 0) {
+      // if outputs is empty, we can't know the call is revert or not
+      return response;
+    }
+    if (!response || response === '0x') {
+      // if outputs isn't empty, treat it as revert
+      throw { revert: response };
+    }
     if (outputs.length > 1) {
       return this.contract.abiCoder.decodeParameters(outputs, response);
     }
