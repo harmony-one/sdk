@@ -45,22 +45,26 @@ export class ContractMethod {
 
         const waitConfirm: boolean = params && params.waitConfirm === false ? false : true;
         const updateNonce: boolean = params && params.nonce !== undefined ? false : true;
-        this.signTransaction(updateNonce).then((signed) => {
-          this.sendTransaction(signed).then((sent) => {
-            const [txn, id] = sent;
-            this.transaction = txn;
-            this.contract.transaction = this.transaction;
-            if (waitConfirm && id.startsWith("0x")) {
-              this.confirm(id).then(() => {
+        this.signTransaction(updateNonce)
+          .then((signed) => {
+            this.sendTransaction(signed).then((sent) => {
+              const [txn, id] = sent;
+              this.transaction = txn;
+              this.contract.transaction = this.transaction;
+              if (this.transaction.isRejected()) {
+                this.transaction.emitter.reject(id); // in this case, id is error message
+              } else if (waitConfirm) {
+                this.confirm(id).then(() => {
+                  this.transaction.emitter.resolve(this.contract);
+                });
+              } else {
                 this.transaction.emitter.resolve(this.contract);
-              });
-            } else {
-              this.transaction.emitter.resolve(this.contract);
-            }
+              }
+            });
+          })
+          .catch((error) => {
+            this.transaction.emitter.reject(error);
           });
-        }).catch((error) => {
-          this.transaction.emitter.reject(error);
-        });
       };
 
       // tslint:disable-next-line: prefer-conditional-expression
@@ -82,29 +86,23 @@ export class ContractMethod {
   }
   async call(options: any, blockNumber: any = 'latest') {
     try {
-      options = { ...this.contract.options, ...options };
+      options = { ...this.contract.options, data: this.transaction.txParams.data, ...options };
       const shardID =
         options !== undefined && options.shardID !== undefined
           ? options.shardID
           : this.contract.shardID;
       const nonce = '0x0';
 
-      let gasLimit: any;
-      // tslint:disable-next-line: prefer-conditional-expression
-      if (options !== undefined) {
+      let gasLimit: any = '21000000';
+      if (options !== undefined && (options.gas || options.gasLimit)) {
         gasLimit = options.gas || options.gasLimit;
-      } else {
-        gasLimit = '21000000';
       }
-      let from: string;
-      // tslint:disable-next-line: prefer-conditional-expression
-      if (this.wallet.signer) {
-        from = options && options.from ? options.from : this.wallet.signer.address;
-      } else {
-        from =
-          options && options.from ? options.from : '0x0000000000000000000000000000000000000000';
+      let from: string = this.wallet.signer
+        ? this.wallet.signer.address
+        : '0x0000000000000000000000000000000000000000';
+      if (options && options.from) {
+        from = options.from;
       }
-
       this.transaction = this.transaction.map((tx: any) => {
         return {
           ...tx,
@@ -321,11 +319,28 @@ export class ContractMethod {
   }
 
   protected afterCall(response: any) {
-    if (!response || response === '0x') {
-      return null;
+    // length of `0x${methodSig}` is 2+4*2=10
+    if (response.length % 32 === 10 && response.startsWith(this.contract.errorFuncSig)) {
+      const errmsg = this.contract.abiCoder.decodeParameters(
+        [{ type: 'string' }],
+        '0x' + response.slice(10),
+      );
+      throw { revert: errmsg[0] };
+    }
+
+    if (this.methodKey === 'contractConstructor') {
+      return response;
     }
 
     const outputs = this.abiItem.getOutputs();
+    if (outputs.length === 0) {
+      // if outputs is empty, we can't know the call is revert or not
+      return response;
+    }
+    if (!response || response === '0x') {
+      // if outputs isn't empty, treat it as revert
+      throw { revert: response };
+    }
     if (outputs.length > 1) {
       return this.contract.abiCoder.decodeParameters(outputs, response);
     }

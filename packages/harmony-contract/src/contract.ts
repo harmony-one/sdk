@@ -27,6 +27,8 @@ export class Contract {
   transaction?: Transaction;
   status: ContractStatus;
   shardID: number;
+  errorFunc: string = 'Error(string)';
+  errorFuncSig: string;
 
   constructor(
     abi: any = [],
@@ -47,6 +49,7 @@ export class Contract {
     this.runMethodFactory();
     this.runEventFactory();
     this.status = status;
+    this.errorFuncSig = this.abiCoder.encodeFunctionSignature(this.errorFunc);
     // tslint:disable-next-line: no-unused-expression
   }
   isInitialised() {
