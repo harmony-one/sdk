@@ -1,6 +1,6 @@
 {
   "name": "@harmony-js/transaction",
-  "version": "0.1.52",
+  "version": "0.1.51",
   "description": "transaction package for harmony",
   "main": "dist/index.js",
   "node": "dist/index.js",
@@ -18,9 +18,9 @@
   "author": "neeboo@firestack.one",
   "license": "MIT",
   "dependencies": {
-    "@harmony-js/crypto": "0.1.49",
-    "@harmony-js/network": "0.1.52",
-    "@harmony-js/utils": "0.1.49"
+    "@harmony-js/crypto": "0.1.48",
+    "@harmony-js/network": "0.1.51",
+    "@harmony-js/utils": "0.1.48"
   },
   "gitHead": "56606e9365721729a490c27d6a294e0daf90fbdf"
 }
