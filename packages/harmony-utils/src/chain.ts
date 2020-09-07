@@ -1,21 +1,21 @@
 /**
  * ## About this package
- * 
+ *
  * `@harmony-js/util` provides utility functions for Harmony dapps and other `harmony-js` packages
- * 
+ *
  * Develop can use this package to:
  * - Transform the unit of token (fromWei, toWei...)
  * - Convert variable to different type (hexToBN, numberToHex...)
  * - Check validators information (isAddress, isPublicKey, isBlockNumber...)
- * 
+ *
  * ## How to use this package
- * 
+ *
  * ### Step 1: create a Harmony Instance
  * ```javascript
  * const { Harmony } = require('@harmony-js/core');
  * const { ChainID, ChainType } = require('@harmony-js/utils');
  * const { BN } = require('@harmony-js/crypto');
- * 
+ *
  * const hmy = new Harmony(
  *   'http://localhost:9500',
  *   {
@@ -24,48 +24,48 @@
  *   },
  * );
  * ```
- * 
+ *
  * ### Step 2: Select and call functions
  * Here are some examples:
- * 
+ *
  * ```javascript
  * // numberToString
  * const num = 123;
  * const str = hmy.utils.numberToString(num)
  * console.log(str);
- * 
+ *
  * // add0xToString
  * const str = '12345';
  * const expected = hmy.utils.add0xToString(str)
  * console.log(expected);
- * 
+ *
  * // fromWei
  * const Wei = new BN('1000000000000000000');
  * const expected = hmy.utils.fromWei(Wei, hmy.utils.Units.one);
  * console.log(expected);
- * 
+ *
  * // toWei
  * const one = new BN('1');
  * const expected = hmy.utils.toWei(one, hmy.utils.Units.one);
  * const num = hmy.utils.numToStr(expected);
  * console.log(num);
  * ```
- * 
+ *
  * ### Step 3: Using unit class to convet the token unit
- * ```javascript 
+ * ```javascript
  * // convert one to Gwei
  * const one = new hmy.utils.Unit('1').asOne();
  * const oneToGwei = one.toGwei();
  * console.log(oneToGwei);
  * ```
- * 
- * ## Some Important consts and Enums 
+ *
+ * ## Some Important consts and Enums
  * ### Chain Type
  * ```javascript
  * Harmony = 'hmy',
  * Ethereum = 'eth',
  * ```
- * 
+ *
  * ### Chain ID
  * ```javascript
  * Default = 0,
@@ -85,7 +85,7 @@
   HmyLocal = 2,
   HmyPangaea = 3,
  * ```
- * 
+ *
  * ### Default Config
  * ```javascript
  * export const defaultConfig = {
@@ -103,7 +103,7 @@
  *   },
  * };
  * ```
- * 
+ *
  * ### Unit Map
  * ```
  * [Units.wei, '1'], // 1 wei
@@ -119,17 +119,17 @@
  * [Units.Gether, '1000000000000000000000000000'], // 1e27 wei
  * [Units.Tether, '1000000000000000000000000000000'], // 1e30 wei
  * ```
- * 
+ *
  * @packageDocumentation
  * @module harmony-utils
  */
 
-export const enum ChainType {
+export enum ChainType {
   Harmony = 'hmy',
   Ethereum = 'eth',
 }
 
-export const enum ChainID {
+export enum ChainID {
   Default = 0,
   EthMainnet = 1,
   Morden = 2,

@@ -28,7 +28,7 @@ export class StakingSettings {
 }
 
 /** @hidden */
-export const enum Directive {
+export enum Directive {
   DirectiveCreateValidator,
   DirectiveEditValidator,
   DirectiveDelegate,
