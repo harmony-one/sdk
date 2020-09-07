@@ -3,7 +3,9 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "declarationDir": "dist"
+    "declarationDir": "dist",
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "include": ["src", "../typings/**/*.d.ts", "fixtures"],
   "references": [
