@@ -104,7 +104,7 @@ export interface TxParams {
   receipt?: TransasctionReceipt;
 }
 
-export const enum TxStatus {
+export enum TxStatus {
   NONE = 'NONE',
   INTIALIZED = 'INITIALIZED',
   SIGNED = 'SIGNED',

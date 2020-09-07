@@ -8,14 +8,14 @@ import { isWs } from '@harmony-js/utils';
 import mitt from 'mitt';
 import { BaseProvider } from './baseProvider';
 
-export const enum SocketConnection {
+export enum SocketConnection {
   READY = 'ready',
   CONNECT = 'connect',
   ERROR = 'error',
   CLOSE = 'close',
 }
 
-export const enum SocketState {
+export enum SocketState {
   SOCKET_MESSAGE = 'socket_message',
   SOCKET_READY = 'socket_ready',
   SOCKET_CLOSE = 'socket_close',
@@ -25,7 +25,7 @@ export const enum SocketState {
   SOCKET_ACCOUNTS_CHANGED = 'socket_accountsChanged',
 }
 
-export const enum EmittType {
+export enum EmittType {
   INSTANCE = 'instance',
   PUBSUB = 'pubsub',
 }
