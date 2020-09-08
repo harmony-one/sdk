@@ -18,8 +18,8 @@
   "author": "neeboo@firestack.one",
   "license": "MIT",
   "dependencies": {
-    "@types/bn.js": "^4.11.3",
-    "bn.js": "^4.11.8"
+    "@types/bn.js": "^4.11.6",
+    "bn.js": "^5.1.3"
   },
   "gitHead": "56606e9365721729a490c27d6a294e0daf90fbdf"
 }

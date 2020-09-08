@@ -19,9 +19,9 @@
   "license": "MIT",
   "dependencies": {
     "@harmony-js/utils": "0.1.54",
-    "cross-fetch": "^3.0.2",
-    "mitt": "^1.2.0",
-    "websocket": "^1.0.28"
+    "cross-fetch": "^3.0.5",
+    "mitt": "^2.1.0",
+    "websocket": "^1.0.32"
   },
   "gitHead": "56606e9365721729a490c27d6a294e0daf90fbdf"
 }
