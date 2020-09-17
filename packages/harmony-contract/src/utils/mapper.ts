@@ -15,6 +15,8 @@ export const abiMapper = (abi: any[], abiCoder: AbiCoderClass): AbiModel => {
   const mappedAbiItems: any = {
     methods: {},
     events: {},
+    fallback: undefined,
+    receive: undefined,
   };
   let hasConstructor = false;
 
@@ -68,6 +70,11 @@ export const abiMapper = (abi: any[], abiCoder: AbiCoderClass): AbiModel => {
 
       mappedAbiItems.events[abiItem.signature] = abiItemModel;
       mappedAbiItems.events[abiItem.funcName] = abiItemModel;
+    }
+
+    if (abiItem.type === 'fallback' || abiItem.type === 'receive') {
+      abiItem.signature = abiItem.type;
+      mappedAbiItems[abiItem.type] = new AbiItem(abiItem);
     }
 
     if (abiItem.type === 'constructor') {

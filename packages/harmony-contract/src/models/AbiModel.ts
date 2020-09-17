@@ -33,6 +33,20 @@ export class AbiModel {
     return false;
   }
 
+  getFallback(): AbiItemModel | false {
+    if (this.hasFallback()) {
+      return this.abi.fallback;
+    }
+    return false;
+  }
+
+  getReceive(): AbiItemModel | false {
+    if (this.hasReceive()) {
+      return this.abi.receive;
+    }
+    return false;
+  }
+
   getEvents(): AbiItemModel[] {
     return this.abi.events;
   }
@@ -51,6 +65,14 @@ export class AbiModel {
 
   hasMethod(name: string): boolean {
     return typeof this.abi.methods[name] !== 'undefined';
+  }
+
+  hasFallback(): boolean {
+    return typeof this.abi.fallback !== 'undefined';
+  }
+
+  hasReceive(): boolean {
+    return typeof this.abi.receive !== 'undefined';
   }
 
   hasEvent(name: string): boolean {

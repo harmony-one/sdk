@@ -13,6 +13,15 @@ export const methodEncoder = (
   abiItemModel: AbiItemModel,
   deployData: string,
 ) => {
+  if (abiItemModel.isOfType('receive')) {
+    return undefined;
+  }
+  if (abiItemModel.isOfType('fallback')) {
+    return abiItemModel.contractMethodParameters.length
+      ? abiItemModel.contractMethodParameters[0]
+      : undefined;
+  }
+
   let encodedParameters = abiCoder.encodeParameters(
     abiItemModel.getInputs(),
     abiItemModel.contractMethodParameters,

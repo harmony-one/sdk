@@ -31,6 +31,14 @@ export class MethodFactory {
 
       Object.assign(this.contract.methods, newObject);
     });
+    if (this.abiModel.hasFallback()) {
+      this.contract.fallback = (calldata: string) =>
+        new ContractMethod('fallback', [calldata], this.abiModel.getFallback(), this.contract);
+    }
+    if (this.abiModel.hasReceive()) {
+      this.contract.receive = () =>
+        new ContractMethod('receive', [], this.abiModel.getReceive(), this.contract);
+    }
     return this.contract;
   }
   /**
