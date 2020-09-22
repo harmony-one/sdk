@@ -6,7 +6,7 @@
 import BN from 'bn.js';
 import { isString, isNumber, isHex } from './validators';
 
-export const enum Units {
+export enum Units {
   wei = 'wei',
   Kwei = 'Kwei',
   Mwei = 'Mwei',

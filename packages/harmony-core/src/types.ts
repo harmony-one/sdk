@@ -20,7 +20,7 @@ export interface HarmonyModule {
   Account: Account;
 }
 
-export const enum UrlType {
+export enum UrlType {
   http,
   ws,
 }

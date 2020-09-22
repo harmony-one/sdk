@@ -23,7 +23,7 @@ import {
 } from './validators';
 
 /** @hidden */
-export const enum AssertType {
+export enum AssertType {
   required = 'required',
   optional = 'optional',
 }

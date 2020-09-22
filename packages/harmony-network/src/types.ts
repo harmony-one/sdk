@@ -9,12 +9,12 @@ import { RPCMethod, RPCErrorCode } from './rpcMethod/rpc';
 export type ReqMiddleware = Map<string | RPCMethod | RegExp, any[]>;
 export type ResMiddleware = Map<string | RPCMethod | RegExp, any[]>;
 
-export const enum MiddlewareType {
+export enum MiddlewareType {
   REQ,
   RES,
 }
 
-export const enum SubscribeReturns {
+export enum SubscribeReturns {
   all = 'all',
   id = 'id',
   method = 'method',

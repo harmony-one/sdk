@@ -5,12 +5,7 @@
 *.tsbuildinfo
 .vscode/
 
-
-# package.json
-
-package-lock.json
-packages/*/package-lock.json
-/packages/*/package-lock.json
+# babel
 packages/*/babel.rc
 
 # lerna

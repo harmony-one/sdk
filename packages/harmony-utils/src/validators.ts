@@ -144,7 +144,7 @@ export const isWs = (obj: any): boolean => {
 };
 isWs.validator = 'isWs';
 
-export const enum DefaultBlockParams {
+export enum DefaultBlockParams {
   earliest = 'earliest',
   pending = 'pending',
   latest = 'latest',
