@@ -20,6 +20,7 @@ import { ContractStatus } from './utils/status';
 export class Contract {
   methods: any;
   events: any;
+  abi: any = [];
   abiModel: any | AbiModel;
   abiCoder: AbiCoderClass;
   options: ContractOptions | any;
@@ -38,6 +39,7 @@ export class Contract {
     status: ContractStatus = ContractStatus.INITIALISED,
   ) {
     // super();
+    this.abi = abi;
     this.abiCoder = AbiCoder();
     this.abiModel = abiMapper(abi, this.abiCoder);
     this.options = options;
