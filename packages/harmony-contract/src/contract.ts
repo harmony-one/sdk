@@ -22,6 +22,7 @@ export class Contract {
   events: any;
   fallback: any = undefined;
   receive: any = undefined;
+  abi: any = [];
   abiModel: any | AbiModel;
   abiCoder: AbiCoderClass;
   options: ContractOptions | any;
@@ -40,6 +41,7 @@ export class Contract {
     status: ContractStatus = ContractStatus.INITIALISED,
   ) {
     // super();
+    this.abi = abi;
     this.abiCoder = AbiCoder();
     this.abiModel = abiMapper(abi, this.abiCoder);
     this.options = options;
