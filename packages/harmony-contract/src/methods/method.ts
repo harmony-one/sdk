@@ -328,7 +328,11 @@ export class ContractMethod {
       throw { revert: errmsg[0] };
     }
 
-    if (this.methodKey === 'contractConstructor') {
+    if (
+      this.methodKey === 'contractConstructor' ||
+      this.abiItem.isOfType('fallback') ||
+      this.abiItem.isOfType('receive')
+    ) {
       return response;
     }
 

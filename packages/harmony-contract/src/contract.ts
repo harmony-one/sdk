@@ -20,6 +20,8 @@ import { ContractStatus } from './utils/status';
 export class Contract {
   methods: any;
   events: any;
+  fallback: any = undefined;
+  receive: any = undefined;
   abi: any = [];
   abiModel: any | AbiModel;
   abiCoder: AbiCoderClass;
