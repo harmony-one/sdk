@@ -15,7 +15,7 @@ import {
   isHex,
   hexToNumber,
 } from '@harmony-js/utils';
-import { Messenger, HttpProvider, WSProvider } from '@harmony-js/network';
+import { Messenger, HttpProvider, WSProvider, RPCMethod } from '@harmony-js/network';
 import { Transaction, TxStatus, TransasctionReceipt } from '@harmony-js/transaction';
 import { Account } from './account';
 
@@ -170,7 +170,7 @@ export class HDNode {
   async signTransaction(txParams: any | Web3TxPrams) {
     const from: string = txParams.from ? getAddress(txParams.from).checksum : '0x';
     const accountNonce = await this.messenger.send(
-      'hmy_getTransactionCount',
+      RPCMethod.GetAccountNonce,
       [from, 'latest'],
       'hmy',
       this.shardID,

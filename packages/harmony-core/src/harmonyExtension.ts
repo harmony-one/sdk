@@ -172,7 +172,7 @@ export class HarmonyExtension {
 
         if (updateNonce) {
           const nonce = await this.messenger.send(
-            RPCMethod.GetTransactionCount,
+            RPCMethod.GetAccountNonce,
             [crypto.getAddress(extensionAccount.address).checksum, blockNumber],
             this.messenger.chainPrefix,
             typeof transaction.txParams.shardID === 'string'
