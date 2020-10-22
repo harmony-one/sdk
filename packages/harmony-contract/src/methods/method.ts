@@ -6,7 +6,7 @@
 import { Wallet } from '@harmony-js/account';
 import { TransactionFactory, Transaction, TxStatus } from '@harmony-js/transaction';
 import { RPCMethod, getResultForData, Emitter } from '@harmony-js/network';
-import { hexToNumber, hexToBN } from '@harmony-js/utils';
+import { hexToBN, Unit, isAddress } from '@harmony-js/utils';
 import { getAddress } from '@harmony-js/crypto';
 import { AbiItemModel } from '../models/types';
 import { Contract } from '../contract';
@@ -36,11 +36,12 @@ export class ContractMethod {
     this.callResponse = undefined;
   }
   send(params: any): Emitter {
+    const from: string = this.fromAddress(params);
     try {
       let gasLimit: any;
       const signTxs = () => {
         this.transaction = this.transaction.map((tx: any) => {
-          return { ...tx, ...params, gasLimit };
+          return { ...tx, ...params, gasLimit, from };
         });
 
         const waitConfirm: boolean = params && params.waitConfirm === false ? false : true;
@@ -72,7 +73,7 @@ export class ContractMethod {
         gasLimit = params.gas || params.gasLimit;
       }
       if (gasLimit === undefined) {
-        this.estimateGas().then((gas) => {
+        this.estimateGas({ from }).then((gas) => {
           gasLimit = hexToBN(gas);
           signTxs();
         });
@@ -86,31 +87,28 @@ export class ContractMethod {
   }
   async call(options: any, blockNumber: any = 'latest') {
     try {
-      options = { ...this.contract.options, data: this.transaction.txParams.data, ...options };
       const shardID =
         options !== undefined && options.shardID !== undefined
           ? options.shardID
           : this.contract.shardID;
-      const nonce = '0x0';
 
-      let gasLimit: any = '21000000';
+      let gasLimit: any;
       if (options !== undefined && (options.gas || options.gasLimit)) {
         gasLimit = options.gas || options.gasLimit;
       }
-      let from: string = this.wallet.signer
-        ? this.wallet.signer.address
-        : '0x0000000000000000000000000000000000000000';
-      if (options && options.from) {
-        from = options.from;
+      const gasPrice: any = options && options.gasPrice;
+      let from: string = this.fromAddress(options);
+      if (!isAddress(from)) {
+        from = '0x0000000000000000000000000000000000000000';
       }
       this.transaction = this.transaction.map((tx: any) => {
         return {
           ...tx,
           ...options,
-          from: from || tx.from,
-          gasPrice: options ? options.gasPrice : tx.gasPrice,
+          from,
+          gasPrice: gasPrice || tx.gasPrice,
           gasLimit: gasLimit || tx.gasLimit,
-          nonce: Number.parseInt(hexToNumber(nonce), 10),
+          nonce: 0,
         };
       });
       const keys: string[] = Object.keys(this.transaction.txPayload);
@@ -171,6 +169,17 @@ export class ContractMethod {
     } catch (error) {
       throw error;
     }
+  }
+
+  private fromAddress(options: any) {
+    let from: string = this.transaction.txParams.from;
+    if (this.wallet.signer) {
+      from = this.wallet.signer.address;
+    }
+    if (options && options.from) {
+      from = options.from;
+    }
+    return from;
   }
 
   async estimateGas(
@@ -309,6 +318,15 @@ export class ContractMethod {
         data: this.encodeABI(),
       };
 
+      if (txObject.gas && !txObject.gasLimit) {
+        txObject.gasLimit = txObject.gas;
+      }
+      if (!txObject.gasLimit) {
+        txObject.gasLimit = new Unit(21000000).asWei().toWei();
+      }
+      if (!txObject.gasPrice) {
+        txObject.gasPrice = new Unit(1).asGwei().toWei();
+      }
       // tslint:disable-line
       const result = new TransactionFactory((<Wallet>this.wallet).messenger).newTx(txObject);
 
