@@ -6,14 +6,12 @@
 import { Wallet } from '@harmony-js/account';
 import { TransactionFactory, Transaction, TxStatus } from '@harmony-js/transaction';
 import { RPCMethod, getResultForData, Emitter } from '@harmony-js/network';
-import { hexToNumber, hexToBN } from '@harmony-js/utils';
+import { hexToBN, Unit } from '@harmony-js/utils';
 import { getAddress } from '@harmony-js/crypto';
 import { AbiItemModel } from '../models/types';
 import { Contract } from '../contract';
 import { methodEncoder } from '../utils/encoder';
 import { ContractStatus } from '../utils/status';
-
-// todo: have to judge if it is contractConstructor
 
 export class ContractMethod {
   contract: Contract;
@@ -36,8 +34,11 @@ export class ContractMethod {
     this.callResponse = undefined;
   }
   send(params: any): Emitter {
+    if (params && !params.gasLimit) {
+      params.gasLimit = params.gas;
+    }
     try {
-      let gasLimit: any;
+      let gasLimit: any = params.gasLimit; // change by estimateGas
       const signTxs = () => {
         this.transaction = this.transaction.map((tx: any) => {
           return { ...tx, ...params, gasLimit };
@@ -67,12 +68,8 @@ export class ContractMethod {
           });
       };
 
-      // tslint:disable-next-line: prefer-conditional-expression
-      if (params !== undefined) {
-        gasLimit = params.gas || params.gasLimit;
-      }
       if (gasLimit === undefined) {
-        this.estimateGas().then((gas) => {
+        this.estimateGas(params).then((gas) => {
           gasLimit = hexToBN(gas);
           signTxs();
         });
@@ -85,32 +82,20 @@ export class ContractMethod {
     }
   }
   async call(options: any, blockNumber: any = 'latest') {
+    if (options && !options.gasLimit) {
+      options.gasLimit = options.gas;
+    }
     try {
-      options = { ...this.contract.options, data: this.transaction.txParams.data, ...options };
       const shardID =
         options !== undefined && options.shardID !== undefined
           ? options.shardID
           : this.contract.shardID;
-      const nonce = '0x0';
 
-      let gasLimit: any = '21000000';
-      if (options !== undefined && (options.gas || options.gasLimit)) {
-        gasLimit = options.gas || options.gasLimit;
-      }
-      let from: string = this.wallet.signer
-        ? this.wallet.signer.address
-        : '0x0000000000000000000000000000000000000000';
-      if (options && options.from) {
-        from = options.from;
-      }
       this.transaction = this.transaction.map((tx: any) => {
         return {
           ...tx,
           ...options,
-          from: from || tx.from,
-          gasPrice: options ? options.gasPrice : tx.gasPrice,
-          gasLimit: gasLimit || tx.gasLimit,
-          nonce: Number.parseInt(hexToNumber(nonce), 10),
+          nonce: 0,
         };
       });
       const keys: string[] = Object.keys(this.transaction.txPayload);
@@ -173,36 +158,29 @@ export class ContractMethod {
     }
   }
 
-  async estimateGas(
-    params: {
-      from?: string;
-      to?: string;
-      gas?: string;
-      gasPrice?: string;
-      value?: string;
-      data?: string;
-    } = {},
-  ) {
+  async estimateGas(options: any) {
     try {
-      if (params.from === undefined && this.contract.options.from !== undefined) {
-        params.from = this.contract.options.from;
-      }
-      if (params.to === undefined && this.transaction.txParams.to !== undefined) {
-        params.to = this.transaction.txParams.to;
-      }
-      if (params.data === undefined) {
-        params.data = this.transaction.txParams.data;
-      }
-      if (params.gasPrice === undefined && this.contract.options.gasPrice !== undefined) {
-        params.gasPrice = this.contract.options.gasPrice;
+      interface Payload {
+        [key: string]: any;
       }
 
-      if (this.methodKey === 'contractConstructor') {
-        delete params.to;
+      const estPayload: Payload = {};
+      const txPayload: Payload = this.transaction.txPayload;
+      const keys: string[] = ['from', 'to', 'gasPrice', 'value', 'data'];
+      for (const key of keys) {
+        if (options && options[key]) {
+          estPayload[key] = options[key];
+        } else if (txPayload[key] !== '0x') {
+          estPayload[key] = txPayload[key];
+        }
+      }
+
+      if (this.abiItem.isOfType('constructor')) {
+        delete estPayload.to;
       }
       const result = getResultForData(
         // tslint:disable-line
-        await (<Wallet>this.wallet).messenger.send(RPCMethod.EstimateGas, [params]),
+        await (<Wallet>this.wallet).messenger.send(RPCMethod.EstimateGas, [estPayload]),
       );
 
       if (result.responseType === 'error') {
@@ -246,7 +224,7 @@ export class ContractMethod {
             'rlp',
             'latest', // 'pending',
           );
-      if (this.methodKey === 'contractConstructor') {
+      if (this.abiItem.isOfType('constructor')) {
         this.contract.address = TransactionFactory.getContractAddress(signed);
       }
       this.contract.setStatus(ContractStatus.SIGNED);
@@ -274,7 +252,7 @@ export class ContractMethod {
       );
 
       if (result.receipt && result.txStatus === TxStatus.CONFIRMED) {
-        if (this.methodKey === 'contractConstructor') {
+        if (this.abiItem.isOfType('constructor')) {
           this.contract.setStatus(ContractStatus.DEPLOYED);
         } else {
           this.contract.setStatus(ContractStatus.CALLED);
@@ -289,7 +267,7 @@ export class ContractMethod {
 
   protected createTransaction() {
     if (this.wallet.messenger) {
-      if (this.methodKey === 'contractConstructor') {
+      if (this.abiItem.isOfType('constructor')) {
         // tslint:disable-next-line: no-string-literal
         this.contract.data = this.params[0]['data'] || '0x';
 
@@ -299,16 +277,19 @@ export class ContractMethod {
       } else {
         this.abiItem.contractMethodParameters = this.params || [];
       }
+      const defaultOptions = {
+        gasLimit: new Unit(21000000).asWei().toWei(),
+        gasPrice: new Unit(1).asGwei().toWei(),
+      };
       const txObject = {
+        ...defaultOptions,
         ...this.contract.options,
         ...this.params[0],
-        to:
-          this.methodKey === 'contractConstructor'
-            ? '0x'
-            : getAddress(this.contract.address).checksum,
+        to: this.abiItem.isOfType('constructor')
+          ? '0x'
+          : getAddress(this.contract.address).checksum,
         data: this.encodeABI(),
       };
-
       // tslint:disable-line
       const result = new TransactionFactory((<Wallet>this.wallet).messenger).newTx(txObject);
 
@@ -329,7 +310,7 @@ export class ContractMethod {
     }
 
     if (
-      this.methodKey === 'contractConstructor' ||
+      this.abiItem.isOfType('constructor') ||
       this.abiItem.isOfType('fallback') ||
       this.abiItem.isOfType('receive')
     ) {
