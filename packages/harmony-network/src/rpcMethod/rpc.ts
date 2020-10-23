@@ -95,6 +95,8 @@ export enum RPCMethod {
   GetShardingStructure = 'hmy_getShardingStructure',
   // 33. hmy_sendRawStakingTransaction
   SendRawStakingTransaction = 'hmy_sendRawStakingTransaction',
+  // 34. hmy_getAccountNonce
+  GetAccountNonce = 'hmy_getAccountNonce',
 }
 
 /**@ignore */

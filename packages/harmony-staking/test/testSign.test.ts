@@ -322,11 +322,6 @@ describe('test sign staking transaction', () => {
       {
         jsonrpc: '2.0',
         id: 1,
-        result: '0x666666666666',
-      },
-      {
-        jsonrpc: '2.0',
-        id: 1,
         result: testTx.nonce,
       },
     ].map((res) => [JSON.stringify(res)] as [string]);
@@ -372,11 +367,6 @@ describe('test sign staking transaction', () => {
       {
         jsonrpc: '2.0',
         id: 1,
-        result: '0x666666666666',
-      },
-      {
-        jsonrpc: '2.0',
-        id: 1,
         result: testTx.nonce,
       },
     ].map((res) => [JSON.stringify(res)] as [string]);
@@ -417,11 +407,6 @@ describe('test sign staking transaction', () => {
       {
         jsonrpc: '2.0',
         id: 1,
-        result: '0x666666666666',
-      },
-      {
-        jsonrpc: '2.0',
-        id: 1,
         result: testTx.nonce,
       },
     ].map((res) => [JSON.stringify(res)] as [string]);
@@ -450,11 +435,6 @@ describe('test sign staking transaction', () => {
     const testTx: any = testTransactions[3];
 
     const responses = [
-      {
-        jsonrpc: '2.0',
-        id: 1,
-        result: '0x666666666666',
-      },
       {
         jsonrpc: '2.0',
         id: 1,
@@ -487,11 +467,6 @@ describe('test sign staking transaction', () => {
   it('should test sign collect rewards staking transaction using wallet', async () => {
     const testTx: any = testTransactions[4];
     const responses = [
-      {
-        jsonrpc: '2.0',
-        id: 1,
-        result: '0x666666666666',
-      },
       {
         jsonrpc: '2.0',
         id: 1,
