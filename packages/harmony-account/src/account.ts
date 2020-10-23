@@ -299,30 +299,18 @@ class Account {
     if (updateNonce) {
       // await this.updateBalances(blockNumber);
       const txShardID = transaction.txParams.shardID;
-      const shardBalanceObject = await this.getShardBalance(
+      const shardNonce = await this.getShardNonce(
         typeof txShardID === 'string' ? Number.parseInt(txShardID, 10) : txShardID,
         blockNumber,
       );
-      if (shardBalanceObject !== undefined) {
-        const shardNonce = shardBalanceObject.nonce;
-        transaction.setParams({
-          ...transaction.txParams,
-          from:
-            this.messenger.chainPrefix === ChainType.Harmony
-              ? this.bech32Address
-              : this.checksumAddress || '0x',
-          nonce: shardNonce,
-        });
-      } else {
-        transaction.setParams({
-          ...transaction.txParams,
-          from:
-            this.messenger.chainPrefix === ChainType.Harmony
-              ? this.bech32Address
-              : this.checksumAddress || '0x',
-          nonce: 0,
-        });
-      }
+      transaction.setParams({
+        ...transaction.txParams,
+        from:
+          this.messenger.chainPrefix === ChainType.Harmony
+            ? this.bech32Address
+            : this.checksumAddress || '0x',
+        nonce: shardNonce,
+      });
     }
 
     if (encodeMode === 'rlp') {
@@ -370,27 +358,16 @@ class Account {
     if (updateNonce) {
       // await this.updateBalances(blockNumber);
       const txShardID = shardID;
-      const shardBalanceObject = await this.getShardBalance(
+      const shardNonce = await this.getShardNonce(
         typeof txShardID === 'string' ? Number.parseInt(txShardID, 10) : txShardID,
         blockNumber,
       );
-      if (shardBalanceObject !== undefined) {
-        const shardNonce = shardBalanceObject.nonce;
-
-        staking.setFromAddress(
-          this.messenger.chainPrefix === ChainType.Harmony
-            ? this.bech32Address
-            : this.checksumAddress || '0x',
-        );
-        staking.setNonce(shardNonce);
-      } else {
-        staking.setFromAddress(
-          this.messenger.chainPrefix === ChainType.Harmony
-            ? this.bech32Address
-            : this.checksumAddress || '0x',
-        );
-        staking.setNonce(0);
-      }
+      staking.setFromAddress(
+        this.messenger.chainPrefix === ChainType.Harmony
+          ? this.bech32Address
+          : this.checksumAddress || '0x',
+      );
+      staking.setNonce(shardNonce);
     }
 
     if (encodeMode === 'rlp') {
@@ -508,6 +485,32 @@ class Account {
       balance: hexToNumber(balance.result),
       nonce: Number.parseInt(hexToNumber(nonce.result), 10),
     };
+  }
+
+  /**
+   * Get the specific shard's nonce
+   *
+   * @param shardID `shardID` is binding with the endpoint, IGNORE it!
+   * @param blockNumber by default, it's `latest`
+   *
+   * @example
+   * ```
+   * account.getShardNonce().then((value) => {
+   *   console.log(value);
+   * });
+   * ```
+   */
+  async getShardNonce(shardID: number, blockNumber: string = 'latest') {
+    const nonce = await this.messenger.send(
+      RPCMethod.GetAccountNonce,
+      [this.address, blockNumber],
+      this.messenger.chainPrefix,
+      shardID,
+    );
+    if (nonce.isError()) {
+      throw nonce.error.message;
+    }
+    return Number.parseInt(hexToNumber(nonce.result), 10);
   }
 
   /**
