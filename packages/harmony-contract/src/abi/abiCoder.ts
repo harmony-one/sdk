@@ -683,7 +683,12 @@ class CoderNumber extends Coder {
   encode(value: BN | number | string): Uint8Array {
     let result;
     try {
-      let v = new BN(value);
+      let v: BN;
+      if (typeof value == 'string' && value.startsWith('0x')) {
+        v = new BN(value.slice(2), 'hex');
+      } else {
+        v = new BN(value);
+      }
       if (this.signed) {
         let bounds = MaxUint256.maskn(this.size * 8 - 1);
         if (v.gt(bounds)) {
