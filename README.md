@@ -5,9 +5,9 @@
 
 This is the Harmony javascript library which provides an easier way to interact with Harmony's blockchain.
 
-Please read the [documentation](https://harmony-js-sdk-doc.s3-us-west-1.amazonaws.com/index.html) for more.
+Please read the [documentation](https://jssdk.doc.hmny.io/) for more.
 
-This libraries contains a few packages. Package level documentation and examples are inside each package
+This libraries contains a few packages. Package level documentation and examples are inside each package.
 
 1. [@harmony-js/core](https://github.com/harmony-one/sdk/tree/master/packages/harmony-core)
 2. [@harmony-js/account](https://github.com/harmony-one/sdk/tree/master/packages/harmony-account)
