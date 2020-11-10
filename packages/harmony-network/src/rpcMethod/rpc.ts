@@ -1,22 +1,28 @@
 /**
- * ## About this package
- *
- * `@harmony-js/network` provides functions to handle messenger, providers and subscriptions...
- *
- * ## How to use this package
- *
- * ### 1. Create a Message
- * ```javascript
- * const { HttpProvider, Messenger } = require('@harmony-js/network');
- * const { ChainType, ChainID } = require('@harmony-js/utils');
- *
- * // create a custom messenger
- * const customMessenger = new Messenger(
- *   new HttpProvider('http://localhost:9500'),
- *   ChainType.Harmony, // if you are connected to Harmony's blockchain
- *   ChainID.HmyLocal, // check if the chainId is correct
- * )
- * ```
+ # @harmony-js/network
+
+This package provides a collection of apis to create messengers (HTTP, WebSocket) to connect to blockchain networks.
+
+## Installation
+
+```
+npm install @harmony-js/network
+```
+
+## Usage
+
+```javascript
+const { Messenger, HttpProvider, WSProvider } = require('@harmony-js/network');
+const { ChainID, ChainType } = require('@harmony-js/utils');
+const testnetHTTP = 'https://api.s0.b.hmny.io';
+const testnetWS = 'wss://ws.s0.b.hmny.io';
+const localHTTP = 'http://localhost:9500/';
+const localWS = 'http://localhost:9800/';
+const http = new HttpProvider(testnetHTTP); // for local use localHTTP
+const ws = new WSProvider(testnetWS); // for local use testnetWS
+const customHTTPMessenger = new Messenger(http, ChainType.Harmony, ChainID.HmyTestnet); // for local ChainID.HmyLocal
+const customWSMessenger = new Messenger(ws, ChainType.Harmony, ChainID.HmyTestnet); // for local ChainID.HmyLocal
+```
  *
  * @packageDocumentation
  * @module harmony-network

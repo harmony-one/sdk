@@ -1,65 +1,79 @@
 /**
- * ## About this package
- *
- * `@harmony-js/crypot` provides a series of functions to deal with keys
- *
- * ## How to use this package
- *
- * ### Create a Harmony Instance
- * ```javascript
- * const { Harmony } = require('@harmony-js/core');
- * const { ChainID, ChainType } = require('@harmony-js/utils');
- *
- * const hmy = new Harmony(
- *   'http://localhost:9500',
- *   {
- *     chainType: ChainType.Harmony,
- *     chainId: ChainID.HmyLocal,
- *   },
- * );
- * ```
- *
- * ### Some examples
- *
- * ```javascript
- * // randomBytes
- * const bytes = hmy.crypto.randomBytes(20);
- * console.log(bytes)
- *
- * // encryptPhrase
- * const myPhrase = hmy.wallet.newMnemonic();
- * const pwd = '1234';
- * hmy.crypto.encryptPhrase(myPhrase, pwd).then((value) => {
- *   console.log(value);
- * })
- *
- * // decryptThePhrase
- * hmy.crypto.encryptPhrase(myPhrase, pwd).then((keystore) => {
- *   hmy.crypto.decryptPhrase(JSON.parse(keystore), pwd).then((value) => {
- *     console.log(value);
- *   })
- * })
- *
- * // generatePrivateKey
- * const privateKey = hmy.crypto.generatePrivateKey();
- * console.log(privateKey)
- *
- * // getPubkeyFromPrivateKey
- * const publicKey = hmy.crypto.getPubkeyFromPrivateKey(privateKey);
- * console.log(publicKey);
- *
- * // getAddressFromPrivateKey
- * const address = hmy.crypto.getAddressFromPrivateKey(privateKey);
- * console.log(address);
- *
- * // getAddressFromPublicKey
- * const address = hmy.crypto.getAddressFromPublicKey(publicKey);
- * console.log(address);
- *
- * // toChecksumAddress
- * const checksumAddr = hmy.crypto.toChecksumAddress(address);
- * console.log(checksumAddr);
- * ```
+ # @harmony-js/crypto
+
+This package provides a collection of apis related to address management, kestore, encoding, and encrypt/decrypt.
+
+## Installation
+
+```
+npm install @harmony-js/crypto
+```
+
+## Usage
+
+```javascript
+* const {
+*   encode,
+*   decode,
+*   randomBytes,
+*   toBech32,
+*   fromBech32,
+*   HarmonyAddress,
+*   generatePrivateKey,
+*   getPubkeyFromPrivateKey,
+*   getAddressFromPublicKey,
+*   getAddressFromPrivateKey,
+*   encryptPhrase,
+*   decryptPhrase
+* } = require('@harmony-js/crypto');
+* const { isPrivateKey, isAddress, isPublicKey } = require('@harmony-js/utils');
+```
+
+Address apis
+```javascript
+const bytes = randomBytes(20);
+const addr = new HarmonyAddress(bytes);
+
+console.log(addr.checksum);
+console.log(addr.bech32);
+
+console.log(HarmonyAddress.isValidBech32(addr.bech32));
+```
+
+RLP apis
+```javascript
+const encoded = '0x89010101010101010101';
+const decoded = '0x010101010101010101';
+console.log(encode(decoded));
+console.log(decode(encoded));
+```
+
+Keystore apis
+```javascript
+const prv = generatePrivateKey();
+const pub = getPubkeyFromPrivateKey(prv);
+const addr = getAddressFromPublicKey(pub);
+const addrPrv = getAddressFromPrivateKey(prv);
+console.log(isPrivateKey(prv));
+console.log(isPublicKey(pub));
+console.log(isAddress(addr));
+console.log(isAddress(addrPrv));
+```
+
+Encrypt/decrypt apis
+```javascript
+* const { Wallet } = require('@harmony-js/account');
+
+* const myPhrase = new Wallet().newMnemonic();
+* console.log(myPhrase);
+* const pwd = '1234';
+* encryptPhrase(myPhrase, pwd).then((value) => {
+*   console.log(value);
+*   decryptPhrase(JSON.parse(value), pwd).then(value => {
+*     console.log(value);
+*   });
+* });
+```
  *
  * @packageDocumentation
  * @module harmony-crypto
