@@ -510,7 +510,7 @@ class Account {
     if (nonce.isError()) {
       throw nonce.error.message;
     }
-    return Number.parseInt(hexToNumber(nonce.result), 10);
+    return nonce.result;
   }
 
   /**
