@@ -8,3 +8,5 @@
 6. [@harmony-js/transaction](https://github.com/harmony-one/sdk/tree/master/packages/harmony-transaction)
 7. [@harmony-js/contract](https://github.com/harmony-one/sdk/tree/master/packages/harmony-contract)
 8. [@harmony-js/staking](https://github.com/harmony-one/sdk/tree/master/packages/harmony-staking)
+
+<mark>Package level documentation and examples are inside each package</mark>
