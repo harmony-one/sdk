@@ -163,6 +163,10 @@ export class TruffleProvider extends HDNode {
               callback(err);
             }
             const response = this.resolveResult(res);
+            if (response.error) {
+              callback(response.error);
+              return;
+            }
 
             if (
               new Unit(response.result.gasLimit)
