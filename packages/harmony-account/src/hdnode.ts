@@ -211,7 +211,7 @@ export class HDNode {
     const nonce =
       txParams.nonce !== undefined && isHex(txParams.nonce)
         ? Number.parseInt(hexToNumber(txParams.nonce), 10)
-        : Number.parseInt(hexToNumber(accountNonce.result), 10);
+        : accountNonce.result;
     const data = txParams.data !== undefined && isHex(txParams.data) ? txParams.data : '0x';
     const prv = this.wallets[from].privateKey;
 
