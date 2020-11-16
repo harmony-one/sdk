@@ -18,7 +18,21 @@ This libraries contains a few packages. Package level documentation and examples
 7. [@harmony-js/contract](https://github.com/harmony-one/sdk/tree/master/packages/harmony-contract)
 8. [@harmony-js/staking](https://github.com/harmony-one/sdk/tree/master/packages/harmony-contract)
 
-A Token Faucet Demo DApp is [here](https://github.com/harmony-one/token-faucet-demo-dapp), and a workshop video is [here]().
+# Examples
+
+* [A Token Faucet Demo DApp](https://github.com/harmony-one/token-faucet-demo-dapp)
+* [Cross-chain Apps](https://docs.harmony.one/home/showcases/crosschain) [the link contains code, demo, and more information]
+* [DeFi Apps](https://docs.harmony.one/home/showcases/defi)
+* [DevPost Hackathon Apps](https://docs.harmony.one/home/showcases/hackathons)
+* Eth<>Harmony Bridge Components: [frontend](https://github.com/harmony-one/ethhmy-bridge.frontend), [backend](https://github.com/harmony-one/ethhmy-bridge.appengine), [smart contracts](https://github.com/harmony-one/ethhmy-bridge), [test scripts](https://github.com/harmony-one/ethhmy-bridge.tests)
+* Eth<>Harmony bridge SDKs: [main sdk](https://github.com/harmony-one/ethhmy-bridge.sdk), [bridge UI widget](https://github.com/harmony-one/ethhmy-bridge.ui-sdk)
+* Swoop Dex: [interface](https://github.com/harmony-one/swoop-interface), [cli](https://github.com/harmony-one/swoop-cli), [sdk](https://github.com/harmony-one/swoop-sdk), [deployment](https://github.com/harmony-one/swoop-deployment), [misc](https://github.com/harmony-one/swoop-misc), [lib](https://github.com/harmony-one/swoop-lib), [periphery](https://github.com/harmony-one/swoop-periphery), [core](https://github.com/harmony-one/swoop-core), [testing](https://github.com/harmony-one/swoop-testing), [utils](https://github.com/harmony-one/swoop-utils)
+* [Iris Bridge](https://github.com/harmony-one/ethhmy-bridge-v2): inspired from near's rainbow bridge
+* [Animoca's BeastQuest Game](https://github.com/harmony-one/BeastQuest)
+* [Chainlink Testnet Integration Demo](https://github.com/harmony-one/chainlink-demo-project)
+* [NFT Store DApp](https://github.com/harmony-one/nft-store)
+* [old dapp-examples](https://github.com/harmony-one/dapp-examples): some of them may be outdated!
+
 
 # Installation
 
