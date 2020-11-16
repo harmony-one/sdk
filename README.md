@@ -1,13 +1,13 @@
-# Harmony JavaScript API
+# Harmony JavaScript SDK
 
 [![npm version](https://img.shields.io/npm/v/@harmony-js/core.svg?style=flat-square)](https://www.npmjs.com/package/@harmony-js/core)
 [![Build Status](https://travis-ci.com/FireStack-Lab/Harmony-sdk-core.svg?branch=master)](https://travis-ci.com/FireStack-Lab/Harmony-sdk-core)
 
-This is the Harmony javascript library which provides an easier way to interact with Harmony's blockchain.
+This is the Harmony Javascript SDK which provides an easier way to interact with Harmony blockchain.
 
-Please read the [documentation](https://jssdk.doc.hmny.io/) for more.
+Please read the [documentation](https://jssdk.doc.hmny.io/) for full API doc.
 
-This libraries contains a few packages. Package level documentation and examples are inside each package.
+The SDK includes following packages with package-level documentation and examples inside each package.
 
 1. [@harmony-js/core](https://github.com/harmony-one/sdk/tree/master/packages/harmony-core)
 2. [@harmony-js/account](https://github.com/harmony-one/sdk/tree/master/packages/harmony-account)
