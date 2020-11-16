@@ -18,6 +18,8 @@ This libraries contains a few packages. Package level documentation and examples
 7. [@harmony-js/contract](https://github.com/harmony-one/sdk/tree/master/packages/harmony-contract)
 8. [@harmony-js/staking](https://github.com/harmony-one/sdk/tree/master/packages/harmony-contract)
 
+A Token Faucet Demo DApp is [here](https://github.com/harmony-one/token-faucet-demo-dapp), and a workshop video is [here]().
+
 # Installation
 
 This library works on both nodejs and browser. Please use it according to your use case.
