@@ -21,6 +21,8 @@ This libraries contains a few packages. Package level documentation and examples
 # Examples
 
 * [A Token Faucet Demo DApp](https://github.com/harmony-one/token-faucet-demo-dapp)
+* [Hackathon DApps](): DApps built during our internal hackathon
+  * [soccerplayers](https://github.com/gupadhyaya/soccerplayers), [onemoji](https://github.com/peekpi/onemoji), [harmonauts](https://github.com/ivorytowerdds/harmonauts), [good-one](https://github.com/harmony-one/dapp-demo-crowdfunding)
 * [Cross-chain Apps](https://docs.harmony.one/home/showcases/crosschain) [the link contains code, demo, and more information]
 * [DeFi Apps](https://docs.harmony.one/home/showcases/defi)
 * [DevPost Hackathon Apps](https://docs.harmony.one/home/showcases/hackathons)
