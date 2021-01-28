@@ -16,7 +16,7 @@ The SDK includes following packages with package-level documentation and example
 5. [@harmony-js/utils](https://github.com/harmony-one/sdk/tree/master/packages/harmony-utils)
 6. [@harmony-js/transaction](https://github.com/harmony-one/sdk/tree/master/packages/harmony-transaction)
 7. [@harmony-js/contract](https://github.com/harmony-one/sdk/tree/master/packages/harmony-contract)
-8. [@harmony-js/staking](https://github.com/harmony-one/sdk/tree/master/packages/harmony-contract)
+8. [@harmony-js/staking](https://github.com/harmony-one/sdk/tree/master/packages/harmony-staking)
 
 # Examples
 
