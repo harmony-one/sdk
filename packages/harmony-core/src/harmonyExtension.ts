@@ -182,7 +182,7 @@ export class HarmonyExtension {
           transaction.setParams({
             ...transaction.txParams,
             from: crypto.getAddress(extensionAccount.address).bech32,
-            nonce: Number.parseInt(utils.hexToNumber(nonce.result), 10),
+            nonce: Number.parseInt(utils.isHex(nonce.result.toString()) ? utils.hexToNumber(nonce.result.toString()) : nonce.result.toString(), 10),
           });
         } else {
           transaction.setParams({
