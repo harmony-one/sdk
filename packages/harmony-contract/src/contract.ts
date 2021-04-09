@@ -118,7 +118,7 @@ export class Contract {
   connect(wallet: Wallet): void {
     this.wallet = wallet;
   }
-  setMessegner(messenger: Messenger) {
+  setMessenger(messenger: Messenger) {
     if (this.wallet instanceof Wallet) {
       this.wallet.setMessenger(messenger);
     } else {
