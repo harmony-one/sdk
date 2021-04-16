@@ -393,16 +393,17 @@ class Blockchain {
    *
    * @example
    * ```javascript
-   * hmy.blockchain.getBlockByNumber({
-   *   blockNumber: '0x89',
+   * hmy.blockchain.getBlocks({
+   *   from: '0x89',
+   *   to: '0x89',
    * }).then((value) => {
    *   console.log(value);
    * });
    * ```
    */
   @assertObject({
-    from: ['isString', AssertType.required],
-    to: ['isString', AssertType.required],
+    from: ['isBlockNumber', AssertType.required],
+    to: ['isBlockNumber', AssertType.required],
     blockArgs: ['isObject', AssertType.optional],
     shardID: ['isNumber', AssertType.optional],
   })
