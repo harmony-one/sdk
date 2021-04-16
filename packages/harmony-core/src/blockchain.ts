@@ -383,6 +383,56 @@ class Blockchain {
   }
 
   /**
+   * Returns blocks in range [from; to]
+   *
+   * @param from starting block number in 0x format
+   * @param to ending block number in 0x format
+   * @param blockArgs optional args struct in json format (should be used just with { })
+   * @param shardID `shardID` is binding with the endpoint, IGNORE it!
+   * @returns `Promise` - An array of block objects
+   *
+   * @example
+   * ```javascript
+   * hmy.blockchain.getBlockByNumber({
+   *   blockNumber: '0x89',
+   * }).then((value) => {
+   *   console.log(value);
+   * });
+   * ```
+   */
+  @assertObject({
+    from: ['isString', AssertType.required],
+    to: ['isString', AssertType.required],
+    blockArgs: ['isObject', AssertType.optional],
+    shardID: ['isNumber', AssertType.optional],
+  })
+  async getBlocks({
+    from,
+    to,
+    blockArgs = {
+      fullTx: false,
+      withSigners: false,
+    },
+    shardID = this.messenger.currentShard,
+  }: {
+    from: string;
+    to: string;
+    blockArgs: {
+      fullTx: boolean;
+      withSigners: boolean;
+    };
+    shardID?: number;
+  }) {
+    const result = await this.messenger.send(
+      RPCMethod.GetBlocks,
+      [from, to, blockArgs],
+      this.messenger.chainPrefix,
+      shardID,
+    );
+    return this.getRpcResult(result);
+  }
+
+  /**
    * Returns the number of transaction in a given block.
    *
    * @param blockHash the block number Hash
