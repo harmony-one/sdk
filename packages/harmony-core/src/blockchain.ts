@@ -417,7 +417,7 @@ class Blockchain {
   }: {
     from: string;
     to: string;
-    blockArgs: {
+    blockArgs?: {
       fullTx: boolean;
       withSigners: boolean;
     };
