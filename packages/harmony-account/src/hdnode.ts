@@ -85,7 +85,6 @@ export class HDNode {
     chainId: ChainID = ChainID.Default,
     gasLimit = '1000000',
     gasPrice = '2000000000',
-    generateMnemonic?: boolean,
   ) {
     this.provider = this.setProvider(provider);
     this.shardID = shardID;
@@ -97,7 +96,7 @@ export class HDNode {
     this.path = chainType === ChainType.Harmony ? HDPath : `m/44'/60'/0'/0/`;
     this.index = index;
     this.addressCount = addressCount;
-    if (generateMnemonic) {
+    if (menmonic !== null && menmonic !== '') {
       this.getHdWallet(menmonic || HDNode.generateMnemonic());
     }
     this.gasLimit = gasLimit;
@@ -154,6 +153,7 @@ export class HDNode {
     }
     return this.addresses;
   }
+
   // tslint:disable-next-line: ban-types
   getPrivateKey(address: string, cb?: Function) {
     if (!cb) {
@@ -169,6 +169,7 @@ export class HDNode {
       cb(null, this.wallets[address].privateKey);
     }
   }
+
   // tslint:disable-next-line: ban-types
   async signTransaction(txParams: any | Web3TxPrams) {
     const from: string = txParams.from ? getAddress(txParams.from).checksum : '0x';
@@ -241,6 +242,7 @@ export class HDNode {
 
     return signed.getRawTransaction();
   }
+
   getAddress(idx?: number) {
     if (!idx) {
       return this.addresses[0];
@@ -248,9 +250,11 @@ export class HDNode {
       return this.addresses[idx];
     }
   }
+
   getAddresses() {
     return this.addresses;
   }
+
   addByPrivateKey(privateKey: string) {
     const account = new Account(privateKey);
     const addr = account.checksumAddress;
