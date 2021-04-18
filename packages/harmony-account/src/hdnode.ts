@@ -85,6 +85,7 @@ export class HDNode {
     chainId: ChainID = ChainID.Default,
     gasLimit = '1000000',
     gasPrice = '2000000000',
+    generateMnemonic?: boolean,
   ) {
     this.provider = this.setProvider(provider);
     this.shardID = shardID;
@@ -96,7 +97,9 @@ export class HDNode {
     this.path = chainType === ChainType.Harmony ? HDPath : `m/44'/60'/0'/0/`;
     this.index = index;
     this.addressCount = addressCount;
-    this.getHdWallet(menmonic || HDNode.generateMnemonic());
+    if (generateMnemonic) {
+      this.getHdWallet(menmonic || HDNode.generateMnemonic());
+    }
     this.gasLimit = gasLimit;
     this.gasPrice = gasPrice;
   }
@@ -258,7 +261,7 @@ export class HDNode {
 
   setSigner(address: string) {
     const foundIndex = this.addresses.findIndex((value) => value === address);
-    this.addresses.slice(foundIndex, foundIndex + 1);
+    this.addresses.splice(foundIndex, 1);
     this.addresses.unshift(address);
   }
 }
