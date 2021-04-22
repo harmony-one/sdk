@@ -103,6 +103,8 @@ export enum RPCMethod {
   SendRawStakingTransaction = 'hmy_sendRawStakingTransaction',
   // 34. hmy_getAccountNonce
   GetAccountNonce = 'hmy_getAccountNonce',
+  // 35. hmy_getBlocks
+  GetBlocks = 'hmy_getBlocks',
 }
 
 /**@ignore */
