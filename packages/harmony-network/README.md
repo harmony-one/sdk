@@ -18,7 +18,7 @@ const testnetWS = 'wss://ws.s0.b.hmny.io';
 const localHTTP = 'http://localhost:9500/';
 const localWS = 'http://localhost:9800/';
 const http = new HttpProvider(testnetHTTP); // for local use localHTTP
-const ws = new WSProvider(testnetWS); // for local use testnetWS
+const ws = new WSProvider(testnetWS); // for local use localWS
 const customHTTPMessenger = new Messenger(http, ChainType.Harmony, ChainID.HmyTestnet); // for local ChainID.HmyLocal
 const customWSMessenger = new Messenger(ws, ChainType.Harmony, ChainID.HmyTestnet); // for local ChainID.HmyLocal
 ```
