@@ -4,8 +4,7 @@
  */
 
 import aes from 'aes-js';
-// import scrypt from 'scrypt.js';
-import scrypt from 'scrypt-shim';
+import scrypt from 'scrypt.js';
 import { pbkdf2Sync } from 'pbkdf2';
 import uuid from 'uuid';
 import { isPrivateKey } from '@harmony-js/utils';

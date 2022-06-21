@@ -1,11 +1,10 @@
-declare module 'scrypt-shim' {
-  export default function scrypt(
-    key: Buffer,
-    salt: Buffer,
-    n: number,
+declare module 'scrypt.js' {
+  export default function syncScrypt(
+    password: ArrayLike<number>,
+    salt: ArrayLike<number>,
+    N: number,
     r: number,
     p: number,
-    dklen: number,
-    progressCB?: (prog: any) => void,
+    dkLen: number,
   ): Buffer;
 }
