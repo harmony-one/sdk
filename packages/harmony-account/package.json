@@ -1,6 +1,6 @@
 {
   "name": "@harmony-js/account",
-  "version": "0.1.57",
+  "version": "0.1.58",
   "description": "account and wallet for harmony",
   "main": "dist/index.js",
   "node": "dist/index.js",
