@@ -16,11 +16,11 @@ describe('test account', () => {
   it('test Account.getBalance returns object that implements Balance interface', () => {
     fetch.mockResponses(
       [
-        JSON.stringify({"jsonrpc":"2.0","id":2,"result":"0x166c690f33421e"}),
+        JSON.stringify({"jsonrpc": "2.0", "id": 1, "result": "0x166c690f33421e"}),
         { status: 200 }
       ],
       [
-        JSON.stringify({"jsonrpc":"2.0","id":2,"result":"0x106"}),
+        JSON.stringify({"jsonrpc": "2.0", "id": 1, "result": "0x106"}),
         { status: 200 }
       ]
     );

@@ -3,6 +3,7 @@ module.exports = {
   ...baseConfig,
   moduleNameMapper: {
     '^@harmony-js/(.*)$': '<rootDir>/packages/harmony-$1/src/index.ts',
+    'cross-fetch': 'jest-fetch-mock',
   },
   setupTestFrameworkScriptFile: '<rootDir>/scripts/jest/jest.framework-setup.js',
   testMatch: ['<rootDir>/e2e/src/?(*.)+(spec|test|e2e).ts'],
@@ -21,4 +22,5 @@ module.exports = {
     'packages/harmony-crypto/src/**/*.ts',
     'packages/harmony-transaction/src/**/*.ts',
   ],
+  automock: false,
 };
