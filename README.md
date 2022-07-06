@@ -93,12 +93,9 @@ yarn test:src
 ```
 ## e2e tests
 
-1. `.env` file defines configuration, edit if you have custom settings
-   
-2. Run harmony node locally, follow the instructions: https://github.com/harmony-one/harmony
-   
-3. Wait for 1-2 mins, and run this:
-
+1. Remove the `'cross-fetch': 'jest-fetch-mock'` line from `scripts/jest/jest.e2e.config.js`
+1. Run harmony node locally, follow the instructions: https://github.com/harmony-one/harmony  
+1. Wait for 1-2 mins, and run this:
 ```bash
 yarn build && yarn test:e2e
 ```

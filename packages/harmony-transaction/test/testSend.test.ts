@@ -33,7 +33,7 @@ describe('test send transaction', () => {
     // jest.clearAllTimers();
   });
   it('should test wallet sign and send', async () => {
-    const responses = [
+    let responses = [
       {
         jsonrpc: '2.0',
         id: 1,
@@ -44,8 +44,7 @@ describe('test send transaction', () => {
         id: 1,
         result: '0x7e1ef610f700805b93cf85b1e55bce84fcbd04373252a968755366a8d2215424',
       },
-    ].map((res) => [JSON.stringify(res)] as [string]);
-
+    ].map(response => JSON.stringify(response), {status: 200});
     fetch.mockResponses(...responses);
     const factory = new TransactionFactory(msgHttp);
 
@@ -197,8 +196,7 @@ describe('test send transaction', () => {
         id: 5,
         result: '0x5',
       },
-    ].map((res) => [JSON.stringify(res)] as [string]);
-
+    ].map(response => JSON.stringify(response), {status: 200});
     fetch.mockResponses(...responses);
 
     const hash = '0x7e1ef610f700805b93cf85b1e55bce84fcbd04373252a968755366a8d2215424';
@@ -318,8 +316,7 @@ describe('test send transaction', () => {
         id: 5,
         result: '0x5',
       },
-    ].map((res) => [JSON.stringify(res)] as [string]);
-
+    ].map(response => JSON.stringify(response), {status: 200});
     fetch.mockResponses(...responses);
 
     const hash = '0x7e1ef610f700805b93cf85b1e55bce84fcbd04373252a968755366a8d2215424';
@@ -421,8 +418,7 @@ describe('test send transaction', () => {
         id: 5,
         result: '0x5',
       },
-    ].map((res) => [JSON.stringify(res)] as [string]);
-
+    ].map(response => JSON.stringify(response), {status: 200});
     fetch.mockResponses(...responses);
 
     const hash = '0x7e1ef610f700805b93cf85b1e55bce84fcbd04373252a968755366a8d2215424';

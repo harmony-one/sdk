@@ -22,13 +22,13 @@ import typescript2 from 'rollup-plugin-typescript2';
 import ts from 'typescript';
 // tslint:disable-next-line: no-implicit-dependencies
 
-import {projects, preProcessFunc, preProcessProjects} from './projects';
+import { projects, preProcessFunc, preProcessProjects } from './projects';
 
 function getKeys(p) {
   const packageJsonFile = `${process.cwd()}/packages/${p}/package.json`;
   const data = fs.readFileSync(packageJsonFile, 'utf-8');
 
-  const {dependencies} = JSON.parse(data);
+  const { dependencies } = JSON.parse(data);
 
   // .filter((d) => !/harmony/.test(d))
   const keys = dependencies ? Object.keys(dependencies) : [];
@@ -43,11 +43,7 @@ async function bundles() {
       input: path.join(pkg.src, 'index.ts'),
       plugins: [
         alias({
-          elliptic: path.resolve(
-            __dirname,
-            '../',
-            'includes/elliptic/elliptic.js',
-          ),
+          elliptic: path.resolve(__dirname, '../', 'includes/elliptic/elliptic.js'),
         }),
         resolve({
           browser: true,
@@ -63,13 +59,15 @@ async function bundles() {
           typescript: ts, // ensure we're using the same typescript (3.x) for rollup as for regular builds etc
           tsconfig: path.join(pkg.path, 'tsconfig.json'),
           tsconfigOverride: {
-            module: 'esnext',
-            stripInternal: true,
-            emitDeclarationOnly: false,
-            composite: false,
-            declaration: false,
-            declarationMap: false,
-            sourceMap: true,
+            compilerOptions: {
+              module: 'es2015',
+              stripInternal: true,
+              emitDeclarationOnly: false,
+              composite: false,
+              declaration: false,
+              declarationMap: false,
+              sourceMap: true,
+            },
           },
         }),
         license({

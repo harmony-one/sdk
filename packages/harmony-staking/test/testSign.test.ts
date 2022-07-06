@@ -318,15 +318,11 @@ describe('test sign staking transaction', () => {
   });
   it('should test sign create validator staking transaction using wallet', async () => {
     const testTx: any = testTransactions[0];
-    const responses = [
-      {
-        jsonrpc: '2.0',
-        id: 1,
-        result: testTx.nonce,
-      },
-    ].map((res) => [JSON.stringify(res)] as [string]);
-
-    fetch.mockResponses(...responses);
+    fetch.mockResponse(JSON.stringify({
+      jsonrpc: '2.0',
+      id: 1,
+      result: testTx.nonce,
+    }));
 
     const desc: Description = new Description(
       testTx.description.name,
@@ -363,15 +359,11 @@ describe('test sign staking transaction', () => {
   });
   it('should test sign edit validator staking transaction using wallet', async () => {
     const testTx: any = testTransactions[1];
-    const responses = [
-      {
-        jsonrpc: '2.0',
-        id: 1,
-        result: testTx.nonce,
-      },
-    ].map((res) => [JSON.stringify(res)] as [string]);
-
-    fetch.mockResponses(...responses);
+    fetch.mockResponse(JSON.stringify({
+      jsonrpc: '2.0',
+      id: 1,
+      result: testTx.nonce,
+    }));
 
     const desc: Description = new Description(
       testTx.description.name,
@@ -403,15 +395,11 @@ describe('test sign staking transaction', () => {
   });
   it('should test sign delegate staking transaction using wallet', async () => {
     const testTx: any = testTransactions[2];
-    const responses = [
-      {
-        jsonrpc: '2.0',
-        id: 1,
-        result: testTx.nonce,
-      },
-    ].map((res) => [JSON.stringify(res)] as [string]);
-
-    fetch.mockResponses(...responses);
+    fetch.mockResponse(JSON.stringify({
+      jsonrpc: '2.0',
+      id: 1,
+      result: testTx.nonce,
+    }));
 
     const stakeMsg: Delegate = new Delegate(
       testTx.delegatorAddress,
@@ -434,15 +422,11 @@ describe('test sign staking transaction', () => {
   it('should test sign undelegate staking transaction using wallet', async () => {
     const testTx: any = testTransactions[3];
 
-    const responses = [
-      {
-        jsonrpc: '2.0',
-        id: 1,
-        result: testTx.nonce,
-      },
-    ].map((res) => [JSON.stringify(res)] as [string]);
-
-    fetch.mockResponses(...responses);
+    fetch.mockResponse(JSON.stringify({
+      jsonrpc: '2.0',
+      id: 1,
+      result: testTx.nonce,
+    }));
     const stakeMsg: Undelegate = new Undelegate(
       testTx.delegatorAddress,
       testTx.validatorAddress,
@@ -466,15 +450,11 @@ describe('test sign staking transaction', () => {
   });
   it('should test sign collect rewards staking transaction using wallet', async () => {
     const testTx: any = testTransactions[4];
-    const responses = [
-      {
-        jsonrpc: '2.0',
-        id: 1,
-        result: testTx.nonce,
-      },
-    ].map((res) => [JSON.stringify(res)] as [string]);
-
-    fetch.mockResponses(...responses);
+    fetch.mockResponse(JSON.stringify({
+      jsonrpc: '2.0',
+      id: 1,
+      result: testTx.nonce,
+    }));
 
     const stakeMsg: CollectRewards = new CollectRewards(testTx.delegatorAddress);
 

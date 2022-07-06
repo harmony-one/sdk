@@ -12,12 +12,12 @@ const provider = new HttpProvider('https://mock.com');
 const messenger = new Messenger(provider);
 
 function runMocks(mockRpcResponse: any, repeat: number): void {
-  const mocks = [];
+  const mocks: any = [];
   for (let i = 0; i < 5; i++) {
     mocks.push(mockRpcResponse);
   }
   // tslint:disable-next-line: no-shadowed-variable
-  const responses = mocks.map((res) => [JSON.stringify(res)]);
+  const responses = mocks.map((res: any) => [JSON.stringify(res), {status: 200}]);
   fetch.mockResponses(...responses);
 }
 
