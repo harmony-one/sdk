@@ -109,6 +109,7 @@ import { Messenger, RPCMethod } from '@harmony-js/network';
 import { defaultMessenger, TransactionBase, TxStatus } from '@harmony-js/transaction';
 import { numberToHex, Unit } from '@harmony-js/utils';
 import { TextEncoder } from 'text-encoding';
+import { StakingTxParams } from './types';
 
 /** @hidden */
 export class StakingSettings {
@@ -164,6 +165,30 @@ export class StakingTransaction extends TransactionBase {
     };
     this.chainId = chainID;
     this.from = '0x';
+  }
+
+  /**
+   * get staking transaction params
+   *
+   * @example
+   * ```
+   * const txParams = txn.txParams;
+   * console.log(txParams)
+   * ```
+   */
+  get txParams(): StakingTxParams {
+    return {
+      directive: this.directive,
+      stakeMsg: this.stakeMsg,
+      nonce: this.nonce || 0,
+      gasPrice: this.gasPrice || new Unit(0).asWei().toWei(),
+      gasLimit: this.gasLimit || new Unit(0).asWei().toWei(),
+      chainId: this.chainId || 0,
+      rawTransaction: this.rawTransaction || '0x',
+      unsignedRawTransaction: this.unsignedRawTransaction || '0x',
+      signature: this.signature || '0x',
+      from: this.from || '',
+    };
   }
 
   encode(): [string, any[]] {
