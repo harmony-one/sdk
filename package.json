@@ -100,7 +100,7 @@
     "jest-json-schema": "^2.0.1",
     "jest-watch-typeahead": "^0.2.0",
     "jsdoc": "^3.6.3",
-    "lerna": "^3.20.2",
+    "lerna": "^6.4.1",
     "mkdirp": "^0.5.1",
     "prettier": "^1.18.2",
     "prettier-plugin-solidity": "^1.0.0-alpha.22",
